@@ -12,9 +12,62 @@ let activeCategory = 'All';
 let adminCurrentCity = 'All';
 
 /* ─────────────────────────────────────────────
+   PASSWORD AUTHENTICATION (Nilesh2202)
+   ───────────────────────────────────────────── */
+const ADMIN_PASSWORD = 'Nilesh2202';
+
+function checkAuth() {
+  if (localStorage.getItem('admin_authorized') === 'true') {
+    document.body.classList.remove('unauthorized');
+    return true;
+  }
+  document.body.classList.add('unauthorized');
+  return false;
+}
+
+function handleLogin(event) {
+  event.preventDefault();
+  const passwordInput = document.getElementById('login-password');
+  const errorEl = document.getElementById('login-error');
+  
+  if (passwordInput.value === ADMIN_PASSWORD) {
+    localStorage.setItem('admin_authorized', 'true');
+    document.body.classList.remove('unauthorized');
+    errorEl.textContent = '';
+    initializeAdminDashboard();
+  } else {
+    errorEl.textContent = '❌ Incorrect password. Please try again.';
+    passwordInput.value = '';
+    passwordInput.focus();
+    
+    // Shake animation effect
+    const card = document.querySelector('.login-card');
+    if (card) {
+      card.style.animation = 'none';
+      card.offsetHeight; // trigger reflow
+      card.style.animation = 'shake 0.4s ease';
+    }
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem('admin_authorized');
+  window.location.reload();
+}
+
+// Bind to window so HTML inline attributes can call them
+window.handleLogin = handleLogin;
+window.handleLogout = handleLogout;
+
+/* ─────────────────────────────────────────────
    BOOTSTRAP
    ───────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', async () => {
+let isInitialized = false;
+
+async function initializeAdminDashboard() {
+  if (isInitialized) return;
+  isInitialized = true;
+  
   await initializeData();
   await renderAdminStats();
   renderCategoryTabs();
@@ -25,6 +78,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupQuantityInput();
   await updatePublishButton();
   await updatePendingIndicator();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (checkAuth()) {
+    initializeAdminDashboard();
+  } else {
+    setTimeout(() => {
+      const pwInput = document.getElementById('login-password');
+      if (pwInput) pwInput.focus();
+    }, 100);
+  }
 });
 
 /* ─────────────────────────────────────────────

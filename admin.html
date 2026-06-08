@@ -7,7 +7,33 @@
   <meta name="description" content="Admin portal for managing Bootup India campaign point entries and publishing updates to the leaderboard." />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
-<body>
+<body class="unauthorized">
+
+<!-- ══════════════ ADMIN LOGIN SCREEN ══════════════ -->
+<div class="login-screen">
+  <div class="login-card">
+    <div class="login-brand-bar"></div>
+    <div class="login-icon">🔒</div>
+    <h2 class="login-title">Admin Access Required</h2>
+    <p class="login-subtitle">Bootup India Campaign · Vigorlaunchpad</p>
+    
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="form-label" style="text-align: left; display: block; margin-bottom: 8px;">Enter Admin Password</label>
+        <input type="password"
+               id="login-password"
+               class="form-input"
+               placeholder="••••••••"
+               style="width: 100%; text-align: center; font-size: 18px; letter-spacing: 2px;"
+               required />
+      </div>
+      <div id="login-error" class="login-error-msg"></div>
+      <button type="submit" class="btn btn-publish btn-full">
+        Unlock Portal
+      </button>
+    </form>
+  </div>
+</div>
 
 <!-- ══════════════ ADMIN HEADER ══════════════ -->
 <header class="admin-header">
@@ -27,6 +53,9 @@
     <a href="index.html" class="view-leaderboard-btn" target="_blank">
       🏆 View Leaderboard ↗
     </a>
+    <button onclick="handleLogout()" class="view-leaderboard-btn" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
+      🔒 Log Out
+    </button>
   </div>
 </header>
 
