@@ -62,6 +62,15 @@ const TASKS = {
     icon: '🎓',
     multiplier: false,
   },
+  orientation_12june: {
+    id: 'orientation_12june',
+    name: 'Introductory Call / Orientation (12th June)',
+    category: 'Events',
+    points: 10,
+    unit: 'attendance',
+    icon: '📢',
+    multiplier: false,
+  },
   ai_webinar: {
     id: 'ai_webinar',
     name: 'AI Webinar — Students Brought In',
