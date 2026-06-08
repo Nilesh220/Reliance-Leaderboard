@@ -833,10 +833,37 @@ body {
   .poc-table-header .col-city, .poc-table-row .poc-table-city { display: none; }
 }
 
-@media (max-width: 600px) {
-  .admin-header { padding: 0 16px; }
-  .admin-main, .admin-sidebar { padding: 18px 16px; }
+@media (max-width: 680px) {
+  .admin-header {
+    height: auto;
+    padding: 14px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .admin-header-actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+  }
+  .admin-header-actions > * {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+  .admin-logo {
+    justify-content: center;
+    text-align: center;
+  }
 }
+
+@media (max-width: 600px) {
+  .admin-main, .admin-sidebar { padding: 18px 16px; }
+  .stats-overview { grid-template-columns: repeat(2, 1fr); }
+  .poc-table-header, .poc-table-row { grid-template-columns: 1fr 60px 60px; font-size: 12px; padding: 10px 12px; }
+}
+
 
 /* ═══════════════════════════════════════════════════
    ADMIN LOGIN SCREEN
