@@ -66,7 +66,7 @@ async function renderAll() {
   renderCityTabs(data);
   renderPodium(data);
   renderRankings(data);
-  renderCollegeBoard(data);
+  renderCityBoard(data);
   renderPointsReference();
   await renderLastUpdated();
 }
@@ -129,7 +129,7 @@ async function switchCity(city) {
   renderCityTabs(data);
   renderPodium(data);
   renderRankings(data);
-  renderCollegeBoard(data);
+  renderCityBoard(data);
 }
 
 /* ─────────────────────────────────────────────
@@ -216,34 +216,63 @@ function getTaskBadges(poc) {
 /* ─────────────────────────────────────────────
    COLLEGE LEADERBOARD
    ───────────────────────────────────────────── */
-function renderCollegeBoard(data) {
-  const container = document.getElementById('college-grid');
+/* ─────────────────────────────────────────────
+   CITY RANKINGS (Computed from live data)
+   ───────────────────────────────────────────── */
+function renderCityBoard(data) {
+  const container = document.getElementById('city-rankings-grid');
   if (!container) return;
-  const colleges  = getCollegeLeaderboard(data, currentCity);
-  const maxPts    = colleges.length > 0 ? colleges[0].totalPoints : 1;
-  if (colleges.length === 0) {
-    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🎓</div><div class="empty-title">No college scores yet</div></div>`;
-    return;
-  }
-  container.innerHTML = colleges.map((col, idx) => {
+
+  // Compute city statistics
+  const cityStats = {
+    Mumbai: { city: 'Mumbai', totalPoints: 0, pocCount: 0, icon: '🏙️' },
+    Pune: { city: 'Pune', totalPoints: 0, pocCount: 0, icon: '🌸' },
+    Aurangabad: { city: 'Aurangabad', totalPoints: 0, pocCount: 0, icon: '🕌' }
+  };
+
+  // Group POC points by city
+  data.forEach(poc => {
+    if (cityStats[poc.city]) {
+      cityStats[poc.city].totalPoints += poc.points;
+      cityStats[poc.city].pocCount++;
+    }
+  });
+
+  // Calculate averages and convert to list
+  const citiesList = Object.values(cityStats).map(c => {
+    const avg = c.pocCount > 0 ? (c.totalPoints / c.pocCount) : 0;
+    return {
+      ...c,
+      avgPoints: Math.round(avg * 10) / 10 // 1 decimal place
+    };
+  });
+
+  // Sort by average points descending
+  citiesList.sort((a, b) => b.avgPoints - a.avgPoints);
+
+  const maxAvg = citiesList.length > 0 ? citiesList[0].avgPoints : 1;
+
+  container.innerHTML = citiesList.map((col, idx) => {
     const rank      = idx + 1;
     const rankClass = rank === 1 ? 'gold-text' : rank === 2 ? 'silver-text' : rank === 3 ? 'bronze-text' : '';
     const rankDisp  = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
-    const pct       = maxPts > 0 ? (col.totalPoints / maxPts) * 100 : 0;
+    const pct       = maxAvg > 0 ? (col.avgPoints / maxAvg) * 100 : 0;
     return `
-      <div class="college-card" style="animation-delay:${Math.min(idx * 0.04, 0.4)}s">
+      <div class="college-card" style="animation-delay:${idx * 0.05}s">
         <div class="college-rank ${rankClass}">${rankDisp}</div>
         <div class="college-info">
-          <div class="college-name" title="${col.college}">${col.college}</div>
+          <div class="college-name">${col.icon} ${col.city} City</div>
           <div class="college-meta">
-            <span class="city-tag city-${col.city.toLowerCase()}" style="padding:2px 8px;font-size:10px">${col.city}</span>
-            &nbsp;·&nbsp; ${col.pocCount} POC${col.pocCount > 1 ? 's' : ''}
+            ${col.pocCount} Active POC${col.pocCount > 1 ? 's' : ''} &nbsp;·&nbsp; Total: ${col.totalPoints.toLocaleString()} pts
           </div>
           <div class="score-bar-wrap">
             <div class="score-bar" style="width:${pct}%"></div>
           </div>
         </div>
-        <div class="college-points">${col.totalPoints.toLocaleString()}<div style="font-size:11px;color:var(--text3);font-family:Inter;font-weight:400">pts</div></div>
+        <div class="college-points" style="text-align:right">
+          ${col.avgPoints.toLocaleString()}
+          <div style="font-size:11px;color:var(--text3);font-family:Inter;font-weight:400">avg pts/poc</div>
+        </div>
       </div>`;
   }).join('');
 }
