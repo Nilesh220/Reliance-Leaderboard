@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bootup India — Reliance Digital Campaign Leaderboard</title>
+  <meta name="description" content="Live leaderboard for Reliance Digital's Bootup India campus campaign. Track POC rankings, college scores, and campaign progress across Mumbai, Pune, and Aurangabad." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- Animated canvas background -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Update notification banner -->
+<div id="refresh-banner" style="
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:linear-gradient(90deg,#00b85e,#00e676);
+  color:#000; font-weight:700; font-size:14px;
+  text-align:center; padding:10px;
+  transform:translateY(-100%); transition:transform 0.3s ease;">
+  🔄 Leaderboard updated!
+</div>
+
+<style>
+  #refresh-banner.visible { transform: translateY(0); }
+</style>
+
+<div class="wrapper">
+
+  <!-- Brand top bar -->
+  <div class="brand-bar"></div>
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+
+    <div class="hero-logo-bar">
+      <div class="reliance-badge">⚡ Reliance Digital <span class="red-dot"></span></div>
+      <div class="logo-divider"></div>
+      <div class="vigor-badge">Powered by Vigorlaunchpad</div>
+    </div>
+
+    <div class="hero-eyebrow">🇮🇳 Campus Campaign 2026</div>
+
+    <h1 class="hero-title">Bootup<br>India</h1>
+    <p class="hero-subtitle">Igniting the Next Generation of Digital Champions</p>
+    <div class="hero-accent-line"></div>
+
+    <!-- Campaign Stats -->
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-total-pts">0</span>
+        <span class="hero-stat-label">Total Points</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-total-pocs">57</span>
+        <span class="hero-stat-label">POCs Enrolled</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-active-pocs">0</span>
+        <span class="hero-stat-label">Active POCs</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-colleges">57</span>
+        <span class="hero-stat-label">Colleges</span>
+      </div>
+    </div>
+
+    <div class="scroll-cue">↓</div>
+  </section>
+
+  <!-- ══════════════ COUNTDOWN STRIP ══════════════ -->
+  <div class="countdown-strip">
+    <span class="countdown-label">Next Update In</span>
+    <span class="countdown-time" id="countdown-time">00:00:00</span>
+    <span style="opacity:0.3;color:#fff">|</span>
+    <span class="live-dot"></span>
+    <span class="last-updated" id="last-updated">Checking...</span>
+  </div>
+  <div class="red-strip"></div>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="main-content">
+
+    <!-- City Filter Tabs -->
+    <div id="city-tabs" class="city-tabs" style="margin-bottom:48px"></div>
+
+    <!-- ── PODIUM ── -->
+    <section class="podium-section">
+      <div class="section-header">
+        <div class="section-icon">🏆</div>
+        <div>
+          <div class="section-title">Top Performers</div>
+          <div class="section-subtitle">The leaders pushing Bootup India forward</div>
+        </div>
+      </div>
+      <div class="podium" id="podium">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── FULL RANKINGS ── -->
+    <section class="rankings-section">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div>
+          <div class="section-title">Individual Rankings</div>
+          <div class="section-subtitle">All 57 POCs ranked by total points</div>
+        </div>
+      </div>
+
+      <div class="rankings-table-wrap">
+        <div class="rankings-header">
+          <div>#</div>
+          <div>POC</div>
+          <div class="col-city">City</div>
+          <div class="col-tasks">Tasks</div>
+          <div style="text-align:right">Points</div>
+        </div>
+        <div id="rankings-body">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COLLEGE LEADERBOARD ── -->
+    <section class="college-section">
+      <div class="section-header">
+        <div class="section-icon">🎓</div>
+        <div>
+          <div class="section-title">College Rankings</div>
+          <div class="section-subtitle">Combined scores from all POCs per college</div>
+        </div>
+      </div>
+      <div class="college-grid" id="college-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── POINTS REFERENCE ── -->
+    <section class="points-reference">
+      <div class="section-header">
+        <div class="section-icon">💡</div>
+        <div>
+          <div class="section-title">How Points Are Earned</div>
+          <div class="section-subtitle">Complete these activities to climb the leaderboard</div>
+        </div>
+      </div>
+      <div class="points-grid" id="points-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer class="footer">
+    <div class="footer-logo">⚡ Reliance Digital × Vigorlaunchpad</div>
+    <div>Bootup India Campaign 2026 · All Rights Reserved</div>
+    <div style="margin-top:8px">
+      <a href="admin.html" style="color:var(--text3);font-size:12px;text-decoration:none;opacity:0.5">Admin Portal →</a>
+    </div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/leaderboard.js"></script>
+</body>
+</html>

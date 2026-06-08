@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal — Bootup India Campaign</title>
+  <meta name="description" content="Admin portal for managing Bootup India campaign point entries and publishing updates to the leaderboard." />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<!-- ══════════════ ADMIN HEADER ══════════════ -->
+<header class="admin-header">
+  <div class="admin-logo">
+    <div class="admin-logo-icon">⚙️</div>
+    <div>
+      <div class="admin-logo-text">Bootup India · Admin Portal</div>
+      <div class="admin-logo-sub">Vigorlaunchpad × Reliance Digital</div>
+    </div>
+  </div>
+
+  <div class="admin-header-actions">
+    <div class="pending-indicator">
+      <span id="header-pending-count">0 pending</span>
+      <div class="pending-count" id="header-pending-badge">0</div>
+    </div>
+    <a href="index.html" class="view-leaderboard-btn" target="_blank">
+      🏆 View Leaderboard ↗
+    </a>
+  </div>
+</header>
+
+<!-- ══════════════ ADMIN LAYOUT ══════════════ -->
+<div class="admin-layout">
+
+  <!-- ════ LEFT: MAIN PANEL ════ -->
+  <div class="admin-main">
+
+    <!-- ── Stats Overview ── -->
+    <div class="stats-overview">
+      <div class="stat-card">
+        <div class="stat-card-value" id="admin-stat-total-pts">0</div>
+        <div class="stat-card-label">Total Pts Live</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value" id="admin-stat-active-pocs">0</div>
+        <div class="stat-card-label">Active POCs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value" id="admin-stat-total-pocs">57</div>
+        <div class="stat-card-label">Total POCs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-value" id="admin-stat-pending" style="color:var(--orange)">0</div>
+        <div class="stat-card-label">In Queue</div>
+      </div>
+    </div>
+
+    <!-- ── Task Logger ── -->
+    <div class="admin-card">
+      <div class="admin-section-title">
+        <div class="icon">➕</div>
+        Log a Task
+      </div>
+
+      <!-- Step 1: Select POC -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
+          Step 1 — Select POC
+        </div>
+        <div style="position:relative" id="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text"
+                 id="poc-search"
+                 class="search-input"
+                 placeholder="Search by name, college or city…"
+                 autocomplete="off" />
+          <div id="search-results" class="search-results"></div>
+        </div>
+
+        <!-- Selected POC card -->
+        <div class="selected-poc-card" id="selected-poc-card">
+          <div class="selected-poc-avatar" id="sel-poc-avatar">—</div>
+          <div class="selected-poc-details">
+            <div class="selected-poc-name" id="sel-poc-name">—</div>
+            <div class="selected-poc-college" id="sel-poc-college">—</div>
+            <div>
+              <span id="sel-poc-city" class="city-tag"></span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="selected-poc-points" id="sel-poc-points">0 <span>pts</span></div>
+            <div style="font-size:11px;color:var(--text3)">current</div>
+          </div>
+          <button class="clear-selection" onclick="clearSelection()" title="Clear selection">✕</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Select Task -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
+          Step 2 — Select Task
+        </div>
+        <div class="category-tabs" id="category-tabs"></div>
+        <div class="tasks-grid" id="tasks-grid"></div>
+      </div>
+
+      <!-- Step 3: Quantity (for multiplier tasks) -->
+      <div id="qty-wrap" style="display:none;margin-bottom:20px;flex-direction:column;gap:8px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">
+          Step 3 — Enter Quantity
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input type="number" id="qty-input" class="form-input" value="1" min="1" max="999" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Note (optional)</label>
+            <input type="text" id="task-note" class="form-input" placeholder="e.g. Group names, details…" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Note for non-multiplier tasks -->
+      <div id="note-wrap" style="margin-bottom:20px">
+        <div class="form-group">
+          <label class="form-label">Note (optional)</label>
+          <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event name…" />
+        </div>
+      </div>
+
+      <!-- Points Preview -->
+      <div class="points-preview">
+        <div>
+          <div class="points-preview-label">Points to be awarded</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
+        </div>
+        <div class="points-preview-value" id="points-preview-value">— pts</div>
+      </div>
+
+      <!-- Add to Queue Button -->
+      <button class="btn btn-primary btn-full" onclick="addToQueue()" id="add-to-queue-btn">
+        ➕ Add to Queue
+      </button>
+    </div>
+
+    <!-- ── Full POC Table ── -->
+    <div class="admin-card">
+      <div class="admin-section-title">
+        <div class="icon">👥</div>
+        All POCs
+      </div>
+
+      <!-- Filter tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="category-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')">All Cities</button>
+        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')">🏙️ Mumbai</button>
+        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')">🌸 Pune</button>
+        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')">🕌 Aurangabad</button>
+      </div>
+
+      <div class="poc-table-wrap">
+        <div class="poc-table-header">
+          <div>POC</div>
+          <div class="col-city">City</div>
+          <div>Points</div>
+          <div>Action</div>
+        </div>
+        <div id="poc-table-body">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Audit History ── -->
+    <div class="admin-card">
+      <div class="admin-section-title">
+        <div class="icon">📜</div>
+        Activity History
+      </div>
+      <div class="history-log" id="history-log">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════ RIGHT: SIDEBAR ════ -->
+  <div class="admin-sidebar">
+
+    <!-- Publish Section -->
+    <div class="publish-section">
+      <div class="publish-title">🚀 Publish to Leaderboard</div>
+      <div class="publish-desc">
+        Review queued tasks below, then publish to push all changes live to the public leaderboard.
+      </div>
+      <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
+        ✅ Publish Update Now
+      </button>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:12px">
+        Typically done daily at 8:00 PM IST
+      </div>
+    </div>
+
+    <!-- Pending Queue -->
+    <div style="margin-bottom:24px">
+      <div class="admin-section-title" style="font-size:16px">
+        <div class="icon">⏳</div>
+        Pending Queue
+        <span id="queue-total-pts" style="font-size:13px;color:var(--accent);margin-left:auto;font-weight:600"></span>
+      </div>
+      <div id="pending-queue">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Quick Reference -->
+    <div class="admin-card">
+      <div class="admin-section-title" style="font-size:15px">
+        <div class="icon">💡</div>
+        Point Reference
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Instagram</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>📸 Story + tag</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🔥 Engagement bonus</span><span style="color:var(--accent);font-weight:700">+20 pts</span></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">WhatsApp</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>💬 Per group share</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Events</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎓 12 June Seminar</span><span style="color:var(--accent);font-weight:700">30 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎯 Webinar attendee</span><span style="color:var(--accent);font-weight:700">15 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🤖 AI Webinar student</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Store</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏪 Store visit</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🇮🇳 15 Aug visit</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Bonus</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏆 Weekly top</span><span style="color:var(--gold);font-weight:700">+50 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🥇 Top college/month</span><span style="color:var(--gold);font-weight:700">+100 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>⭐ Weekly consistency</span><span style="color:var(--gold);font-weight:700">+25 pts</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ PUBLISH CONFIRMATION MODAL ══════════════ -->
+<div class="modal-overlay" id="publish-modal" onclick="if(event.target===this)closePublishModal()">
+  <div class="modal">
+    <div class="modal-title">🚀 Confirm Publish</div>
+    <div id="publish-summary" style="color:var(--text2);font-size:14px;line-height:1.6"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closePublishModal()">Cancel</button>
+      <button class="btn btn-success" onclick="confirmPublish()">✅ Yes, Publish Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ OVERRIDE MODAL ══════════════ -->
+<div class="modal-overlay" id="override-modal" onclick="if(event.target===this)closeOverrideModal()">
+  <div class="modal">
+    <div class="modal-title">✏️ Manual Point Override</div>
+    <input type="hidden" id="override-poc-id" />
+    <div style="color:var(--text2);margin-bottom:16px">
+      Editing: <strong id="override-poc-name" style="color:var(--text)">—</strong>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">New Total Points</label>
+      <input type="number" id="override-pts-input" class="form-input" min="0" />
+    </div>
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">Reason</label>
+      <input type="text" id="override-reason" class="form-input" placeholder="e.g. Correction, bonus award…" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeOverrideModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmOverride()">Save Override</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TOAST CONTAINER ══════════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+
+<script>
+  // Sync category-tab active state for POC filter buttons
+  document.querySelectorAll('.poc-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.poc-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Note field sync for single tasks
+  document.addEventListener('DOMContentLoaded', () => {
+    const noteEl       = document.getElementById('task-note');
+    const noteSingleEl = document.getElementById('task-note-single');
+
+    if (noteEl && noteSingleEl) {
+      noteSingleEl.addEventListener('input', () => noteEl.value = noteSingleEl.value);
+      noteEl.addEventListener('input', () => noteSingleEl.value = noteEl.value);
+    }
+  });
+</script>
+</body>
+</html>
