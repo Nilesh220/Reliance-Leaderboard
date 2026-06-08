@@ -57,7 +57,7 @@ const TASKS = {
     id: 'seminar_12june',
     name: '12th June Seminar Attended',
     category: 'Events',
-    points: 30,
+    points: 10,
     unit: 'attendance',
     icon: '🎓',
     multiplier: false,
