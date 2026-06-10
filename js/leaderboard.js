@@ -209,7 +209,7 @@ function getTaskBadges(poc) {
   const seen = new Set();
   return log
     .filter(t => { if (seen.has(t.taskIcon)) return false; seen.add(t.taskIcon); return true; })
-    .map(t => `<span class="task-badge" data-tooltip="${t.taskName}">${t.taskIcon}</span>`)
+    .map(t => `<span class="task-badge" data-tooltip="${t.taskName}">${getTaskIcon(t.taskIcon, 'sm')}</span>`)
     .join('');
 }
 
@@ -285,7 +285,7 @@ function renderPointsReference() {
   if (!container) return;
   container.innerHTML = Object.values(TASKS).map(task => `
     <div class="point-item">
-      <div class="point-icon">${task.icon}</div>
+      <div class="point-icon">${getTaskIcon(task.icon)}</div>
       <div class="point-text">
         <div class="point-name">${task.name}</div>
         <div class="point-category">${task.category}</div>

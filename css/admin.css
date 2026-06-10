@@ -974,7 +974,124 @@ body.unauthorized .login-screen {
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-6px); }
-  40%, 80% { transform: translateX(6px); }
+  20%, 60%  { transform: translateX(-6px); }
+  40%, 80%  { transform: translateX(6px); }
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SVG TASK ICON SYSTEM
+   ═══════════════════════════════════════════════════ */
+.t-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.t-icon svg { width: 18px; height: 18px; display: block; }
+
+.t-icon--blue  { background: rgba(0,48,135,0.09);  color: var(--blue); }
+.t-icon--red   { background: rgba(227,24,55,0.09);  color: var(--red); }
+.t-icon--green { background: rgba(0,134,90,0.09);   color: var(--green); }
+.t-icon--gold  { background: rgba(212,168,0,0.11);  color: var(--gold, #B8860B); }
+
+.t-icon--sm { width: 24px; height: 24px; border-radius: 6px; }
+.t-icon--sm svg { width: 12px; height: 12px; }
+
+.t-icon--xs { width: 20px; height: 20px; border-radius: 5px; }
+.t-icon--xs svg { width: 10px; height: 10px; }
+
+.t-icon-emoji { font-size: 16px; line-height: 1; display: inline-flex; align-items: center; }
+
+/* Invert icon on selected task option */
+.task-option.selected .t-icon {
+  background: rgba(0,48,135,0.15) !important;
+}
+
+/* Fix queue-item-icon to flex-align SVG */
+.queue-item-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* History: align icon + name inline */
+.history-poc {
+  font-weight: 600;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+   ═══════════════════════════════════════════════════ */
+#scroll-progress {
+  position: fixed; top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--red) 100%);
+  z-index: 99997;
+  transition: width 0.08s linear;
+  width: 0%;
+  pointer-events: none;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   CUSTOM CURSOR (admin)
+   ═══════════════════════════════════════════════════ */
+@media (pointer: fine) {
+  body { cursor: none; }
+  input, textarea, select { cursor: none; }
+}
+
+#cursor-dot {
+  position: fixed; top: 0; left: 0;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  background: var(--red); border-radius: 50%;
+  pointer-events: none; z-index: 99999; will-change: transform;
+  transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease,
+              margin 0.2s ease, background 0.2s ease;
+}
+
+#cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 32px; height: 32px; margin: -16px 0 0 -16px;
+  border: 1.5px solid rgba(0,48,135,0.5); border-radius: 50%;
+  pointer-events: none; z-index: 99998; will-change: transform;
+  transition: opacity 0.25s ease, width 0.3s ease, height 0.3s ease,
+              margin 0.3s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+#cursor-ring.ring--link { width: 44px; height: 44px; margin: -22px 0 0 -22px; border-color: var(--red); background: rgba(227,24,55,0.06); }
+#cursor-dot.dot--link   { background: var(--blue); }
+#cursor-ring.ring--card { width: 50px; height: 50px; margin: -25px 0 0 -25px; border-color: rgba(0,48,135,0.25); }
+#cursor-ring.ring--text { width: 2px; height: 24px; margin: -12px 0 0 -1px; border-color: var(--blue); border-radius: 1px; }
+#cursor-dot.dot--text   { opacity: 0; }
+#cursor-dot.dot--click  { width: 4px; height: 4px; margin: -2px 0 0 -2px; }
+
+/* ═══════════════════════════════════════════════════
+   BUTTON RIPPLE (admin)
+   ═══════════════════════════════════════════════════ */
+.btn-publish, button.btn, .category-tab { position: relative; overflow: hidden; }
+
+.ripple-fx {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0);
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  animation: rippleFx 0.55s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleFx {
+  to { transform: translate(-50%, -50%) scale(5); opacity: 0; }
 }
 

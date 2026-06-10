@@ -220,7 +220,7 @@ function renderTaskOptions() {
   const tasks = Object.values(TASKS).filter(t => activeCategory === 'All' || t.category === activeCategory);
   container.innerHTML = tasks.map(task => `
     <div class="task-option ${selectedTask?.id === task.id ? 'selected' : ''}" onclick="selectTask('${task.id}')">
-      <div class="task-option-icon">${task.icon}</div>
+      <div class="task-option-icon">${getTaskIcon(task.icon)}</div>
       <div>
         <div class="task-option-name">${task.name}</div>
         <div class="task-option-pts">${task.points}<span class="task-option-unit"> ${task.unit}</span></div>
@@ -307,7 +307,7 @@ async function renderPendingQueue() {
 
   container.innerHTML = queue.map(entry => `
     <div class="queue-item" id="qitem-${entry.id}">
-      <div class="queue-item-icon">${entry.task_icon}</div>
+      <div class="queue-item-icon">${getTaskIcon(entry.task_icon, 'sm')}</div>
       <div class="queue-item-info">
         <div class="queue-item-poc">${entry.poc_name}</div>
         <div class="queue-item-task">${entry.task_name}${entry.quantity > 1 ? ` × ${entry.quantity}` : ''}</div>
@@ -406,7 +406,7 @@ async function renderHistory() {
     return `
       <div class="history-item ${entry.status}">
         <div class="history-item-header">
-          <span class="history-poc">${entry.task_icon || ''} ${entry.poc_name}</span>
+          <span class="history-poc">${entry.task_icon ? getTaskIcon(entry.task_icon, 'xs') : ''} ${entry.poc_name}</span>
           <span class="history-pts">${pts} pts</span>
         </div>
         <div class="history-task">${entry.task_name}</div>
