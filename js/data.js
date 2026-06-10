@@ -67,7 +67,7 @@ const TASKS = {
     name: 'Instagram Story',
     category: 'Instagram',
     points: 30,
-    unit: 'story',
+    unit: 'per story',
     icon: 'camera',
     multiplier: false,
   },

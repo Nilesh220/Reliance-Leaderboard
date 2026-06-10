@@ -306,8 +306,8 @@ function renderPointsReference() {
         <div class="point-name">${task.name}</div>
         <div class="point-category">${task.category}</div>
       </div>
-      <div>
-        <div class="point-value">${task.points}</div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="point-value">${task.points}<span class="point-pts-label">pts</span></div>
         <div class="point-unit">${task.unit}</div>
       </div>
     </div>`
