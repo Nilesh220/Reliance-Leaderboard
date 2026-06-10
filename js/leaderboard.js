@@ -67,7 +67,6 @@ async function renderAll() {
   renderPodium(data);
   renderRankings(data);
   renderCityBoard(data);
-  renderPointsStrip();
   renderPointsReference();
   await renderLastUpdated();
 }
@@ -210,7 +209,10 @@ function getTaskBadges(poc) {
   const seen = new Set();
   return log
     .filter(t => { if (seen.has(t.taskIcon)) return false; seen.add(t.taskIcon); return true; })
-    .map(t => `<span class="task-badge" data-tooltip="${t.taskName}">${getTaskIcon(t.taskIcon, 'sm')}</span>`)
+    .map(t => {
+      const label = (t.taskId && TASKS[t.taskId]) ? TASKS[t.taskId].name : t.taskName;
+      return `<span class="task-badge" data-tooltip="${label}">${getTaskIcon(t.taskIcon, 'sm')}</span>`;
+    })
     .join('');
 }
 
