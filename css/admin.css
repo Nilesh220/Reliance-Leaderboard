@@ -88,7 +88,17 @@ body {
   height: 26px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
+
+.admin-vigor-logo {
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
 
 .admin-logo-divider {
   width: 1px;
@@ -857,7 +867,12 @@ body {
   .admin-logo {
     justify-content: center;
     text-align: center;
+    flex-wrap: wrap;
+    gap: 8px;
   }
+  .admin-vigor-logo { height: 22px; }
+  .admin-logo-text { font-size: 14px; }
+  .admin-logo-sub { display: none; }
 }
 
 @media (max-width: 600px) {
