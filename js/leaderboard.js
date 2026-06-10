@@ -67,6 +67,7 @@ async function renderAll() {
   renderPodium(data);
   renderRankings(data);
   renderCityBoard(data);
+  renderPointsStrip();
   renderPointsReference();
   await renderLastUpdated();
 }
@@ -275,6 +276,21 @@ function renderCityBoard(data) {
         </div>
       </div>`;
   }).join('');
+}
+
+/* ─────────────────────────────────────────────
+   POINTS STRIP  (top of page quick reference)
+   ───────────────────────────────────────────── */
+function renderPointsStrip() {
+  const container = document.getElementById('points-strip');
+  if (!container) return;
+  container.innerHTML = Object.values(TASKS).map(task => `
+    <div class="ps-pill">
+      <span class="ps-icon">${getTaskIcon(task.icon, 'xs')}</span>
+      <span class="ps-name">${task.name}</span>
+      <span class="ps-pts">${task.points} <span class="ps-unit">${task.unit}</span></span>
+    </div>`
+  ).join('');
 }
 
 /* ─────────────────────────────────────────────

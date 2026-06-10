@@ -64,7 +64,7 @@ window.getTaskIcon = getTaskIcon;
 const TASKS = {
   instagram_story: {
     id: 'instagram_story',
-    name: 'Instagram Story (campaign creative + tag brand)',
+    name: 'Instagram Story',
     category: 'Instagram',
     points: 30,
     unit: 'story',
@@ -91,7 +91,7 @@ const TASKS = {
   },
   whatsapp_group: {
     id: 'whatsapp_group',
-    name: 'WhatsApp Group Broadcast (campaign creative)',
+    name: 'WhatsApp Group Broadcast',
     category: 'WhatsApp',
     points: 10,
     unit: 'per group',

@@ -1158,3 +1158,94 @@ button.poc-filter-btn { position: relative; overflow: hidden; }
 
 /* Point item */
 .point-item { transition: var(--transition); }
+
+/* ═══════════════════════════════════════════════════
+   POINTS AT A GLANCE STRIP
+   ═══════════════════════════════════════════════════ */
+.points-strip-wrap {
+  margin-bottom: 48px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 12px rgba(0,48,135,0.06);
+}
+
+.points-strip-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+.points-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.points-strip::-webkit-scrollbar { display: none; }
+
+.ps-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 40px;
+  padding: 8px 14px 8px 8px;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+
+.ps-pill:hover {
+  border-color: rgba(0,48,135,0.3);
+  box-shadow: 0 4px 14px rgba(0,48,135,0.1);
+  transform: translateY(-2px);
+}
+
+.ps-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.ps-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ps-pts {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue);
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+.ps-unit {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  display: block;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+@media (max-width: 600px) {
+  .points-strip-wrap { padding: 16px; }
+  .ps-name { max-width: 120px; }
+}
