@@ -1,10 +1,13 @@
 /**
  * Bootup India — Visual Effects Layer
- * Custom cursor · Scroll reveal · Ripple · Progress bar
+ * Animated gradient mesh · Custom cursor · Scroll reveal · Ripple · Progress bar
  * Vigorlaunchpad × Reliance Digital
  */
 
 'use strict';
+
+/* Background gradient handled by CSS (background-attachment: fixed on html) */
+/* Canvas disabled — #bg-canvas { display: none } in style.css */
 
 /* ══════════════════════════════════════════════════
    SCROLL PROGRESS BAR
@@ -26,12 +29,10 @@
 (function () {
   if (!window.matchMedia('(pointer:fine)').matches) return;
 
-  /* Build cursor elements */
   const dot  = Object.assign(document.createElement('div'), { id: 'cursor-dot'  });
   const ring = Object.assign(document.createElement('div'), { id: 'cursor-ring' });
   document.body.append(dot, ring);
 
-  /* Position tracking with smooth lerp for ring */
   let mx = 0, my = 0, rx = 0, ry = 0, rafPending = false;
 
   document.addEventListener('mousemove', e => {
@@ -52,7 +53,6 @@
     }
   }
 
-  /* Cursor state machine */
   document.addEventListener('mouseover', e => {
     const t = e.target;
     ring.className = '';
@@ -68,11 +68,9 @@
     }
   }, { passive: true });
 
-  /* Click shrink feedback */
   document.addEventListener('mousedown', () => dot.classList.add('dot--click'),    { passive: true });
   document.addEventListener('mouseup',   () => dot.classList.remove('dot--click'), { passive: true });
 
-  /* Hide when mouse leaves window */
   document.addEventListener('mouseleave', () => {
     dot.style.opacity  = '0';
     ring.style.opacity = '0';
