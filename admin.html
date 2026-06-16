@@ -182,6 +182,7 @@
       <div class="admin-section-title">
         <div class="icon">👥</div>
         All POCs
+        <button class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="openAddPOCModal()">+ Add POC</button>
       </div>
 
       <!-- Filter tabs -->
@@ -382,6 +383,47 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeOverrideModal()">Cancel</button>
       <button class="btn btn-primary" onclick="confirmOverride()">Save Override</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ADD POC MODAL ══════════════ -->
+<div class="modal-overlay" id="add-poc-modal" onclick="if(event.target===this)closeAddPOCModal()">
+  <div class="modal">
+    <div class="modal-title">👤 Add New POC</div>
+    
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Name</label>
+      <input type="text" id="new-poc-name" class="form-input" placeholder="e.g. Rahul Sharma" required />
+    </div>
+    
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">Email</label>
+      <input type="email" id="new-poc-email" class="form-input" placeholder="e.g. rahul@example.com" required />
+    </div>
+
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">College</label>
+      <input type="text" id="new-poc-college" class="form-input" placeholder="e.g. IIT Bombay" required />
+    </div>
+
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label">City</label>
+      <select id="new-poc-city" class="form-input" required>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Pune">Pune</option>
+        <option value="Aurangabad">Aurangabad</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom:16px">
+      <label class="form-label">Starting Points</label>
+      <input type="number" id="new-poc-points" class="form-input" value="0" min="0" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAddPOCModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddPOC()">Add POC</button>
     </div>
   </div>
 </div>

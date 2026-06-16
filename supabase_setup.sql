@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS pocs (
   name        TEXT NOT NULL,
   college     TEXT NOT NULL,
   city        TEXT NOT NULL CHECK (city IN ('Mumbai', 'Pune', 'Aurangabad')),
+  email       TEXT,
   points      INTEGER NOT NULL DEFAULT 0,
   task_log    JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),

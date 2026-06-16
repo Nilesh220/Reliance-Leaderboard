@@ -732,6 +732,7 @@ body {
   transition: var(--transition);
 }
 .action-btn:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+.action-btn-delete:hover { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
 
 /* ═══════════════════════════════════════════════════
    TOAST NOTIFICATIONS

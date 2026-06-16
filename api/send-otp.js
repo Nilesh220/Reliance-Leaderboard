@@ -82,7 +82,31 @@ export default async function handler(req, res) {
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (!ALLOWED_EMAILS.has(normalizedEmail)) {
+  let emailAllowed = ALLOWED_EMAILS.has(normalizedEmail);
+
+  if (!emailAllowed) {
+    try {
+      const pocRes = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/pocs?email=eq.${encodeURIComponent(normalizedEmail)}&limit=1`,
+        {
+          headers: {
+            'apikey': process.env.SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+          },
+        }
+      );
+      if (pocRes.ok) {
+        const pocRows = await pocRes.json();
+        if (Array.isArray(pocRows) && pocRows.length > 0) {
+          emailAllowed = true;
+        }
+      }
+    } catch (err) {
+      console.error('Error querying pocs table:', err);
+    }
+  }
+
+  if (!emailAllowed) {
     return res.status(403).json({ error: 'This email is not registered for Bootup India.' });
   }
 

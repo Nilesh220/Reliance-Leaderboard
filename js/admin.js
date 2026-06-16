@@ -435,8 +435,9 @@ async function renderPOCTable() {
       </div>
       <div class="poc-table-city col-city">${poc.city}</div>
       <div class="poc-table-pts">${poc.points}</div>
-      <div class="poc-table-actions">
+      <div class="poc-table-actions" style="display:flex;gap:6px">
         <button class="action-btn" onclick="event.stopPropagation(); openOverrideModal('${poc.id}')" title="Edit points">✏️</button>
+        <button class="action-btn action-btn-delete" onclick="event.stopPropagation(); deletePOC('${poc.id}', '${poc.name.replace(/'/g, "\\'")}')" title="Remove POC">🗑️</button>
       </div>
     </div>`
   ).join('');
@@ -529,5 +530,119 @@ document.addEventListener('click', e => {
   if (e.target.classList.contains('modal-overlay')) {
     closePublishModal();
     closeOverrideModal();
+    closeAddPOCModal();
   }
 });
+
+/* ─────────────────────────────────────────────
+   ADD / REMOVE POC MANAGEMENT
+   ───────────────────────────────────────────── */
+function openAddPOCModal() {
+  const modal = document.getElementById('add-poc-modal');
+  if (modal) modal.classList.add('visible');
+}
+
+function closeAddPOCModal() {
+  const modal = document.getElementById('add-poc-modal');
+  if (modal) modal.classList.remove('visible');
+  // clear fields
+  ['new-poc-name', 'new-poc-email', 'new-poc-college', 'new-poc-points'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = id === 'new-poc-points' ? '0' : '';
+  });
+}
+
+async function confirmAddPOC() {
+  const name = document.getElementById('new-poc-name')?.value?.trim();
+  const email = document.getElementById('new-poc-email')?.value?.trim()?.toLowerCase();
+  const college = document.getElementById('new-poc-college')?.value?.trim();
+  const city = document.getElementById('new-poc-city')?.value;
+  const points = parseInt(document.getElementById('new-poc-points')?.value || 0, 10);
+
+  if (!name || !email || !college || !city) {
+    showToast('All fields except points are required', 'error');
+    return;
+  }
+
+  if (!email.includes('@')) {
+    showToast('Invalid email address', 'error');
+    return;
+  }
+
+  // Fetch existing POCs to calculate next sequential ID
+  const { data: allPocs, error: fetchError } = await db.from('pocs').select('id');
+  if (fetchError) {
+    showToast('Error generating POC ID: ' + fetchError.message, 'error');
+    return;
+  }
+
+  // Generate prefix and sequential number
+  const prefix = city.substring(0, 3).toLowerCase();
+  let maxSeq = 0;
+  allPocs.forEach(poc => {
+    if (poc.id.startsWith(prefix + '_')) {
+      const numStr = poc.id.substring(prefix.length + 1);
+      const num = parseInt(numStr, 10);
+      if (!isNaN(num) && num > maxSeq) {
+        maxSeq = num;
+      }
+    }
+  });
+  const nextSeq = maxSeq + 1;
+  const nextSeqStr = nextSeq < 10 ? '0' + nextSeq : '' + nextSeq;
+  const newId = `${prefix}_${nextSeqStr}`;
+
+  // Insert new POC row
+  const newPoc = {
+    id: newId,
+    name,
+    email,
+    college,
+    city,
+    points,
+    task_log: []
+  };
+
+  const { error: insertError } = await db.from('pocs').insert(newPoc);
+  if (insertError) {
+    showToast('Error adding POC: ' + insertError.message, 'error');
+    return;
+  }
+
+  showToast(`Successfully added POC: ${name} (${newId})`, 'success');
+  closeAddPOCModal();
+
+  // Reload admin views
+  await renderAdminStats();
+  await renderPOCTable();
+}
+
+async function deletePOC(pocId, pocName) {
+  const confirmed = confirm(`Are you sure you want to delete POC "${pocName}" (${pocId})?\nThis will permanently remove them and all their submissions.`);
+  if (!confirmed) return;
+
+  // Clean up any pending queue entries for this POC
+  const { error: queueError } = await db.from('pending_queue').delete().eq('poc_id', pocId);
+  if (queueError) {
+    console.error('Error cleaning up pending queue for deleted POC:', queueError.message);
+  }
+
+  // Delete from pocs table
+  const { error: deleteError } = await db.from('pocs').delete().eq('id', pocId);
+  if (deleteError) {
+    showToast('Error deleting POC: ' + deleteError.message, 'error');
+    return;
+  }
+
+  showToast(`Successfully removed POC: ${pocName}`, 'success');
+
+  // Reload admin views
+  await renderAdminStats();
+  await renderPOCTable();
+}
+
+// Bind to window
+window.openAddPOCModal = openAddPOCModal;
+window.closeAddPOCModal = closeAddPOCModal;
+window.confirmAddPOC = confirmAddPOC;
+window.deletePOC = deletePOC;
