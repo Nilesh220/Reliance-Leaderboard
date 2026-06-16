@@ -41,7 +41,7 @@ create table if not exists tasks (
 -- Task submissions (by POCs)
 create table if not exists task_submissions (
   id           bigserial primary key,
-  poc_id       text not null,
+  poc_id       text not null references pocs(id) on delete cascade,
   task_id      bigint references tasks(id) on delete cascade,
   media_url    text,
   reel_link    text,
