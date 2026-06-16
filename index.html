@@ -3,169 +3,344 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bootup India — Reliance Digital Campaign Leaderboard</title>
-  <meta name="description" content="Live leaderboard for Reliance Digital's Bootup India campus campaign. Track POC rankings, college scores, and campaign progress across Mumbai, Pune, and Aurangabad." />
+  <title>Login — Bootup India · Reliance Digital</title>
+  <meta name="description" content="POC Login for Reliance Digital's Bootup India Campus Campaign." />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Login page overrides ── */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 36px 36px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 48px rgba(0,48,135,0.12), 0 2px 8px rgba(0,48,135,0.06);
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    .login-logo-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .login-logo-bar img { height: 36px; width: auto; }
+    .login-logo-divider { width: 1.5px; height: 28px; background: var(--border); border-radius: 99px; }
+
+    .login-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--text3);
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .login-step { display: none; }
+    .login-step.active { display: block; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--bg2);
+      transition: var(--transition);
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--blue);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+
+    .otp-input {
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif !important;
+      font-size: 28px !important;
+      font-weight: 800 !important;
+      letter-spacing: 8px !important;
+      color: var(--blue) !important;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--red));
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 4px;
+    }
+
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,48,135,0.25); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .login-error {
+      background: rgba(227,24,55,0.08);
+      border: 1px solid rgba(227,24,55,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      margin-bottom: 14px;
+      display: none;
+    }
+    .login-error.visible { display: block; }
+
+    .login-info {
+      background: rgba(0,48,135,0.05);
+      border: 1px solid rgba(0,48,135,0.12);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 14px;
+      display: none;
+    }
+    .login-info.visible { display: block; }
+
+    .otp-note {
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .resend-link {
+      color: var(--blue);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .login-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-6px); }
+      80%       { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+  </style>
 </head>
 <body>
 
-<!-- Animated canvas background -->
 <canvas id="bg-canvas"></canvas>
 
-<!-- Update notification banner -->
-<div id="refresh-banner" style="
-  position:fixed; top:0; left:0; right:0; z-index:200;
-  background:linear-gradient(90deg,#00b85e,#00e676);
-  color:#000; font-weight:700; font-size:14px;
-  text-align:center; padding:10px;
-  transform:translateY(-100%); transition:transform 0.3s ease;">
-  🔄 Leaderboard updated!
-</div>
+<div class="wrapper login-page">
 
-<style>
-  #refresh-banner.visible { transform: translateY(0); }
-</style>
+  <div class="login-card" id="login-card">
 
-<div class="wrapper">
-
-  <!-- Brand top bar -->
-  <div class="brand-bar"></div>
-
-  <!-- ══════════════ HERO ══════════════ -->
-  <section class="hero">
-
-    <div class="hero-logo-bar">
-      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" class="hero-brand-logo" />
-      <div class="logo-divider"></div>
-      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad" class="vigor-logo" />
+    <div class="login-logo-bar">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital">
+      <div class="login-logo-divider"></div>
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad">
     </div>
 
-    <div class="hero-eyebrow">✦ Campus Campaign 2026</div>
+    <div class="login-heading">Bootup India Portal</div>
+    <div class="login-sub">Sign in with your registered email to continue</div>
 
-    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780982027/Reliance_Digital_Bootup_Campaign_Campus_Ambassador_Program_1_rv8mqc.png" alt="Reliance Digital Bootup Campaign Logo" class="hero-campaign-logo" />
-    <p class="hero-subtitle">Igniting the Next Generation of Digital Champions</p>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-info"  id="login-info"></div>
 
-    <!-- Campaign Stats -->
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="hero-stat-value" id="stat-total-pts">0</span>
-        <span class="hero-stat-label">Total Points</span>
+    <!-- Step 1: Email -->
+    <div class="login-step active" id="step-email">
+      <div class="form-group">
+        <label>Your Email</label>
+        <input type="email" id="email-input" placeholder="yourname@gmail.com" autocomplete="email" />
       </div>
-      <div class="hero-stat">
-        <span class="hero-stat-value" id="stat-total-pocs">48</span>
-        <span class="hero-stat-label">POCs Enrolled</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-value" id="stat-active-pocs">0</span>
-        <span class="hero-stat-label">Active POCs</span>
-      </div>
-      <div class="hero-stat">
-        <span class="hero-stat-value" id="stat-colleges">48</span>
-        <span class="hero-stat-label">Colleges</span>
-      </div>
+      <button class="btn-login" id="btn-send-otp" onclick="sendOTP()">Send OTP →</button>
+      <div class="login-footer">Only registered POCs can access this portal.</div>
     </div>
 
-    <div class="scroll-cue">↓</div>
-  </section>
+    <!-- Step 2: OTP -->
+    <div class="login-step" id="step-otp">
+      <div class="form-group">
+        <label>6-Digit OTP</label>
+        <input type="text" id="otp-input" class="otp-input" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+      </div>
+      <button class="btn-login" id="btn-verify-otp" onclick="verifyOTP()">Verify & Sign In →</button>
+      <p class="otp-note">Didn't receive it? <span class="resend-link" onclick="resendOTP()">Resend OTP</span></p>
+    </div>
 
-  <!-- ══════════════ COUNTDOWN STRIP ══════════════ -->
-  <div class="countdown-strip">
-    <span class="countdown-label">Next Update In</span>
-    <span class="countdown-time" id="countdown-time">00:00:00</span>
-    <span style="opacity:0.3;color:#fff">|</span>
-    <span class="live-dot"></span>
-    <span class="last-updated" id="last-updated">Checking...</span>
   </div>
-  <div class="red-strip"></div>
-
-  <!-- ══════════════ MAIN CONTENT ══════════════ -->
-  <main class="main-content">
-
-    <!-- City Filter Tabs -->
-    <div id="city-tabs" class="city-tabs" style="margin-bottom:48px"></div>
-
-    <!-- ── PODIUM ── -->
-    <section class="podium-section" data-reveal>
-      <div class="section-header">
-        <div class="section-icon">🏆</div>
-        <div>
-          <div class="section-title">Top Performers</div>
-          <div class="section-subtitle">The leaders pushing Bootup India forward</div>
-        </div>
-      </div>
-      <div class="podium" id="podium">
-        <!-- Rendered by JS -->
-      </div>
-    </section>
-
-    <!-- ── FULL RANKINGS ── -->
-    <section class="rankings-section" data-reveal data-delay="100">
-      <div class="section-header">
-        <div class="section-icon">📊</div>
-        <div>
-          <div class="section-title">Individual Rankings</div>
-          <div class="section-subtitle">All 48 POCs ranked by total points</div>
-        </div>
-      </div>
-
-      <div class="rankings-table-wrap">
-        <div class="rankings-header">
-          <div>#</div>
-          <div>POC</div>
-          <div class="col-city">City</div>
-          <div class="col-tasks">Tasks</div>
-          <div style="text-align:right">Points</div>
-        </div>
-        <div id="rankings-body">
-          <!-- Rendered by JS -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ── CITY STANDINGS ── -->
-    <section class="college-section" data-reveal data-delay="200">
-      <div class="section-header">
-        <div class="section-icon">🏙️</div>
-        <div>
-          <div class="section-title">City Standings</div>
-          <div class="section-subtitle">Ranked by Average Points per POC (Fair Comparison)</div>
-        </div>
-      </div>
-      <div class="college-grid" id="city-rankings-grid">
-        <!-- Rendered by JS -->
-      </div>
-    </section>
-
-    <!-- ── POINTS REFERENCE ── -->
-    <section class="points-reference" data-reveal data-delay="300">
-      <div class="section-header">
-        <div class="section-icon">💡</div>
-        <div>
-          <div class="section-title">How Points Are Earned</div>
-          <div class="section-subtitle">Complete these activities to climb the leaderboard</div>
-        </div>
-      </div>
-      <div class="points-grid" id="points-grid">
-        <!-- Rendered by JS -->
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ══════════════ FOOTER ══════════════ -->
-  <footer class="footer">
-    <div class="footer-logo">⚡ Reliance Digital × Vigorlaunchpad</div>
-    <div>Bootup India Campaign 2026 · All Rights Reserved</div>
-    <div style="margin-top:8px">
-      <a href="admin.html" style="color:var(--text3);font-size:12px;text-decoration:none;opacity:0.5">Admin Portal →</a>
-    </div>
-  </footer>
 
 </div>
 
 <script src="js/effects.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/data.js"></script>
-  <script src="js/leaderboard.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // If already logged in, go to leaderboard
+  if (getSession()) window.location.href = '/leaderboard';
+
+  let currentEmail = '';
+
+  async function sendOTP() {
+    const emailInput = document.getElementById('email-input');
+    const email = emailInput.value.trim();
+    const btn   = document.getElementById('btn-send-otp');
+    const err   = document.getElementById('login-error');
+    const info  = document.getElementById('login-info');
+
+    if (!email) { showError('Please enter your email address.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Sending...';
+    hideMessages();
+
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) { showError(data.error || 'Something went wrong.'); }
+      else {
+        currentEmail = email;
+        showInfo(`✅ OTP sent to <strong>${email}</strong>. Check your inbox.`);
+        document.getElementById('step-email').classList.remove('active');
+        document.getElementById('step-otp').classList.add('active');
+        document.getElementById('otp-input').focus();
+      }
+    } catch (e) {
+      showError('Network error. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Send OTP →';
+    }
+  }
+
+  async function verifyOTP() {
+    const otp = document.getElementById('otp-input').value.trim();
+    const btn  = document.getElementById('btn-verify-otp');
+
+    if (!otp || otp.length !== 6) { showError('Please enter the 6-digit OTP.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Verifying...';
+    hideMessages();
+
+    try {
+      const res = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: currentEmail, otp }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(data.error || 'Invalid OTP. Please try again.');
+        shakeCard();
+      } else {
+        saveSession(data);
+        window.location.href = '/leaderboard';
+      }
+    } catch (e) {
+      showError('Network error. Please try again.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Verify & Sign In →';
+    }
+  }
+
+  async function resendOTP() {
+    document.getElementById('step-otp').classList.remove('active');
+    document.getElementById('step-email').classList.add('active');
+    document.getElementById('email-input').value = currentEmail;
+    hideMessages();
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('step-email').classList.contains('active')) sendOTP();
+    else verifyOTP();
+  });
+
+  function showError(msg) {
+    const el = document.getElementById('login-error');
+    el.innerHTML = msg; el.classList.add('visible');
+    document.getElementById('login-info').classList.remove('visible');
+  }
+  function showInfo(msg) {
+    const el = document.getElementById('login-info');
+    el.innerHTML = msg; el.classList.add('visible');
+    document.getElementById('login-error').classList.remove('visible');
+  }
+  function hideMessages() {
+    document.getElementById('login-error').classList.remove('visible');
+    document.getElementById('login-info').classList.remove('visible');
+  }
+  function shakeCard() {
+    const card = document.getElementById('login-card');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+</script>
 </body>
 </html>

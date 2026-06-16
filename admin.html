@@ -53,7 +53,7 @@
       <span id="header-pending-count">0 pending</span>
       <div class="pending-count" id="header-pending-badge">0</div>
     </div>
-    <a href="index.html" class="view-leaderboard-btn" target="_blank">
+    <a href="/leaderboard" class="view-leaderboard-btn" target="_blank">
       🏆 View Leaderboard ↗
     </a>
     <button onclick="handleLogout()" class="view-leaderboard-btn" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
@@ -205,6 +205,64 @@
       </div>
     </div>
 
+    <!-- ── Task Management ── -->
+    <div class="admin-card" id="task-management-card">
+      <div class="admin-section-title">
+        <div class="icon">📋</div>
+        Task Management
+        <button class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="toggleCreateTaskForm()">+ Create Task</button>
+      </div>
+
+      <!-- Create Task Form -->
+      <div id="create-task-form" style="display:none;background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:20px;border:1.5px solid var(--border)">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">New Task</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Task Title</label>
+            <input type="text" id="ntask-title" class="form-input" placeholder="e.g. Post a Story with #BootupIndia" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Task Type</label>
+            <select id="ntask-type" class="form-input">
+              <option value="story_screenshot">📸 Story Screenshot</option>
+              <option value="store_visit">🏪 Store Visit</option>
+              <option value="reel_link">🎬 Reel Link</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (one-liner shown to POCs)</label>
+          <input type="text" id="ntask-desc" class="form-input" placeholder="e.g. Upload a story screenshot tagging @reliancedigital" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Points Awarded</label>
+            <input type="number" id="ntask-pts" class="form-input" value="50" min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Deadline (optional)</label>
+            <input type="datetime-local" id="ntask-deadline" class="form-input" />
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)">
+            <input type="checkbox" id="ntask-live" style="width:16px;height:16px;accent-color:var(--green)" />
+            Make live immediately
+          </label>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="createTask()">Create Task</button>
+          <button class="btn btn-ghost" onclick="toggleCreateTaskForm()">Cancel</button>
+        </div>
+        <div id="create-task-msg" style="font-size:13px;margin-top:8px"></div>
+      </div>
+
+      <!-- Task List -->
+      <div id="admin-tasks-list">
+        <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Loading tasks...</div>
+      </div>
+    </div>
+
     <!-- ── Audit History ── -->
     <div class="admin-card">
       <div class="admin-section-title">
@@ -220,6 +278,18 @@
 
   <!-- ════ RIGHT: SIDEBAR ════ -->
   <div class="admin-sidebar">
+
+    <!-- Task Submissions Review -->
+    <div class="admin-card" style="margin-bottom:24px">
+      <div class="admin-section-title" style="font-size:16px">
+        <div class="icon">📥</div>
+        Task Submissions
+        <span id="pending-sub-count" style="font-size:12px;background:var(--red);color:#fff;padding:2px 8px;border-radius:99px;margin-left:auto">0</span>
+      </div>
+      <div id="task-submissions-list">
+        <div style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Loading submissions...</div>
+      </div>
+    </div>
 
     <!-- Publish Section -->
     <div class="publish-section">

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tasks — Bootup India · Reliance Digital</title>
+  <meta name="description" content="POC Task Submission Dashboard for Bootup India campaign." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Auth Nav (same as leaderboard) ── */
+    #auth-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--border); }
+    .auth-nav-inner { max-width: 1200px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .auth-nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .auth-nav-divider { width: 1.5px; height: 22px; background: var(--border); border-radius: 99px; }
+    .auth-nav-links { display: flex; align-items: center; gap: 8px; }
+    .auth-nav-link { font-size: 13px; font-weight: 600; color: var(--text2); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: var(--transition); }
+    .auth-nav-link:hover, .auth-nav-link.active { background: var(--bg2); color: var(--blue); }
+    .auth-nav-user { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
+    .auth-nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--red)); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .auth-nav-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .auth-nav-logout { font-size: 12px; font-weight: 600; color: var(--red); background: rgba(227,24,55,0.07); border: 1px solid rgba(227,24,55,0.15); border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: var(--transition); }
+    .auth-nav-logout:hover { background: var(--red); color: #fff; }
+
+    /* ── Dashboard Layout ── */
+    .dashboard-page { padding-top: 72px; min-height: 100vh; }
+    .dashboard-inner { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    /* ── Welcome Strip ── */
+    .welcome-strip {
+      background: linear-gradient(135deg, var(--blue) 0%, #1a4fa8 100%);
+      border-radius: 20px;
+      padding: 28px 32px;
+      margin-bottom: 36px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 32px rgba(0,48,135,0.25);
+    }
+    .welcome-text h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+    .welcome-text p  { font-size: 14px; opacity: 0.8; margin: 0; }
+    .welcome-points  { text-align: right; }
+    .welcome-points .pts-num { font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 900; line-height: 1; }
+    .welcome-points .pts-lbl { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+    /* ── Section Header ── */
+    .dash-section-head {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px; font-weight: 800;
+      color: var(--text);
+      margin: 0 0 20px;
+    }
+    .dash-section-head span { font-size: 22px; }
+
+    /* ── Task Cards ── */
+    .tasks-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 48px; }
+
+    .task-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .task-card::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, var(--blue), var(--red));
+      border-radius: 0 0 0 16px;
+    }
+    .task-card:hover { box-shadow: 0 8px 32px rgba(0,48,135,0.10); transform: translateY(-2px); }
+
+    .task-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .task-card-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .task-card-pts {
+      background: rgba(0,48,135,0.07);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+    .task-card-desc { font-size: 13px; color: var(--text2); margin-bottom: 14px; line-height: 1.6; }
+    .task-card-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--text3); margin-bottom: 16px; }
+    .task-meta-type { display: flex; align-items: center; gap: 4px; font-weight: 600; }
+    .task-meta-deadline { display: flex; align-items: center; gap: 4px; }
+    .deadline-warning { color: var(--red) !important; font-weight: 600; }
+
+    /* Submission Form */
+    .task-form { border-top: 1.5px solid var(--border); padding-top: 16px; }
+    .task-form .form-group { margin-bottom: 12px; }
+    .task-form label {
+      display: block; font-size: 11px; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 5px;
+    }
+    .task-form input[type="text"],
+    .task-form input[type="url"],
+    .task-form textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); background: var(--bg2);
+      transition: var(--transition); outline: none; resize: vertical;
+    }
+    .task-form input:focus, .task-form textarea:focus {
+      border-color: var(--blue); background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.07);
+    }
+
+    .file-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg2);
+      position: relative;
+    }
+    .file-upload-area:hover, .file-upload-area.dragging {
+      border-color: var(--blue);
+      background: rgba(0,48,135,0.04);
+    }
+    .file-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .file-upload-icon { font-size: 28px; margin-bottom: 6px; }
+    .file-upload-text { font-size: 13px; color: var(--text2); }
+    .file-upload-text strong { color: var(--blue); }
+    .file-preview { margin-top: 10px; display: none; }
+    .file-preview img { max-height: 120px; border-radius: 8px; border: 1.5px solid var(--border); }
+    .file-preview .fname { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+    .geo-note {
+      background: rgba(0,48,135,0.05);
+      border: 1px solid rgba(0,48,135,0.12);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--blue), var(--red));
+      color: #fff; border: none;
+      border-radius: 10px;
+      padding: 11px 22px;
+      font-size: 14px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,48,135,0.25); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Already submitted badge */
+    .submitted-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .submitted-badge.pending  { background: rgba(245,158,11,0.1);  color: #B45309; border: 1px solid rgba(245,158,11,0.25); }
+    .submitted-badge.approved { background: rgba(16,185,129,0.1);  color: #065F46; border: 1px solid rgba(16,185,129,0.25); }
+    .submitted-badge.rejected { background: rgba(227,24,55,0.08);  color: var(--red); border: 1px solid rgba(227,24,55,0.2); }
+
+    /* ── Submission History ── */
+    .history-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 10px;
+    }
+    .history-card-info { flex: 1; }
+    .history-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .history-card-date  { font-size: 12px; color: var(--text3); }
+    .history-card-right { display: flex; align-items: center; gap: 10px; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+    .empty-state .em-icon { font-size: 36px; margin-bottom: 8px; }
+
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="auth-nav"></div>
+
+<script src="js/auth.js"></script>
+<script>
+  const _session = requireAuth();
+  if (_session) renderAuthNav(_session);
+</script>
+
+<div class="dashboard-page">
+  <div class="dashboard-inner">
+
+    <!-- Welcome strip -->
+    <div class="welcome-strip" id="welcome-strip">
+      <div class="welcome-text">
+        <h2 id="welcome-name">Welcome back 👋</h2>
+        <p id="welcome-detail">Loading your profile...</p>
+      </div>
+      <div class="welcome-points">
+        <div class="pts-num" id="welcome-pts">—</div>
+        <div class="pts-lbl">Total Points</div>
+      </div>
+    </div>
+
+    <!-- Live Tasks -->
+    <div class="dash-section-head"><span>📋</span> Active Tasks</div>
+    <div class="tasks-grid" id="tasks-grid">
+      <div class="empty-state"><div class="em-icon">⏳</div>Loading tasks...</div>
+    </div>
+
+    <!-- Submission History -->
+    <div class="dash-section-head"><span>📁</span> My Submissions</div>
+    <div id="history-list">
+      <div class="empty-state"><div class="em-icon">⏳</div>Loading submissions...</div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/effects.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/data.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

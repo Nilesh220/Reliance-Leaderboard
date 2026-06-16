@@ -531,3 +531,120 @@ document.addEventListener('click', e => {
     closeOverrideModal();
   }
 });
+
+/* ---------------------------------------------------
+   TASK MANAGEMENT — Create / Toggle / Delete Tasks
+   --------------------------------------------------- */
+
+const TASK_TYPE_LABELS = {
+  story_screenshot: '?? Story Screenshot',
+  store_visit:      '?? Store Visit',
+  reel_link:        '?? Reel Link',
+};
+
+function toggleCreateTaskForm() {
+  const form = document.getElementById('create-task-form');
+  if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+window.toggleCreateTaskForm = toggleCreateTaskForm;
+
+async function createTask() {
+  const title    = document.getElementById('ntask-title')?.value.trim();
+  const type     = document.getElementById('ntask-type')?.value;
+  const desc     = document.getElementById('ntask-desc')?.value.trim();
+  const pts      = parseInt(document.getElementById('ntask-pts')?.value) || 50;
+  const deadline = document.getElementById('ntask-deadline')?.value;
+  const isLive   = document.getElementById('ntask-live')?.checked || false;
+  const msg      = document.getElementById('create-task-msg');
+  if (!title) { if(msg) msg.innerHTML = '<span style="color:var(--red)">Please enter a task title.</span>'; return; }
+  if(msg) msg.textContent = 'Creating...';
+  const { error } = await db.from('tasks').insert({
+    title, description: desc, task_type: type, points: pts,
+    deadline: deadline ? new Date(deadline).toISOString() : null,
+    is_live: isLive,
+  });
+  if (error) { if(msg) msg.innerHTML = '<span style="color:var(--red)">Error: '+error.message+'</span>'; return; }
+  if(msg) msg.innerHTML = '<span style="color:var(--green)">Task created!</span>';
+  ['ntask-title','ntask-desc'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  if(document.getElementById('ntask-pts')) document.getElementById('ntask-pts').value = '50';
+  if(document.getElementById('ntask-deadline')) document.getElementById('ntask-deadline').value = '';
+  if(document.getElementById('ntask-live')) document.getElementById('ntask-live').checked = false;
+  await loadAdminTasks();
+  setTimeout(() => { if(msg) msg.textContent=''; toggleCreateTaskForm(); }, 1500);
+}
+window.createTask = createTask;
+
+async function loadAdminTasks() {
+  const list = document.getElementById('admin-tasks-list');
+  if (!list) return;
+  const { data: tasks } = await db.from('tasks').select('*').order('created_at', { ascending: false });
+  if (!tasks || !tasks.length) {
+    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">No tasks yet. Create one above.</div>';
+    return;
+  }
+  list.innerHTML = tasks.map(t => {
+    const dl = t.deadline ? new Date(t.deadline).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'No deadline';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--text)">'+t.title+'</div><div style="font-size:12px;color:var(--text3)">'+(TASK_TYPE_LABELS[t.task_type]||t.task_type)+' · '+t.points+' pts · '+dl+'</div>'+(t.description?'<div style="font-size:12px;color:var(--text2);margin-top:2px">'+t.description+'</div>':'')+'</div><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleTaskLive('+t.id+','+t.is_live+')" class="btn '+(t.is_live?'btn-success':'btn-ghost')+'" style="font-size:12px;padding:4px 10px">'+(t.is_live?'?? Live':'? Draft')+'</button><button onclick="deleteTask('+t.id+')" class="btn btn-ghost" style="font-size:12px;padding:4px 10px;color:var(--red)">Delete</button></div></div>';
+  }).join('');
+}
+window.loadAdminTasks = loadAdminTasks;
+
+async function toggleTaskLive(taskId, current) {
+  await db.from('tasks').update({ is_live: !current }).eq('id', taskId);
+  await loadAdminTasks();
+}
+window.toggleTaskLive = toggleTaskLive;
+
+async function deleteTask(taskId) {
+  if (!confirm('Delete this task? All submissions will also be deleted.')) return;
+  await db.from('tasks').delete().eq('id', taskId);
+  await loadAdminTasks();
+}
+window.deleteTask = deleteTask;
+
+async function loadTaskSubmissions() {
+  const list = document.getElementById('task-submissions-list');
+  if (!list) return;
+  const { data: subs } = await db.from('task_submissions').select('*, tasks(title,task_type,points), pocs(name,college,city)').order('submitted_at', { ascending: false }).limit(50);
+  const pending = (subs||[]).filter(s=>s.status==='pending');
+  const badge = document.getElementById('pending-sub-count');
+  if (badge) badge.textContent = pending.length;
+  if (!subs||!subs.length) { list.innerHTML = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:12px">No submissions yet.</div>'; return; }
+  const statusColors = { pending:'var(--orange)', approved:'var(--green)', rejected:'var(--red)' };
+  list.innerHTML = subs.map(s => {
+    const poc=s.pocs||{}, task=s.tasks||{};
+    const dateStr = new Date(s.submitted_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const mediaBtn = s.media_url?'<a href="'+s.media_url+'" target="_blank" style="font-size:11px;color:var(--accent)">View Photo</a>':'';
+    const reelBtn  = s.reel_link?'<a href="'+s.reel_link+'" target="_blank" style="font-size:11px;color:var(--accent)">View Reel</a>':'';
+    return '<div style="border-bottom:1px solid var(--border);padding:10px 0"><div style="font-size:13px;font-weight:700;color:var(--text)">'+(poc.name||s.poc_id)+' <span style="font-weight:400;color:var(--text3)">? '+(task.title||'Task')+' (+'+task.points+' pts)</span></div><div style="font-size:11px;color:var(--text3)">'+(poc.college||'')+' · '+(poc.city||'')+' · '+dateStr+' '+mediaBtn+' '+reelBtn+'</div>'+(s.notes?'<div style="font-size:11px;color:var(--text2)">Note: '+s.notes+'</div>':'')+'<div style="display:flex;gap:6px;margin-top:6px">'+(s.status==='pending'?'<button onclick="approveSubmission('+s.id+\',"'+s.poc_id+'",'+task.points+')" class="btn btn-success" style="font-size:11px;padding:3px 10px">Approve</button><button onclick="rejectSubmission('+s.id+')" class="btn btn-ghost" style="font-size:11px;padding:3px 10px;color:var(--red)">Reject</button>':'<span style="font-size:12px;font-weight:700;color:'+statusColors[s.status]+'">'+s.status.toUpperCase()+'</span>')+(s.admin_note?'<span style="font-size:11px;color:var(--text3)">'+s.admin_note+'</span>':'')+'</div></div>';
+  }).join('');
+}
+window.loadTaskSubmissions = loadTaskSubmissions;
+
+async function approveSubmission(subId, pocId, points) {
+  if (!confirm('Approve? +'+points+' pts will be added.')) return;
+  await db.from('task_submissions').update({ status: 'approved' }).eq('id', subId);
+  const { data: poc } = await db.from('pocs').select('points').eq('id', pocId).single();
+  if (poc) await db.from('pocs').update({ points: (poc.points||0) + points }).eq('id', pocId);
+  showToast('Approved! +'+points+' pts added.', 'success');
+  await loadTaskSubmissions();
+}
+window.approveSubmission = approveSubmission;
+
+async function rejectSubmission(subId) {
+  const note = prompt('Reason for rejection (optional):') || '';
+  await db.from('task_submissions').update({ status: 'rejected', admin_note: note }).eq('id', subId);
+  showToast('Submission rejected.', 'error');
+  await loadTaskSubmissions();
+}
+window.rejectSubmission = rejectSubmission;
+
+// Hook into admin init to load tasks/submissions
+const _origAdminInit = window.initializeAdminDashboard;
+if (_origAdminInit) {
+  window.initializeAdminDashboard = async function() {
+    await _origAdminInit();
+    await loadAdminTasks();
+    await loadTaskSubmissions();
+  };
+}
