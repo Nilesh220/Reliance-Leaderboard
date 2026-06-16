@@ -68,8 +68,13 @@ function renderTasks() {
   const grid = document.getElementById('tasks-grid');
   const now  = new Date();
 
-  // Filter out expired tasks
-  const liveTasks = allTasks.filter(t => !t.deadline || new Date(t.deadline) > now);
+  // Show task if: no deadline, OR not expired, OR expired but late_submission_penalty is enabled
+  const liveTasks = allTasks.filter(t => {
+    if (!t.deadline) return true;
+    const dl = new Date(t.deadline);
+    if (dl > now) return true;
+    return t.late_submission_penalty === true; // still show after deadline with penalty
+  });
 
   if (!liveTasks.length) {
     grid.innerHTML = '<div class="empty-state"><div class="em-icon">🎉</div>No active tasks right now. Check back soon!</div>';
@@ -79,29 +84,41 @@ function renderTasks() {
   grid.innerHTML = liveTasks.map(task => {
     const meta       = TASK_TYPE_META[task.task_type] || { label: task.task_type, icon: '📌' };
     const deadline   = task.deadline ? new Date(task.deadline) : null;
-    const isUrgent   = deadline && (deadline - now) < 24 * 60 * 60 * 1000;
+    const isPastDeadline = deadline && deadline < now;
+    const isLateAllowed  = isPastDeadline && task.late_submission_penalty;
+    const isUrgent   = deadline && !isPastDeadline && (deadline - now) < 24 * 60 * 60 * 1000;
     const deadlineStr = deadline
-      ? `${isUrgent ? '⚠️' : '⏰'} Due: ${deadline.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`
+      ? `${isPastDeadline ? '🔴' : isUrgent ? '⚠️' : '⏰'} Due: ${deadline.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${isPastDeadline ? ' (Deadline passed)' : ''}`
       : '🟢 No deadline';
+
+    const lateWarning = isLateAllowed
+      ? `<div style="background:rgba(255,165,0,0.12);border:1px solid var(--orange);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--orange);font-weight:600">
+           ⏰ Deadline has passed — late submissions earn <strong>50% points (+${Math.round(task.points * 0.5)} pts)</strong>
+         </div>`
+      : '';
+
+    const displayPts = isLateAllowed ? Math.round(task.points * 0.5) : task.points;
+    const ptsLabel   = isLateAllowed ? `+${displayPts} pts <span style="font-size:11px;font-weight:400;opacity:0.7;text-decoration:line-through">${task.points}</span>` : `+${task.points} pts`;
 
     // Check if already submitted
     const existing = mySubmissions.find(s => s.task_id === task.id);
     const submittedBlock = existing
       ? `<div class="submitted-badge ${existing.status}">${statusIcon(existing.status)} ${statusLabel(existing.status)}${existing.admin_note ? ` — "${existing.admin_note}"` : ''}</div>`
-      : buildSubmitForm(task);
+      : buildSubmitForm(task, isLateAllowed);
 
     return `
       <div class="task-card" id="task-card-${task.id}">
         <div class="task-card-top">
           <div class="task-card-title">${task.title}</div>
-          <div class="task-card-pts">+${task.points} pts</div>
+          <div class="task-card-pts">${ptsLabel}</div>
         </div>
         <div class="task-card-desc">${task.description || ''}</div>
         <div class="task-card-meta">
           <span class="task-meta-type">${meta.icon} ${meta.label}</span>
-          <span class="task-meta-deadline ${isUrgent ? 'deadline-warning' : ''}">${deadlineStr}</span>
+          <span class="task-meta-deadline ${isUrgent ? 'deadline-warning' : isPastDeadline ? 'deadline-warning' : ''}">${deadlineStr}</span>
         </div>
         <div class="task-form">
+          ${lateWarning}
           ${submittedBlock}
         </div>
       </div>
@@ -124,7 +141,7 @@ function renderTasks() {
   });
 }
 
-function buildSubmitForm(task) {
+function buildSubmitForm(task, isLate) {
   const type = task.task_type;
   let mediaField = '';
 
@@ -160,12 +177,21 @@ function buildSubmitForm(task) {
     </div>
   `;
 
+  const halfPts = Math.round(task.points * 0.5);
+  const btnStyle = 'btn-submit';
+  const btnLabel = isLate
+    ? `⏰ Submit Late — earn +${halfPts} pts (50%)`
+    : `Submit Task →`;
+  const btnExtra = isLate
+    ? `style="background:linear-gradient(135deg,#f97316,#ea580c);box-shadow:0 4px 20px rgba(249,115,22,0.35);"`
+    : '';
+
   return `
     ${mediaField}
     ${reelField}
     ${notesField}
-    <button class="btn-submit" id="btn-${task.id}" onclick="submitTask(${task.id}, '${type}')">
-      Submit Task →
+    <button class="${btnStyle}" id="btn-${task.id}" onclick="submitTask(${task.id}, '${type}')" ${btnExtra}>
+      ${btnLabel}
     </button>
     <div id="submit-msg-${task.id}" style="font-size:13px;margin-top:8px;"></div>
   `;
@@ -267,19 +293,27 @@ function renderHistory() {
   }
 
   list.innerHTML = mySubmissions.map(s => {
-    const task     = s.tasks || allTasks.find(t => t.id === s.task_id);
-    const title    = task?.title || `Task #${s.task_id}`;
-    const pts      = task?.points || '?';
-    const dateStr  = new Date(s.submitted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const task    = s.tasks || allTasks.find(t => t.id === s.task_id);
+    const title   = task?.title || `Task #${s.task_id}`;
+    const fullPts = task?.points || '?';
+    const dateStr = new Date(s.submitted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const hasMedia = s.media_url ? `<a href="${s.media_url}" target="_blank" style="font-size:12px;color:var(--blue);font-weight:600;">View Photo ↗</a>` : '';
     const hasReel  = s.reel_link ? `<a href="${s.reel_link}" target="_blank" style="font-size:12px;color:var(--blue);font-weight:600;">View Reel ↗</a>` : '';
+
+    // Detect late submission from admin_note
+    const isLate = s.admin_note && s.admin_note.startsWith('Late submission');
+    const halfPts = typeof fullPts === 'number' ? Math.round(fullPts * 0.5) : fullPts;
+    const ptsDisplay = isLate
+      ? `+${halfPts} pts <span style="font-size:11px;font-weight:400;color:var(--orange)">⏰ late</span> <span style="font-size:11px;font-weight:400;text-decoration:line-through;opacity:0.5">${fullPts}</span>`
+      : `+${fullPts} pts`;
 
     return `
       <div class="history-card">
         <div class="history-card-info">
-          <div class="history-card-title">${title} <span style="font-size:12px;font-weight:400;color:var(--text3)">+${pts} pts</span></div>
+          <div class="history-card-title">${title} <span style="font-size:12px;font-weight:400;color:var(--text3)">${ptsDisplay}</span></div>
           <div class="history-card-date">Submitted ${dateStr} ${hasMedia} ${hasReel}</div>
-          ${s.admin_note ? `<div style="font-size:12px;color:var(--text2);margin-top:3px">Admin: "${s.admin_note}"</div>` : ''}
+          ${isLate ? `<div style="font-size:12px;color:var(--orange);margin-top:3px">⏰ Late submission — 50% points applied</div>` : ''}
+          ${s.admin_note && !isLate ? `<div style="font-size:12px;color:var(--text2);margin-top:3px">Admin: "${s.admin_note}"</div>` : ''}
         </div>
         <div class="history-card-right">
           <div class="submitted-badge ${s.status}">${statusIcon(s.status)} ${statusLabel(s.status)}</div>

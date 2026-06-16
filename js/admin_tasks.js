@@ -16,14 +16,16 @@ function toggleCreateTaskForm() {
 window.toggleCreateTaskForm = toggleCreateTaskForm;
 
 async function createTask() {
-  const title    = document.getElementById('ntask-title') ? document.getElementById('ntask-title').value.trim() : '';
-  const type     = document.getElementById('ntask-type')  ? document.getElementById('ntask-type').value : 'story_screenshot';
-  const desc     = document.getElementById('ntask-desc')  ? document.getElementById('ntask-desc').value.trim() : '';
-  const pts      = parseInt(document.getElementById('ntask-pts') ? document.getElementById('ntask-pts').value : '50') || 50;
+  const title      = document.getElementById('ntask-title') ? document.getElementById('ntask-title').value.trim() : '';
+  const type       = document.getElementById('ntask-type')  ? document.getElementById('ntask-type').value : 'story_screenshot';
+  const desc       = document.getElementById('ntask-desc')  ? document.getElementById('ntask-desc').value.trim() : '';
+  const pts        = parseInt(document.getElementById('ntask-pts') ? document.getElementById('ntask-pts').value : '50') || 50;
   const deadlineEl = document.getElementById('ntask-deadline');
   const deadline   = deadlineEl ? deadlineEl.value : '';
   const liveEl     = document.getElementById('ntask-live');
   const isLive     = liveEl ? liveEl.checked : false;
+  const penaltyEl  = document.getElementById('ntask-late-penalty');
+  const latePenalty = penaltyEl ? penaltyEl.checked : false;
   const msg        = document.getElementById('create-task-msg');
 
   if (!title) {
@@ -38,6 +40,7 @@ async function createTask() {
     task_type: type,
     points: pts,
     is_live: isLive,
+    late_submission_penalty: latePenalty,
   };
   if (deadline) payload.deadline = new Date(deadline).toISOString();
 
@@ -56,6 +59,7 @@ async function createTask() {
   if (ptsEl)   ptsEl.value   = '50';
   if (deadlineEl) deadlineEl.value = '';
   if (liveEl)  liveEl.checked = false;
+  if (penaltyEl) penaltyEl.checked = false;
 
   await loadAdminTasks();
   setTimeout(function() {
@@ -80,18 +84,27 @@ async function loadAdminTasks() {
   var html = '';
   for (var i = 0; i < tasks.length; i++) {
     var t = tasks[i];
-    var dl = t.deadline
-      ? new Date(t.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+    var now = new Date();
+    var deadlineDate = t.deadline ? new Date(t.deadline) : null;
+    var dl = deadlineDate
+      ? deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
       : 'No deadline';
+    var isPastDeadline = deadlineDate && deadlineDate < now;
     var typeLabel = TASK_TYPE_LABELS[t.task_type] || t.task_type;
     var liveClass = t.is_live ? 'btn-success' : 'btn-ghost';
     var liveText  = t.is_live ? 'Live' : 'Draft';
     var descHtml  = t.description ? '<div style="font-size:12px;color:var(--text2);margin-top:2px">' + t.description + '</div>' : '';
+    var penaltyBadge = t.late_submission_penalty
+      ? '<span style="font-size:10px;font-weight:700;background:rgba(255,165,0,0.15);color:var(--orange);border:1px solid var(--orange);border-radius:99px;padding:1px 7px;margin-left:6px">⏰ 50% late</span>'
+      : '';
+    var deadlineHtml = isPastDeadline
+      ? '<span style="color:var(--red)">' + dl + ' (expired)</span>'
+      : dl;
 
     html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">';
     html += '<div style="flex:1">';
-    html += '<div style="font-size:14px;font-weight:700;color:var(--text)">' + t.title + '</div>';
-    html += '<div style="font-size:12px;color:var(--text3)">' + typeLabel + ' | ' + t.points + ' pts | ' + dl + '</div>';
+    html += '<div style="font-size:14px;font-weight:700;color:var(--text)">' + t.title + penaltyBadge + '</div>';
+    html += '<div style="font-size:12px;color:var(--text3)">' + typeLabel + ' | ' + t.points + ' pts | ' + deadlineHtml + '</div>';
     html += descHtml;
     html += '</div>';
     html += '<div style="display:flex;align-items:center;gap:8px">';
@@ -121,7 +134,7 @@ async function loadTaskSubmissions() {
   if (!list) return;
 
   var result = await db.from('task_submissions')
-    .select('*, tasks(title,task_type,points), pocs(name,college,city)')
+    .select('*, tasks(title,task_type,points,deadline,late_submission_penalty), pocs(name,college,city)')
     .order('submitted_at', { ascending: false })
     .limit(50);
 
@@ -148,15 +161,25 @@ async function loadTaskSubmissions() {
     var taskName = task.title  || 'Task';
     var taskPts  = task.points || 0;
 
+    // Check if submitted after deadline
+    var isLate = false;
+    if (task.deadline && task.late_submission_penalty) {
+      isLate = new Date(s.submitted_at) > new Date(task.deadline);
+    }
+    var effectivePts = isLate ? Math.round(taskPts * 0.5) : taskPts;
+    var lateBadge = isLate
+      ? '<span style="font-size:10px;font-weight:700;background:rgba(255,165,0,0.15);color:var(--orange);border:1px solid var(--orange);border-radius:99px;padding:1px 7px;margin-left:6px">⏰ LATE — 50% pts</span>'
+      : '';
+
     var statusColor = s.status === 'approved' ? 'var(--green)' : s.status === 'rejected' ? 'var(--red)' : 'var(--orange)';
 
     html += '<div style="border-bottom:1px solid var(--border);padding:10px 0">';
-    html += '<div style="font-size:13px;font-weight:700;color:var(--text)">' + pocName + ' <span style="font-weight:400;color:var(--text3)">to ' + taskName + ' (+' + taskPts + ' pts)</span></div>';
+    html += '<div style="font-size:13px;font-weight:700;color:var(--text)">' + pocName + ' <span style="font-weight:400;color:var(--text3)">to ' + taskName + ' (+' + effectivePts + ' pts)</span>' + lateBadge + '</div>';
     html += '<div style="font-size:11px;color:var(--text3)">' + (poc.college || '') + ' | ' + (poc.city || '') + ' | ' + dateStr + ' ' + mediaBtn + reelBtn + '</div>';
     if (s.notes) html += '<div style="font-size:11px;color:var(--text2)">Note: ' + s.notes + '</div>';
     html += '<div style="display:flex;gap:6px;margin-top:6px">';
     if (s.status === 'pending') {
-      html += '<button onclick="approveSubmission(' + s.id + ',\'' + s.poc_id + '\',' + taskPts + ')" class="btn btn-success" style="font-size:11px;padding:3px 10px">Approve</button>';
+      html += '<button onclick="approveSubmission(' + s.id + ',\'' + s.poc_id + '\',' + taskPts + ',' + (isLate ? 'true' : 'false') + ')" class="btn btn-success" style="font-size:11px;padding:3px 10px">Approve (+' + effectivePts + ' pts)</button>';
       html += '<button onclick="rejectSubmission(' + s.id + ')" class="btn btn-ghost" style="font-size:11px;padding:3px 10px;color:var(--red)">Reject</button>';
     } else {
       html += '<span style="font-size:12px;font-weight:700;color:' + statusColor + '">' + s.status.toUpperCase() + '</span>';
@@ -168,15 +191,18 @@ async function loadTaskSubmissions() {
 }
 window.loadTaskSubmissions = loadTaskSubmissions;
 
-async function approveSubmission(subId, pocId, points) {
-  if (!confirm('Approve? +' + points + ' pts will be added to this POC.')) return;
-  await db.from('task_submissions').update({ status: 'approved' }).eq('id', subId);
+async function approveSubmission(subId, pocId, points, isLate) {
+  var effectivePts = isLate ? Math.round(points * 0.5) : points;
+  var lateNote = isLate ? ' (50% — late submission)' : '';
+  if (!confirm('Approve? +' + effectivePts + ' pts will be added to this POC.' + lateNote)) return;
+  var adminNote = isLate ? 'Late submission — 50% points awarded (' + effectivePts + ' of ' + points + ' pts)' : '';
+  await db.from('task_submissions').update({ status: 'approved', admin_note: adminNote || null }).eq('id', subId);
   var pocResult = await db.from('pocs').select('points').eq('id', pocId).single();
   if (pocResult.data) {
-    var newPts = (pocResult.data.points || 0) + points;
+    var newPts = (pocResult.data.points || 0) + effectivePts;
     await db.from('pocs').update({ points: newPts }).eq('id', pocId);
   }
-  showToast('Approved! +' + points + ' pts added.', 'success');
+  showToast('Approved! +' + effectivePts + ' pts added.' + (isLate ? ' (50% late penalty applied)' : ''), 'success');
   await loadTaskSubmissions();
 }
 window.approveSubmission = approveSubmission;

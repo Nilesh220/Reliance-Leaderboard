@@ -244,10 +244,14 @@
             <input type="datetime-local" id="ntask-deadline" class="form-input" />
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)">
             <input type="checkbox" id="ntask-live" style="width:16px;height:16px;accent-color:var(--green)" />
             Make live immediately
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" title="After deadline, submissions still accepted but earn only 50% of the points">
+            <input type="checkbox" id="ntask-late-penalty" style="width:16px;height:16px;accent-color:var(--orange)" />
+            ⏰ Late submission = 50% points
           </label>
         </div>
         <div style="display:flex;gap:10px">

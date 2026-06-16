@@ -28,15 +28,19 @@ create trigger trg_cleanup_otps after insert on login_otps
 
 -- Tasks table (created by admin)
 create table if not exists tasks (
-  id          bigserial primary key,
-  title       text not null,
-  description text,
-  task_type   text not null check (task_type in ('story_screenshot','store_visit','reel_link')),
-  points      int  not null default 50,
-  deadline    timestamptz,
-  is_live     boolean default false,
-  created_at  timestamptz default now()
+  id                      bigserial primary key,
+  title                   text not null,
+  description             text,
+  task_type               text not null check (task_type in ('story_screenshot','store_visit','reel_link')),
+  points                  int  not null default 50,
+  deadline                timestamptz,
+  is_live                 boolean default false,
+  late_submission_penalty boolean default false,  -- if true, submissions after deadline earn 50% points
+  created_at              timestamptz default now()
 );
+
+-- Migration: add late_submission_penalty to existing tasks table (safe to run multiple times)
+alter table tasks add column if not exists late_submission_penalty boolean default false;
 
 -- Task submissions (by POCs)
 create table if not exists task_submissions (
