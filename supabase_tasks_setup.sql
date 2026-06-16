@@ -59,8 +59,8 @@ alter table task_submissions enable row level security;
 -- Allow anon to insert/read login_otps (OTP flow happens via serverless)
 create policy "anon_all_login_otps" on login_otps for all using (true) with check (true);
 
--- Allow anon to read live tasks
-create policy "anon_read_tasks" on tasks for select using (true);
+-- Allow anon full access to tasks (since admin writes happen client-side)
+create policy "anon_all_tasks" on tasks for all using (true) with check (true);
 
 -- Allow anon to insert/read/update task_submissions
 create policy "anon_all_submissions" on task_submissions for all using (true) with check (true);
