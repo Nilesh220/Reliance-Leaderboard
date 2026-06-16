@@ -1,21 +1,21 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal â€” Bootup India Campaign</title>
+  <title>Admin Portal — Bootup India Campaign</title>
   <meta name="description" content="Admin portal for managing Bootup India campaign point entries and publishing updates to the leaderboard." />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body class="unauthorized">
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• ADMIN LOGIN SCREEN â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ ADMIN LOGIN SCREEN ══════════════ -->
 <div class="login-screen">
   <div class="login-card">
     <div class="login-brand-bar"></div>
-    <div class="login-icon">ðŸ”’</div>
+    <div class="login-icon">🔒</div>
     <h2 class="login-title">Admin Access Required</h2>
-    <p class="login-subtitle">Bootup India Campaign Â· Vigorlaunchpad</p>
+    <p class="login-subtitle">Bootup India Campaign · Vigorlaunchpad</p>
     
     <form id="login-form" onsubmit="handleLogin(event)">
       <div class="form-group" style="margin-bottom: 20px;">
@@ -23,7 +23,7 @@
         <input type="password"
                id="login-password"
                class="form-input"
-               placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+               placeholder="••••••••"
                style="width: 100%; text-align: center; font-size: 18px; letter-spacing: 2px;"
                required />
       </div>
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• ADMIN HEADER â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ ADMIN HEADER ══════════════ -->
 <header class="admin-header">
   <div class="admin-logo">
     <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital Logo" class="admin-logo-img" />
@@ -43,7 +43,7 @@
     <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad" class="admin-vigor-logo" />
     <div class="admin-logo-divider"></div>
     <div>
-      <div class="admin-logo-text">Bootup India Â· Admin Portal</div>
+      <div class="admin-logo-text">Bootup India · Admin Portal</div>
       <div class="admin-logo-sub">Powered by Vigorlaunchpad</div>
     </div>
   </div>
@@ -54,21 +54,21 @@
       <div class="pending-count" id="header-pending-badge">0</div>
     </div>
     <a href="/leaderboard" class="view-leaderboard-btn" target="_blank">
-      ðŸ† View Leaderboard â†—
+      🏆 View Leaderboard ↗
     </a>
     <button onclick="handleLogout()" class="view-leaderboard-btn" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
-      ðŸ”’ Log Out
+      🔒 Log Out
     </button>
   </div>
 </header>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• ADMIN LAYOUT â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ ADMIN LAYOUT ══════════════ -->
 <div class="admin-layout">
 
-  <!-- â•â•â•â• LEFT: MAIN PANEL â•â•â•â• -->
+  <!-- ════ LEFT: MAIN PANEL ════ -->
   <div class="admin-main">
 
-    <!-- â”€â”€ Stats Overview â”€â”€ -->
+    <!-- ── Stats Overview ── -->
     <div class="stats-overview">
       <div class="stat-card">
         <div class="stat-card-value" id="admin-stat-total-pts">0</div>
@@ -88,34 +88,34 @@
       </div>
     </div>
 
-    <!-- â”€â”€ Task Logger â”€â”€ -->
+    <!-- ── Task Logger ── -->
     <div class="admin-card">
       <div class="admin-section-title">
-        <div class="icon">âž•</div>
+        <div class="icon">➕</div>
         Log a Task
       </div>
 
       <!-- Step 1: Select POC -->
       <div style="margin-bottom:20px">
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
-          Step 1 â€” Select POC
+          Step 1 — Select POC
         </div>
         <div style="position:relative" id="search-wrap">
-          <span class="search-icon">ðŸ”</span>
+          <span class="search-icon">🔍</span>
           <input type="text"
                  id="poc-search"
                  class="search-input"
-                 placeholder="Search by name, college or cityâ€¦"
+                 placeholder="Search by name, college or city…"
                  autocomplete="off" />
           <div id="search-results" class="search-results"></div>
         </div>
 
         <!-- Selected POC card -->
         <div class="selected-poc-card" id="selected-poc-card">
-          <div class="selected-poc-avatar" id="sel-poc-avatar">â€”</div>
+          <div class="selected-poc-avatar" id="sel-poc-avatar">—</div>
           <div class="selected-poc-details">
-            <div class="selected-poc-name" id="sel-poc-name">â€”</div>
-            <div class="selected-poc-college" id="sel-poc-college">â€”</div>
+            <div class="selected-poc-name" id="sel-poc-name">—</div>
+            <div class="selected-poc-college" id="sel-poc-college">—</div>
             <div>
               <span id="sel-poc-city" class="city-tag"></span>
             </div>
@@ -124,14 +124,14 @@
             <div class="selected-poc-points" id="sel-poc-points">0 <span>pts</span></div>
             <div style="font-size:11px;color:var(--text3)">current</div>
           </div>
-          <button class="clear-selection" onclick="clearSelection()" title="Clear selection">âœ•</button>
+          <button class="clear-selection" onclick="clearSelection()" title="Clear selection">✕</button>
         </div>
       </div>
 
       <!-- Step 2: Select Task -->
       <div style="margin-bottom:20px">
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
-          Step 2 â€” Select Task
+          Step 2 — Select Task
         </div>
         <div class="category-tabs" id="category-tabs"></div>
         <div class="tasks-grid" id="tasks-grid"></div>
@@ -140,7 +140,7 @@
       <!-- Step 3: Quantity (for multiplier tasks) -->
       <div id="qty-wrap" style="display:none;margin-bottom:20px;flex-direction:column;gap:8px">
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">
-          Step 3 â€” Enter Quantity
+          Step 3 — Enter Quantity
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -149,7 +149,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Note (optional)</label>
-            <input type="text" id="task-note" class="form-input" placeholder="e.g. Group names, detailsâ€¦" />
+            <input type="text" id="task-note" class="form-input" placeholder="e.g. Group names, details…" />
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@
       <div id="note-wrap" style="margin-bottom:20px">
         <div class="form-group">
           <label class="form-label">Note (optional)</label>
-          <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event nameâ€¦" />
+          <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event name…" />
         </div>
       </div>
 
@@ -168,28 +168,28 @@
           <div class="points-preview-label">Points to be awarded</div>
           <div style="font-size:12px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
         </div>
-        <div class="points-preview-value" id="points-preview-value">â€” pts</div>
+        <div class="points-preview-value" id="points-preview-value">— pts</div>
       </div>
 
       <!-- Add to Queue Button -->
       <button class="btn btn-primary btn-full" onclick="addToQueue()" id="add-to-queue-btn">
-        âž• Add to Queue
+        ➕ Add to Queue
       </button>
     </div>
 
-    <!-- â”€â”€ Full POC Table â”€â”€ -->
+    <!-- ── Full POC Table ── -->
     <div class="admin-card">
       <div class="admin-section-title">
-        <div class="icon">ðŸ‘¥</div>
+        <div class="icon">👥</div>
         All POCs
       </div>
 
       <!-- Filter tabs -->
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
         <button class="category-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')">All Cities</button>
-        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')">ðŸ™ï¸ Mumbai</button>
-        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')">ðŸŒ¸ Pune</button>
-        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')">ðŸ•Œ Aurangabad</button>
+        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')">🏙️ Mumbai</button>
+        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')">🌸 Pune</button>
+        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')">🕌 Aurangabad</button>
       </div>
 
       <div class="poc-table-wrap">
@@ -205,10 +205,10 @@
       </div>
     </div>
 
-    <!-- â”€â”€ Task Management â”€â”€ -->
+    <!-- ── Task Management ── -->
     <div class="admin-card" id="task-management-card">
       <div class="admin-section-title">
-        <div class="icon">ðŸ“‹</div>
+        <div class="icon">📋</div>
         Task Management
         <button class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="toggleCreateTaskForm()">+ Create Task</button>
       </div>
@@ -224,9 +224,9 @@
           <div class="form-group">
             <label class="form-label">Task Type</label>
             <select id="ntask-type" class="form-input">
-              <option value="story_screenshot">ðŸ“¸ Story Screenshot</option>
-              <option value="store_visit">ðŸª Store Visit</option>
-              <option value="reel_link">ðŸŽ¬ Reel Link</option>
+              <option value="story_screenshot">📸 Story Screenshot</option>
+              <option value="store_visit">🏪 Store Visit</option>
+              <option value="reel_link">🎬 Reel Link</option>
             </select>
           </div>
         </div>
@@ -263,10 +263,10 @@
       </div>
     </div>
 
-    <!-- â”€â”€ Audit History â”€â”€ -->
+    <!-- ── Audit History ── -->
     <div class="admin-card">
       <div class="admin-section-title">
-        <div class="icon">ðŸ“œ</div>
+        <div class="icon">📜</div>
         Activity History
       </div>
       <div class="history-log" id="history-log">
@@ -276,13 +276,27 @@
 
   </div>
 
-  <!-- â•â•â•â• RIGHT: SIDEBAR â•â•â•â• -->
+  <!-- ════ RIGHT: SIDEBAR ════ -->
   <div class="admin-sidebar">
+
+    <!-- Publish Section -->
+    <div class="publish-section">
+      <div class="publish-title">🚀 Publish to Leaderboard</div>
+      <div class="publish-desc">
+        Review queued tasks below, then publish to push all changes live to the public leaderboard.
+      </div>
+      <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
+        ✅ Publish Update Now
+      </button>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:12px">
+        Typically done daily at 8:00 PM IST
+      </div>
+    </div>
 
     <!-- Task Submissions Review -->
     <div class="admin-card" style="margin-bottom:24px">
       <div class="admin-section-title" style="font-size:16px">
-        <div class="icon">ðŸ“¥</div>
+        <div class="icon">📥</div>
         Task Submissions
         <span id="pending-sub-count" style="font-size:12px;background:var(--red);color:#fff;padding:2px 8px;border-radius:99px;margin-left:auto">0</span>
       </div>
@@ -291,24 +305,10 @@
       </div>
     </div>
 
-    <!-- Publish Section -->
-    <div class="publish-section">
-      <div class="publish-title">ðŸš€ Publish to Leaderboard</div>
-      <div class="publish-desc">
-        Review queued tasks below, then publish to push all changes live to the public leaderboard.
-      </div>
-      <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
-        âœ… Publish Update Now
-      </button>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:12px">
-        Typically done daily at 8:00 PM IST
-      </div>
-    </div>
-
     <!-- Pending Queue -->
     <div style="margin-bottom:24px">
       <div class="admin-section-title" style="font-size:16px">
-        <div class="icon">â³</div>
+        <div class="icon">⏳</div>
         Pending Queue
         <span id="queue-total-pts" style="font-size:13px;color:var(--accent);margin-left:auto;font-weight:600"></span>
       </div>
@@ -320,52 +320,52 @@
     <!-- Quick Reference -->
     <div class="admin-card">
       <div class="admin-section-title" style="font-size:15px">
-        <div class="icon">ðŸ’¡</div>
+        <div class="icon">💡</div>
         Point Reference
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Instagram</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ“¸ Story + tag</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ”¥ Engagement bonus</span><span style="color:var(--accent);font-weight:700">+20 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>📸 Story + tag</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🔥 Engagement bonus</span><span style="color:var(--accent);font-weight:700">+20 pts</span></div>
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">WhatsApp</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ’¬ Per group share</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>💬 Per group share</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Events</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸŽ“ 12 June Seminar</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ“¢ 12 June Orientation</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸŽ¯ Webinar attendee</span><span style="color:var(--accent);font-weight:700">15 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ¤– AI Webinar student</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎓 12 June Seminar</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>📢 12 June Orientation</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎯 Webinar attendee</span><span style="color:var(--accent);font-weight:700">15 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🤖 AI Webinar student</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Store</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸª Store visit</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ‡®ðŸ‡³ 15 Aug visit</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏪 Store visit</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🇮🇳 15 Aug visit</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
         <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Bonus</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ† Weekly top</span><span style="color:var(--gold);font-weight:700">+50 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>ðŸ¥‡ Top college/month</span><span style="color:var(--gold);font-weight:700">+100 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>â­ Weekly consistency</span><span style="color:var(--gold);font-weight:700">+25 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏆 Weekly top</span><span style="color:var(--gold);font-weight:700">+50 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🥇 Top college/month</span><span style="color:var(--gold);font-weight:700">+100 pts</span></div>
+        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>⭐ Weekly consistency</span><span style="color:var(--gold);font-weight:700">+25 pts</span></div>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PUBLISH CONFIRMATION MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ PUBLISH CONFIRMATION MODAL ══════════════ -->
 <div class="modal-overlay" id="publish-modal" onclick="if(event.target===this)closePublishModal()">
   <div class="modal">
-    <div class="modal-title">ðŸš€ Confirm Publish</div>
+    <div class="modal-title">🚀 Confirm Publish</div>
     <div id="publish-summary" style="color:var(--text2);font-size:14px;line-height:1.6"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closePublishModal()">Cancel</button>
-      <button class="btn btn-success" onclick="confirmPublish()">âœ… Yes, Publish Now</button>
+      <button class="btn btn-success" onclick="confirmPublish()">✅ Yes, Publish Now</button>
     </div>
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• OVERRIDE MODAL â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ OVERRIDE MODAL ══════════════ -->
 <div class="modal-overlay" id="override-modal" onclick="if(event.target===this)closeOverrideModal()">
   <div class="modal">
-    <div class="modal-title">âœï¸ Manual Point Override</div>
+    <div class="modal-title">✏️ Manual Point Override</div>
     <input type="hidden" id="override-poc-id" />
     <div style="color:var(--text2);margin-bottom:16px">
-      Editing: <strong id="override-poc-name" style="color:var(--text)">â€”</strong>
+      Editing: <strong id="override-poc-name" style="color:var(--text)">—</strong>
     </div>
     <div class="form-group" style="margin-bottom:12px">
       <label class="form-label">New Total Points</label>
@@ -373,7 +373,7 @@
     </div>
     <div class="form-group" style="margin-bottom:0">
       <label class="form-label">Reason</label>
-      <input type="text" id="override-reason" class="form-input" placeholder="e.g. Correction, bonus awardâ€¦" />
+      <input type="text" id="override-reason" class="form-input" placeholder="e.g. Correction, bonus award…" />
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeOverrideModal()">Cancel</button>
@@ -382,12 +382,13 @@
   </div>
 </div>
 
-<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOAST CONTAINER â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<!-- ══════════════ TOAST CONTAINER ══════════════ -->
 <div class="toast-container" id="toast-container"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
-<script src="js/admin.js"></script><script src="js/admin_tasks.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/admin_tasks.js"></script>
 <script src="js/effects.js"></script>
 <script>
   // Sync category-tab active state for POC filter buttons
@@ -411,4 +412,3 @@
 </script>
 </body>
 </html>
-
