@@ -4,6 +4,11 @@
  */
 
 const ALLOWED_EMAILS = new Set([
+  // Vigorlaunchpad team
+  'nilesh@vigorlaunchpad.com',
+  'marsha@vigorlaunchpad.com',
+  'priya@vigorlaunchpad.com',
+  'yash@vigorlaunchpad.com',
   'shaikhalshifa220@gmail.com',
   'arch25014@gmail.com',
   'svishwakarma8878@gmail.com',
