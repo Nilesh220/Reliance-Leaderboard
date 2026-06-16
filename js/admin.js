@@ -1,19 +1,19 @@
 /**
- * Bootup India â€” Admin Portal Logic (Supabase version)
- * Vigorlaunchpad Ã— Reliance Digital
+ * Bootup India — Admin Portal Logic (Supabase version)
+ * Vigorlaunchpad × Reliance Digital
  */
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    STATE
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 let selectedPOC    = null;
 let selectedTask   = null;
 let activeCategory = 'All';
 let adminCurrentCity = 'All';
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PASSWORD AUTHENTICATION (Nilesh2202)
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 const ADMIN_PASSWORD = 'Nilesh2202';
 
 function checkAuth() {
@@ -36,7 +36,7 @@ function handleLogin(event) {
     errorEl.textContent = '';
     initializeAdminDashboard();
   } else {
-    errorEl.textContent = 'âŒ Incorrect password. Please try again.';
+    errorEl.textContent = '❌ Incorrect password. Please try again.';
     passwordInput.value = '';
     passwordInput.focus();
     
@@ -59,9 +59,9 @@ function handleLogout() {
 window.handleLogin = handleLogin;
 window.handleLogout = handleLogout;
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    BOOTSTRAP
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 let isInitialized = false;
 
 async function initializeAdminDashboard() {
@@ -91,9 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    ADMIN STATS OVERVIEW
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function renderAdminStats() {
   const data  = await getLiveData();
   const queue = await getPendingQueue();
@@ -105,9 +105,9 @@ async function renderAdminStats() {
   setEl('admin-stat-pending',     queue.length);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    POC SEARCH
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 const searchInput   = document.getElementById('poc-search');
 const searchResults = document.getElementById('search-results');
 
@@ -157,9 +157,9 @@ function hideSearchResults() {
   if (searchResults) searchResults.classList.remove('visible');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    SELECT POC
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function selectPOC(pocId) {
   const { data: poc, error } = await db.from('pocs').select('*').eq('id', pocId).single();
   if (error || !poc) return;
@@ -194,9 +194,9 @@ function clearSelection() {
   updatePointsPreview();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    TASK CATEGORIES & OPTIONS
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 function renderCategoryTabs() {
   const container = document.getElementById('category-tabs');
   if (!container) return;
@@ -244,9 +244,9 @@ function selectTask(taskId) {
   updatePointsPreview();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    QUANTITY INPUT
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 function setupQuantityInput() {
   const qtyInput = document.getElementById('qty-input');
   if (qtyInput) qtyInput.addEventListener('input', updatePointsPreview);
@@ -255,14 +255,14 @@ function setupQuantityInput() {
 function updatePointsPreview() {
   const el = document.getElementById('points-preview-value');
   if (!el) return;
-  if (!selectedTask) { el.textContent = 'â€” pts'; return; }
+  if (!selectedTask) { el.textContent = '— pts'; return; }
   const qty = selectedTask.multiplier ? (parseInt(document.getElementById('qty-input')?.value) || 1) : 1;
   el.textContent = `+${selectedTask.points * qty} pts`;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    ADD TO PENDING QUEUE
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function addToQueue() {
   if (!selectedPOC) { showToast('Please select a POC first', 'error'); return; }
   if (!selectedTask) { showToast('Please select a task', 'error'); return; }
@@ -289,9 +289,9 @@ async function addToQueue() {
   showToast(`+${entry.points_earned} pts queued for ${selectedPOC.name}`, 'success');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PENDING QUEUE
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function renderPendingQueue() {
   const container = document.getElementById('pending-queue');
   if (!container) return;
@@ -301,7 +301,7 @@ async function renderPendingQueue() {
   setEl('queue-total-pts', totalPts > 0 ? `+${totalPts} pts pending` : '');
 
   if (queue.length === 0) {
-    container.innerHTML = `<div class="queue-empty"><div class="queue-empty-icon">ðŸ“‹</div>No tasks queued yet. Add tasks above.</div>`;
+    container.innerHTML = `<div class="queue-empty"><div class="queue-empty-icon">📋</div>No tasks queued yet. Add tasks above.</div>`;
     return;
   }
 
@@ -310,12 +310,12 @@ async function renderPendingQueue() {
       <div class="queue-item-icon">${getTaskIcon(entry.task_icon, 'sm')}</div>
       <div class="queue-item-info">
         <div class="queue-item-poc">${entry.poc_name}</div>
-        <div class="queue-item-task">${entry.task_name}${entry.quantity > 1 ? ` Ã— ${entry.quantity}` : ''}</div>
+        <div class="queue-item-task">${entry.task_name}${entry.quantity > 1 ? ` × ${entry.quantity}` : ''}</div>
         ${entry.note ? `<div class="queue-item-note">${entry.note}</div>` : ''}
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">${entry.college} Â· ${entry.city}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">${entry.college} · ${entry.city}</div>
       </div>
       <div class="queue-item-points">+${entry.points_earned}</div>
-      <button class="queue-item-remove" onclick="removeQueueItem('${entry.id}')" title="Remove">âœ•</button>
+      <button class="queue-item-remove" onclick="removeQueueItem('${entry.id}')" title="Remove">✕</button>
     </div>`
   ).join('');
 }
@@ -329,9 +329,9 @@ async function removeQueueItem(id) {
   showToast('Task removed from queue', 'info');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PUBLISH
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function publishUpdate() {
   const queue = await getPendingQueue();
   if (queue.length === 0) { showToast('No tasks in queue to publish', 'error'); return; }
@@ -353,11 +353,11 @@ async function confirmPublish() {
   closePublishModal();
 
   const btn = document.getElementById('publish-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'â³ Publishingâ€¦'; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Publishing…'; }
 
   const result = await publishPendingQueue();
 
-  if (btn) { btn.textContent = 'âœ… Publish Update Now'; }
+  if (btn) { btn.textContent = '✅ Publish Update Now'; }
 
   await renderPendingQueue();
   await updatePendingIndicator();
@@ -366,7 +366,7 @@ async function confirmPublish() {
   await renderHistory();
   await renderPOCTable();
 
-  showToast(`âœ… Published! ${result.published} tasks are now live`, 'success');
+  showToast(`✅ Published! ${result.published} tasks are now live`, 'success');
 }
 
 function closePublishModal() {
@@ -380,18 +380,18 @@ async function updatePublishButton() {
   if (btn) btn.disabled = queue.length === 0;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    PENDING INDICATOR (header)
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function updatePendingIndicator() {
   const queue = await getPendingQueue();
   setEl('header-pending-count', `${queue.length} pending`);
   setEl('header-pending-badge', queue.length);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    HISTORY LOG
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function renderHistory() {
   const container = document.getElementById('history-log');
   if (!container) return;
@@ -415,9 +415,9 @@ async function renderHistory() {
   }).join('');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    POC TABLE
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function renderPOCTable() {
   const container = document.getElementById('poc-table-body');
   if (!container) return;
@@ -436,7 +436,7 @@ async function renderPOCTable() {
       <div class="poc-table-city col-city">${poc.city}</div>
       <div class="poc-table-pts">${poc.points}</div>
       <div class="poc-table-actions">
-        <button class="action-btn" onclick="event.stopPropagation(); openOverrideModal('${poc.id}')" title="Edit points">âœï¸</button>
+        <button class="action-btn" onclick="event.stopPropagation(); openOverrideModal('${poc.id}')" title="Edit points">✏️</button>
       </div>
     </div>`
   ).join('');
@@ -450,9 +450,9 @@ async function filterPOCTable(city) {
   await renderPOCTable();
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    MANUAL OVERRIDE MODAL
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 async function openOverrideModal(pocId) {
   const { data: poc, error } = await db.from('pocs').select('*').eq('id', pocId).single();
   if (error || !poc) return;
@@ -490,13 +490,13 @@ function closeOverrideModal() {
   if (modal) modal.classList.remove('visible');
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    TOAST NOTIFICATIONS
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   if (!container) return;
-  const icons = { success: 'âœ…', error: 'âŒ', info: 'â„¹ï¸' };
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${message}</span>`;
@@ -507,9 +507,9 @@ function showToast(message, type = 'info') {
   }, 3500);
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────
    UTILITIES
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────── */
 function setEl(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
