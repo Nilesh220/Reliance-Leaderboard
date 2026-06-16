@@ -74,9 +74,7 @@ export default async function handler(req, res) {
 
     if (!fileBuffer) return res.status(400).json({ error: 'No file found in request' });
 
-    // Build form for Cloudinary
-    const { FormData: NodeFormData, Blob } = await import('node-fetch');
-
+    // Build form for Cloudinary (uses native global FormData and Blob)
     const cldForm = new FormData();
     const blob = new Blob([fileBuffer], { type: mimeType });
     cldForm.append('file', blob, fileName);
