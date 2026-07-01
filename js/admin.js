@@ -436,6 +436,7 @@ async function renderPOCTable() {
       <div class="poc-table-city col-city">${poc.city}</div>
       <div class="poc-table-pts">${poc.points}</div>
       <div class="poc-table-actions" style="display:flex;gap:6px">
+        <button class="action-btn" onclick="event.stopPropagation(); openPointHistory('${poc.id}', '${poc.name.replace(/'/g, "\\'")}')" title="Point history">📈</button>
         <button class="action-btn" onclick="event.stopPropagation(); openOverrideModal('${poc.id}')" title="Edit points">✏️</button>
         <button class="action-btn action-btn-delete" onclick="event.stopPropagation(); deletePOC('${poc.id}', '${poc.name.replace(/'/g, "\\'")}')" title="Remove POC">🗑️</button>
       </div>
@@ -531,6 +532,7 @@ document.addEventListener('click', e => {
     closePublishModal();
     closeOverrideModal();
     closeAddPOCModal();
+    closePointHistory();
   }
 });
 
@@ -646,3 +648,114 @@ window.openAddPOCModal = openAddPOCModal;
 window.closeAddPOCModal = closeAddPOCModal;
 window.confirmAddPOC = confirmAddPOC;
 window.deletePOC = deletePOC;
+
+/* ─────────────────────────────────────────────
+   POINT HISTORY MODAL
+   ───────────────────────────────────────────── */
+async function openPointHistory(pocId, pocName) {
+  const modal   = document.getElementById('point-history-modal');
+  const titleEl = document.getElementById('point-history-title');
+  const summaryEl = document.getElementById('point-history-summary');
+  const bodyEl  = document.getElementById('point-history-body');
+
+  if (!modal) return;
+
+  if (titleEl) titleEl.textContent = `${pocName} — Point History`;
+  if (summaryEl) summaryEl.innerHTML = '';
+  if (bodyEl) bodyEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3)">Loading…</div>`;
+  modal.classList.add('visible');
+
+  // Fetch POC current data
+  const { data: poc, error: pocErr } = await db.from('pocs').select('*').eq('id', pocId).single();
+
+  // Fetch audit log entries for this POC
+  const { data: log, error: logErr } = await db
+    .from('audit_log')
+    .select('*')
+    .eq('poc_id', pocId)
+    .order('published_at', { ascending: false })
+    .limit(50);
+
+  if (pocErr || logErr || !poc) {
+    if (bodyEl) bodyEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--red)">Failed to load history.</div>`;
+    return;
+  }
+
+  // Summary chips
+  if (summaryEl) {
+    const taskCount = log.length;
+    const totalEarned = log.reduce((s, e) => s + (e.points_earned || 0), 0);
+    summaryEl.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--text2)">
+        <span style="font-weight:700;color:var(--accent);font-size:16px">${poc.points.toLocaleString()}</span> current pts
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--text2)">
+        <span style="font-weight:700;font-size:15px">${taskCount}</span> tasks logged
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--text2)">
+        <span style="font-weight:700;color:var(--green);font-size:15px">+${totalEarned.toLocaleString()}</span> pts earned
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--text2)">
+        🏙️ ${poc.city} · ${poc.college}
+      </div>`;
+  }
+
+  // Timeline entries
+  if (!log || log.length === 0) {
+    if (bodyEl) bodyEl.innerHTML = `
+      <div style="text-align:center;padding:32px;color:var(--text3)">
+        <div style="font-size:36px;margin-bottom:12px">📭</div>
+        <div style="font-size:14px">No point history yet for this POC.</div>
+      </div>`;
+    return;
+  }
+
+  if (bodyEl) {
+    // Group by date
+    const grouped = {};
+    log.forEach(entry => {
+      const d = new Date(entry.published_at || entry.added_at);
+      const dateKey = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      if (!grouped[dateKey]) grouped[dateKey] = [];
+      grouped[dateKey].push(entry);
+    });
+
+    bodyEl.innerHTML = Object.entries(grouped).map(([date, entries]) => {
+      const dayTotal = entries.reduce((s, e) => s + (e.points_earned || 0), 0);
+      return `
+        <div style="margin-bottom:4px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--text3);white-space:nowrap">${date}</div>
+            <div style="font-size:11px;color:var(--accent);font-weight:700;white-space:nowrap">+${dayTotal} pts</div>
+            <div style="flex:1;height:1px;background:var(--border)"></div>
+          </div>
+          ${entries.map(e => {
+            const t    = new Date(e.published_at || e.added_at);
+            const time = t.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+            const pts  = e.points_earned >= 0 ? `+${e.points_earned}` : `${e.points_earned}`;
+            const ptsColor = e.points_earned >= 0 ? 'var(--green)' : 'var(--red)';
+            const icon = e.task_icon ? getTaskIcon(e.task_icon, 'xs') : '📌';
+            return `
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);margin-bottom:6px">
+                <div style="flex-shrink:0">${icon}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.task_name}</div>
+                  ${e.note ? `<div style="font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📝 ${e.note}</div>` : ''}
+                  <div style="font-size:11px;color:var(--text3);margin-top:2px">⏰ ${time}</div>
+                </div>
+                <div style="font-size:15px;font-weight:800;color:${ptsColor};flex-shrink:0">${pts}</div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }).join('');
+  }
+}
+
+function closePointHistory() {
+  const modal = document.getElementById('point-history-modal');
+  if (modal) modal.classList.remove('visible');
+}
+
+window.openPointHistory = openPointHistory;
+window.closePointHistory = closePointHistory;

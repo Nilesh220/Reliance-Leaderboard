@@ -3,11 +3,16 @@
  * Sends OTP via Resend to allowed POC emails only
  */
 
-const ALLOWED_EMAILS = new Set([
-  // Vigorlaunchpad team
+// Admin team — can login via OTP but are NOT POCs (never shown on leaderboard)
+const ADMIN_EMAILS = new Set([
   'nilesh@vigorlaunchpad.com',
   'marsha@vigorlaunchpad.com',
   'priya@vigorlaunchpad.com',
+  'nagesh@vigorlaunchpad.com',
+]);
+
+const ALLOWED_EMAILS = new Set([
+  // Vigorlaunchpad team (non-admin)
   'yash@vigorlaunchpad.com',
   'shaikhalshifa220@gmail.com',
   'arch25014@gmail.com',
@@ -82,7 +87,8 @@ export default async function handler(req, res) {
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  let emailAllowed = ALLOWED_EMAILS.has(normalizedEmail);
+  // Admin emails always get access — skip pocs table check
+  let emailAllowed = ADMIN_EMAILS.has(normalizedEmail) || ALLOWED_EMAILS.has(normalizedEmail);
 
   if (!emailAllowed) {
     try {

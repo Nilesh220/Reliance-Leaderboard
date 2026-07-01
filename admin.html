@@ -428,6 +428,21 @@
   </div>
 </div>
 
+<!-- ══════════════ POINT HISTORY MODAL ══════════════ -->
+<div class="modal-overlay" id="point-history-modal" onclick="if(event.target===this)closePointHistory()">
+  <div class="modal" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">
+    <div class="modal-title" style="display:flex;align-items:center;gap:10px">
+      <span>📈</span>
+      <span id="point-history-title">Point History</span>
+      <button onclick="closePointHistory()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div id="point-history-summary" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap"></div>
+    <div id="point-history-body" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px">
+      <div style="text-align:center;padding:20px;color:var(--text3)">Loading...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ TOAST CONTAINER ══════════════ -->
 <div class="toast-container" id="toast-container"></div>
 
