@@ -427,8 +427,11 @@ async function renderPOCTable() {
   const { data, error } = await query;
   if (error || !data) return;
 
-  container.innerHTML = data.map(poc => `
-    <div class="poc-table-row" onclick="selectPOC('${poc.id}')">
+  // Use data-* attributes to avoid ALL HTML quote-escaping bugs with POC names
+  container.innerHTML = data.map(poc => {
+    const safeName = (poc.name || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    return `
+    <div class="poc-table-row" data-action="select" data-poc-id="${poc.id}">
       <div>
         <div class="poc-table-name">${poc.name}</div>
         <div class="poc-table-college">${poc.college}</div>
@@ -436,12 +439,25 @@ async function renderPOCTable() {
       <div class="poc-table-city col-city">${poc.city}</div>
       <div class="poc-table-pts">${poc.points}</div>
       <div class="poc-table-actions" style="display:flex;gap:6px">
-        <button class="action-btn" onclick="event.stopPropagation(); openPointHistory('${poc.id}', '${poc.name.replace(/'/g, "\\'")}')" title="Point history">📈</button>
-        <button class="action-btn" onclick="event.stopPropagation(); openOverrideModal('${poc.id}')" title="Edit points">✏️</button>
-        <button class="action-btn action-btn-delete" onclick="event.stopPropagation(); deletePOC('${poc.id}', '${poc.name.replace(/'/g, "\\'")}')" title="Remove POC">🗑️</button>
+        <button class="action-btn" data-action="history" data-poc-id="${poc.id}" data-poc-name="${safeName}" title="Point history">📈</button>
+        <button class="action-btn" data-action="override" data-poc-id="${poc.id}" title="Edit points">✏️</button>
+        <button class="action-btn action-btn-delete" data-action="delete" data-poc-id="${poc.id}" data-poc-name="${safeName}" title="Remove POC">🗑️</button>
       </div>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
+
+  container.onclick = (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    e.stopPropagation();
+    const action  = btn.dataset.action;
+    const pocId   = btn.dataset.pocId;
+    const pocName = btn.dataset.pocName || '';
+    if (action === 'select')   selectPOC(pocId);
+    if (action === 'history')  openPointHistory(pocId, pocName);
+    if (action === 'override') openOverrideModal(pocId);
+    if (action === 'delete')   deletePOC(pocId, pocName);
+  };
 }
 
 async function filterPOCTable(city) {
