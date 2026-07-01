@@ -691,7 +691,7 @@ body {
 
 .poc-table-header {
   display: grid;
-  grid-template-columns: 1fr 160px 80px 80px;
+  grid-template-columns: 1fr 160px 80px 115px;
   padding: 11px 18px;
   background: linear-gradient(90deg, var(--blue) 0%, #004EC2 60%, var(--red) 100%);
   font-size: 11px;
@@ -703,7 +703,7 @@ body {
 
 .poc-table-row {
   display: grid;
-  grid-template-columns: 1fr 160px 80px 80px;
+  grid-template-columns: 1fr 160px 80px 115px;
   padding: 12px 18px;
   border-bottom: 1px solid var(--border);
   align-items: center;
@@ -842,7 +842,7 @@ body {
   .admin-sidebar { position: static; height: auto; border-top: 1.5px solid var(--border); }
   .stats-overview { grid-template-columns: repeat(2, 1fr); }
   .tasks-grid { grid-template-columns: 1fr; }
-  .poc-table-header, .poc-table-row { grid-template-columns: 1fr 80px 80px; }
+  .poc-table-header, .poc-table-row { grid-template-columns: 1fr 115px 115px; }
   .poc-table-header .col-city, .poc-table-row .poc-table-city { display: none; }
 }
 
@@ -879,7 +879,7 @@ body {
 @media (max-width: 600px) {
   .admin-main, .admin-sidebar { padding: 18px 16px; }
   .stats-overview { grid-template-columns: repeat(2, 1fr); }
-  .poc-table-header, .poc-table-row { grid-template-columns: 1fr 60px 60px; font-size: 12px; padding: 10px 12px; }
+  .poc-table-header, .poc-table-row { grid-template-columns: 1fr 60px 115px; font-size: 12px; padding: 10px 12px; }
 }
 
 
