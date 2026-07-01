@@ -428,6 +428,22 @@
   </div>
 </div>
 
+<!-- ══════════════ DELETE CONFIRMATION MODAL ══════════════ -->
+<div class="modal-overlay" id="delete-poc-modal" onclick="if(event.target===this)closeDeletePOCModal()">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title" style="color:var(--red)">⚠️ Delete POC</div>
+    <div style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px;">
+      Are you sure you want to permanently delete <strong id="delete-poc-name" style="color:var(--text)">—</strong>?<br>
+      This will permanently remove them, their points, and all their logged activity history.
+    </div>
+    <input type="hidden" id="delete-poc-id" />
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeDeletePOCModal()">Cancel</button>
+      <button class="btn" style="background:var(--red); border-color:var(--red); color:#fff;" onclick="confirmDeletePOC()">🗑️ Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ POINT HISTORY MODAL ══════════════ -->
 <div class="modal-overlay" id="point-history-modal" onclick="if(event.target===this)closePointHistory()">
   <div class="modal" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">

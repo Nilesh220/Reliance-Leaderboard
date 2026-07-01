@@ -456,7 +456,7 @@ async function renderPOCTable() {
     if (action === 'select')   selectPOC(pocId);
     if (action === 'history')  openPointHistory(pocId, pocName);
     if (action === 'override') openOverrideModal(pocId);
-    if (action === 'delete')   deletePOC(pocId, pocName);
+    if (action === 'delete')   openDeletePOCModal(pocId, pocName);
   };
 }
 
@@ -549,6 +549,7 @@ document.addEventListener('click', e => {
     closeOverrideModal();
     closeAddPOCModal();
     closePointHistory();
+    closeDeletePOCModal();
   }
 });
 
@@ -635,9 +636,26 @@ async function confirmAddPOC() {
   await renderPOCTable();
 }
 
-async function deletePOC(pocId, pocName) {
-  const confirmed = confirm(`Are you sure you want to delete POC "${pocName}" (${pocId})?\nThis will permanently remove them and all their submissions.`);
-  if (!confirmed) return;
+function openDeletePOCModal(pocId, pocName) {
+  const modal = document.getElementById('delete-poc-modal');
+  const nameEl = document.getElementById('delete-poc-name');
+  const idInput = document.getElementById('delete-poc-id');
+  if (nameEl) nameEl.textContent = pocName;
+  if (idInput) idInput.value = pocId;
+  if (modal) modal.classList.add('visible');
+}
+
+function closeDeletePOCModal() {
+  const modal = document.getElementById('delete-poc-modal');
+  if (modal) modal.classList.remove('visible');
+}
+
+async function confirmDeletePOC() {
+  const pocId = document.getElementById('delete-poc-id')?.value;
+  const pocName = document.getElementById('delete-poc-name')?.textContent;
+  if (!pocId) return;
+
+  closeDeletePOCModal();
 
   // Clean up any pending queue entries for this POC
   const { error: queueError } = await db.from('pending_queue').delete().eq('poc_id', pocId);
@@ -663,7 +681,9 @@ async function deletePOC(pocId, pocName) {
 window.openAddPOCModal = openAddPOCModal;
 window.closeAddPOCModal = closeAddPOCModal;
 window.confirmAddPOC = confirmAddPOC;
-window.deletePOC = deletePOC;
+window.openDeletePOCModal = openDeletePOCModal;
+window.closeDeletePOCModal = closeDeletePOCModal;
+window.confirmDeletePOC = confirmDeletePOC;
 
 /* ─────────────────────────────────────────────
    POINT HISTORY MODAL
