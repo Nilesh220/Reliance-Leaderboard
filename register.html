@@ -714,14 +714,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Fetch POC from Supabase
-  const { data: poc, error } = await db
+  // Primary: look up by exact ID (UUID)
+  let { data: poc, error } = await db
     .from('pocs')
     .select('id, name, city, college')
     .eq('id', pocId)
     .single();
 
+  // Fallback: look up by name (allows ?poc=nilesh for testing)
   if (error || !poc) {
+    const { data: byName } = await db
+      .from('pocs')
+      .select('id, name, city, college')
+      .ilike('name', `%${pocId}%`)
+      .limit(1)
+      .single();
+    poc = byName || null;
+  }
+
+  if (!poc) {
     showInvalidScreen();
     return;
   }
@@ -730,6 +741,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderPOCBanner(poc);
   // City is now chosen by the student — do NOT auto-filter by POC city
 });
+
 
 /* ──────────────────────────────────────────
    RENDER POC BANNER
