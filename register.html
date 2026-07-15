@@ -235,6 +235,30 @@
     .fg .field-error { font-size: 12px; color: var(--red); font-weight: 500; display: none; }
     .fg .field-error.visible { display: block; }
 
+    /* City picker buttons */
+    .city-btn {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 99px;
+      padding: 9px 20px;
+      font-size: 14px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      color: var(--text2);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .city-btn:hover {
+      border-color: var(--blue-mid);
+      color: var(--blue);
+      background: var(--blue-pale);
+    }
+    .city-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,48,135,0.25);
+    }
+
     /* ──────────────────────────────────────────
        STORE RADIO CARDS
     ────────────────────────────────────────── */
@@ -515,17 +539,42 @@
     </div>
   </div>
 
-  <!-- ── Section 3: Preferred Store ── -->
+  <!-- ── Section 3: City & Store ── -->
   <div class="reg-card" id="card-store">
-    <div class="reg-section-label">🏪 Preferred Store Location</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
-      These are the Reliance Digital stores in your city participating in the Valorant Challenge. Select your preferred location.
+    <div class="reg-section-label">🏙️ Select City &amp; Store</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">
+      Choose the city you'd like to visit, then select your preferred store and date.
     </p>
-    <div class="stores-grid" id="stores-grid">
-      <!-- Injected by JS based on POC's city -->
+
+    <!-- City picker -->
+    <div style="margin-bottom:22px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:10px">
+        Your City <span style="color:var(--red)">*</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap" id="city-picker">
+        <button type="button" class="city-btn" id="city-btn-mumbai" onclick="selectCity('Mumbai')">
+          🏙️ Mumbai
+        </button>
+        <button type="button" class="city-btn" id="city-btn-pune" onclick="selectCity('Pune')">
+          🌸 Pune
+        </button>
+        <button type="button" class="city-btn" id="city-btn-aurangabad" onclick="selectCity('Aurangabad')">
+          🕌 Aurangabad
+        </button>
+      </div>
+      <div class="field-error" id="err-city" style="margin-top:8px">Please select a city.</div>
     </div>
-    <div class="field-error" id="err-store" style="margin-top:10px">Please select a store location.</div>
+
+    <!-- Stores (shown after city selected) -->
+    <div id="stores-section" style="display:none">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:10px">
+        Preferred Store <span style="color:var(--red)">*</span>
+      </div>
+      <div class="stores-grid" id="stores-grid"></div>
+      <div class="field-error" id="err-store" style="margin-top:10px">Please select a store location.</div>
+    </div>
   </div>
+
 
   <!-- ── Section 4: Valorant Info ── -->
   <div class="reg-card" id="card-valorant">
@@ -651,6 +700,7 @@ const STORES = {
    STATE
 ────────────────────────────────────────── */
 let pocData = null;
+let selectedCity = '';
 
 /* ──────────────────────────────────────────
    INIT
@@ -678,7 +728,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   pocData = poc;
   renderPOCBanner(poc);
-  renderStores(poc.city);
+  // City is now chosen by the student — do NOT auto-filter by POC city
 });
 
 /* ──────────────────────────────────────────
@@ -688,6 +738,33 @@ function renderPOCBanner(poc) {
   const initials = poc.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   document.getElementById('poc-avatar').textContent   = initials;
   document.getElementById('poc-banner-name').textContent = poc.name;
+}
+
+/* ──────────────────────────────────────────
+   SELECT CITY (student-driven)
+────────────────────────────────────────── */
+function selectCity(city) {
+  selectedCity = city;
+
+  // Update button states
+  document.querySelectorAll('.city-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(`city-btn-${city.toLowerCase()}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Hide city error if showing
+  showErr('err-city', false);
+
+  // Render stores for selected city
+  renderStores(city);
+
+  // Show stores section
+  const section = document.getElementById('stores-section');
+  if (section) section.style.display = 'block';
+
+  // Clear any previously selected store
+  const grid = document.getElementById('stores-grid');
+  if (grid) grid.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  showErr('err-store', false);
 }
 
 /* ──────────────────────────────────────────
@@ -774,6 +851,11 @@ function validateForm() {
   const city = getVal('reg-college-city');
   setFieldError('reg-college-city', 'err-college-city', !city);
   if (!city) valid = false;
+
+  // Store city selection
+  const cityErr = !selectedCity;
+  showErr('err-city', cityErr);
+  if (cityErr) valid = false;
 
   // Preferred store (radio)
   const storeChecked = document.querySelector('input[name="preferred-store"]:checked');
