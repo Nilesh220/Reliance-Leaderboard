@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valorant Store Challenge — Register | Bootup India × Reliance Digital</title>
+  <meta name="description" content="Register for the Valorant Store Challenge by Bootup India × Reliance Digital. Join your POC and compete at a Reliance Digital store near you." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ──────────────────────────────────────────
+       ROOT DESIGN TOKENS
+    ────────────────────────────────────────── */
+    :root {
+      --blue:        #003087;
+      --blue-mid:    #0052CC;
+      --blue-light:  #1A73E8;
+      --blue-pale:   #EEF4FF;
+      --red:         #E31837;
+      --red-dark:    #B5142C;
+      --red-pale:    #FFF0F2;
+      --bg:          #F5F8FF;
+      --bg2:         #FFFFFF;
+      --border:      rgba(0,48,135,0.10);
+      --border2:     rgba(0,48,135,0.22);
+      --text:        #1A1F36;
+      --text2:       #374878;
+      --text3:       #7A8BA8;
+      --green:       #00865A;
+      --green-pale:  #E6F6F1;
+      --shadow:      0 4px 20px rgba(0,48,135,0.08);
+      --shadow-blue: 0 8px 32px rgba(0,48,135,0.18);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background blobs ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 800px 600px at -10% -10%, rgba(0,48,135,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 110% 110%, rgba(227,24,55,0.05) 0%, transparent 70%);
+    }
+
+    /* ──────────────────────────────────────────
+       HEADER / NAV
+    ────────────────────────────────────────── */
+    #reg-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border);
+      padding: 0 24px;
+    }
+    .reg-nav-inner {
+      max-width: 680px; margin: 0 auto;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .reg-nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--blue);
+      text-decoration: none;
+    }
+    .reg-nav-logo { height: 24px; width: auto; object-fit: contain; }
+    .reg-nav-divider { width: 1.5px; height: 20px; background: var(--border); border-radius: 99px; }
+    .reg-nav-badge {
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 3px 10px; border-radius: 99px;
+    }
+
+    /* ──────────────────────────────────────────
+       HERO SECTION
+    ────────────────────────────────────────── */
+    .reg-hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #002070 50%, #6B0011 80%, var(--red-dark) 100%);
+      padding: 48px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .reg-hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+
+    /* Valorant-style geometric accent lines */
+    .reg-hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px,
+          transparent 1px, transparent 40px
+        );
+    }
+
+    .reg-hero-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+    .reg-hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 99px; padding: 4px 14px;
+      margin-bottom: 18px;
+      animation: fadeInDown 0.5s ease both;
+    }
+    .reg-hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      animation: fadeInDown 0.5s 0.1s ease both;
+    }
+    .reg-hero-title span {
+      background: linear-gradient(90deg, #FFD700, #FF6B35);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .reg-hero-sub {
+      font-size: 15px; color: rgba(255,255,255,0.75);
+      max-width: 480px; margin: 0 auto 24px;
+      line-height: 1.6;
+      animation: fadeInDown 0.5s 0.2s ease both;
+    }
+
+    /* POC banner in hero */
+    .poc-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      animation: fadeInDown 0.5s 0.3s ease both;
+    }
+    .poc-banner-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #FFD700, #FF6B35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #1A1F36;
+      flex-shrink: 0;
+    }
+    .poc-banner-info { text-align: left; }
+    .poc-banner-label { font-size: 10px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase; }
+    .poc-banner-name  { font-size: 15px; font-weight: 700; color: #fff; }
+
+    /* ──────────────────────────────────────────
+       MAIN FORM CONTAINER
+    ────────────────────────────────────────── */
+    .reg-body {
+      max-width: 680px; margin: 0 auto;
+      padding: 36px 24px 80px;
+      position: relative; z-index: 1;
+    }
+
+    /* Section headers */
+    .reg-section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--red);
+      background: var(--red-pale);
+      border: 1px solid rgba(227,24,55,0.15);
+      border-radius: 99px; padding: 3px 14px;
+      display: inline-block; margin-bottom: 16px;
+    }
+
+    /* Card wrapper */
+    .reg-card {
+      background: rgba(255,255,255,0.9);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.5s ease both;
+    }
+    .reg-card:nth-child(2) { animation-delay: 0.05s; }
+    .reg-card:nth-child(3) { animation-delay: 0.10s; }
+    .reg-card:nth-child(4) { animation-delay: 0.15s; }
+
+    /* Form grid */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid .span2 { grid-column: 1 / -1; }
+
+    /* Form group */
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+    .fg label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text3);
+    }
+    .fg label span { color: var(--red); }
+
+    .fg input, .fg select {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+    .fg input::placeholder { color: var(--text3); }
+    .fg input:focus, .fg select:focus {
+      border-color: var(--blue-mid);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+    .fg input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(227,24,55,0.08); }
+    .fg .field-error { font-size: 12px; color: var(--red); font-weight: 500; display: none; }
+    .fg .field-error.visible { display: block; }
+
+    /* ──────────────────────────────────────────
+       STORE RADIO CARDS
+    ────────────────────────────────────────── */
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .store-card {
+      position: relative;
+      cursor: pointer;
+    }
+    .store-card input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+    .store-card-inner {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+      background: #fff;
+      height: 100%;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .store-card:hover .store-card-inner {
+      border-color: var(--blue-mid);
+      background: var(--blue-pale);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-blue);
+    }
+    .store-card input:checked ~ .store-card-inner {
+      border-color: var(--blue);
+      background: var(--blue-pale);
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.12), var(--shadow-blue);
+    }
+
+    .store-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .store-name {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      line-height: 1.35;
+    }
+    .store-addr {
+      font-size: 11px; color: var(--text3); line-height: 1.4;
+      flex: 1;
+    }
+    .store-directions {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700; color: var(--blue-light);
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    .store-directions:hover { color: var(--blue); text-decoration: underline; }
+
+    /* Selected check indicator */
+    .store-check {
+      position: absolute; top: 10px; right: 10px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.5);
+      transition: var(--transition);
+      color: #fff; font-size: 11px;
+    }
+    .store-card input:checked ~ .store-card-inner .store-check {
+      opacity: 1; transform: scale(1);
+    }
+
+    /* ──────────────────────────────────────────
+       RANK DROPDOWN CUSTOM STYLING
+    ────────────────────────────────────────── */
+    .rank-select-wrap { position: relative; }
+    .rank-select-wrap::after {
+      content: '▾';
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--text3); font-size: 13px;
+    }
+    .rank-select-wrap select { appearance: none; -webkit-appearance: none; }
+
+    /* ──────────────────────────────────────────
+       SUBMIT BUTTON
+    ────────────────────────────────────────── */
+    .reg-submit-btn {
+      width: 100%;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 50%, var(--red-dark) 100%);
+      background-size: 200% 100%;
+      color: #fff; border: none;
+      border-radius: var(--radius);
+      font-size: 16px; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0,48,135,0.35);
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .reg-submit-btn:hover {
+      background-position: right center;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 32px rgba(0,48,135,0.45);
+    }
+    .reg-submit-btn:active { transform: translateY(-1px); }
+    .reg-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error message */
+    #submit-error {
+      font-size: 13px; font-weight: 600; color: var(--red);
+      background: var(--red-pale); border: 1px solid rgba(227,24,55,0.2);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      display: none; margin-top: 12px;
+    }
+    #submit-error.visible { display: block; }
+
+    /* ──────────────────────────────────────────
+       SUCCESS & ERROR SCREENS
+    ────────────────────────────────────────── */
+    .fullscreen-state {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--bg);
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+    }
+    .fullscreen-state.visible { display: flex; }
+
+    .state-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 36px;
+      max-width: 520px; width: 100%;
+      box-shadow: var(--shadow-blue);
+      animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .state-card::before {
+      content: '';
+      display: block; height: 5px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      margin: -48px -36px 36px;
+      border-radius: 24px 24px 0 0;
+    }
+    .state-icon { font-size: 56px; margin-bottom: 16px; }
+    .state-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 800; color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .state-sub  { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; }
+    .state-detail {
+      background: var(--blue-pale); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      font-size: 13px; color: var(--text2); line-height: 1.8;
+      text-align: left;
+    }
+    .state-detail strong { color: var(--blue); }
+
+    /* Error state specific */
+    .state-card.error-state::before { background: var(--red); }
+    .state-card.error-state .state-title { color: var(--red); }
+
+    /* ──────────────────────────────────────────
+       ANIMATIONS
+    ────────────────────────────────────────── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ──────────────────────────────────────────
+       RESPONSIVE
+    ────────────────────────────────────────── */
+    @media (max-width: 560px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .span2 { grid-column: auto; }
+      .reg-card { padding: 20px; }
+      .reg-hero { padding: 36px 20px 32px; }
+    }
+    @media (max-width: 400px) {
+      .stores-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav id="reg-nav">
+  <div class="reg-nav-inner">
+    <a href="/" class="reg-nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
+           alt="Reliance Digital" class="reg-nav-logo" />
+      <div class="reg-nav-divider"></div>
+      <span>Bootup India</span>
+    </a>
+    <div class="reg-nav-badge">🎮 Valorant Challenge</div>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="reg-hero" id="reg-hero">
+  <div class="reg-hero-inner">
+    <div class="reg-hero-eyebrow">🏆 Store Visit Challenge · 2025</div>
+    <h1 class="reg-hero-title">Join the <span>Valorant</span><br>Store Challenge</h1>
+    <p class="reg-hero-sub">Visit a Reliance Digital store, compete in the Valorant challenge, and earn rewards. Register below to secure your spot.</p>
+    <div class="poc-banner" id="poc-banner">
+      <div class="poc-banner-avatar" id="poc-avatar">—</div>
+      <div class="poc-banner-info">
+        <div class="poc-banner-label">Registering under</div>
+        <div class="poc-banner-name" id="poc-banner-name">Loading…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FORM BODY ══════════════ -->
+<main class="reg-body" id="reg-form-body">
+
+  <!-- ── Section 1: Personal Info ── -->
+  <div class="reg-card" id="card-personal">
+    <div class="reg-section-label">👤 Personal Information</div>
+    <div class="form-grid">
+      <div class="fg span2">
+        <label for="reg-fullname">Full Name <span>*</span></label>
+        <input type="text" id="reg-fullname" placeholder="e.g. Rahul Sharma" autocomplete="name" />
+        <div class="field-error" id="err-fullname">Please enter your full name.</div>
+      </div>
+      <div class="fg">
+        <label for="reg-mobile">Mobile Number <span>*</span></label>
+        <input type="tel" id="reg-mobile" placeholder="10-digit mobile" maxlength="10" autocomplete="tel" />
+        <div class="field-error" id="err-mobile">Enter a valid 10-digit number.</div>
+      </div>
+      <div class="fg">
+        <label for="reg-email">Email ID <span>*</span></label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" />
+        <div class="field-error" id="err-email">Enter a valid email address.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 2: College Info ── -->
+  <div class="reg-card" id="card-college">
+    <div class="reg-section-label">🎓 College Information</div>
+    <div class="form-grid">
+      <div class="fg span2">
+        <label for="reg-college-name">College Name <span>*</span></label>
+        <input type="text" id="reg-college-name" placeholder="e.g. MIT WPU, Pune" autocomplete="organization" />
+        <div class="field-error" id="err-college-name">Please enter your college name.</div>
+      </div>
+      <div class="fg span2">
+        <label for="reg-college-city">College City <span>*</span></label>
+        <input type="text" id="reg-college-city" placeholder="e.g. Pune" autocomplete="address-level2" />
+        <div class="field-error" id="err-college-city">Please enter your college city.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 3: Preferred Store ── -->
+  <div class="reg-card" id="card-store">
+    <div class="reg-section-label">🏪 Preferred Store Location</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+      These are the Reliance Digital stores in your city participating in the Valorant Challenge. Select your preferred location.
+    </p>
+    <div class="stores-grid" id="stores-grid">
+      <!-- Injected by JS based on POC's city -->
+    </div>
+    <div class="field-error" id="err-store" style="margin-top:10px">Please select a store location.</div>
+  </div>
+
+  <!-- ── Section 4: Valorant Info ── -->
+  <div class="reg-card" id="card-valorant">
+    <div class="reg-section-label">🎮 Valorant Details</div>
+    <div class="form-grid">
+      <div class="fg span2">
+        <label for="reg-riot-id">Valorant Username (Riot ID) <span>*</span></label>
+        <input type="text" id="reg-riot-id" placeholder="e.g. TenZ#000" autocomplete="off" />
+        <div class="field-error" id="err-riot-id">Please enter your Riot ID.</div>
+      </div>
+      <div class="fg span2">
+        <label for="reg-rank">Current Rank <span>*</span></label>
+        <div class="rank-select-wrap">
+          <select id="reg-rank">
+            <option value="">— Select your rank —</option>
+            <option value="Unranked">Unranked</option>
+            <option value="Iron">Iron</option>
+            <option value="Bronze">Bronze</option>
+            <option value="Silver">Silver</option>
+            <option value="Gold">Gold</option>
+            <option value="Platinum">Platinum</option>
+            <option value="Diamond">Diamond</option>
+            <option value="Ascendant">Ascendant</option>
+            <option value="Immortal">Immortal</option>
+            <option value="Radiant">Radiant</option>
+          </select>
+        </div>
+        <div class="field-error" id="err-rank">Please select your current rank.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Submit ── -->
+  <button class="reg-submit-btn" id="reg-submit-btn" onclick="handleRegister()">
+    🎮 Register for the Challenge
+  </button>
+  <div id="submit-error" role="alert"></div>
+
+</main>
+
+<!-- ══════════════ SUCCESS SCREEN ══════════════ -->
+<div class="fullscreen-state" id="success-screen">
+  <div class="state-card">
+    <div class="state-icon">🎉</div>
+    <div class="state-title">You're Registered!</div>
+    <p class="state-sub">Your spot for the Valorant Store Challenge has been confirmed. See you at the store!</p>
+    <div class="state-detail" id="success-detail">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ERROR SCREEN (invalid link) ══════════════ -->
+<div class="fullscreen-state" id="invalid-screen">
+  <div class="state-card error-state">
+    <div class="state-icon">🔗</div>
+    <div class="state-title">Invalid Link</div>
+    <p class="state-sub">This registration link is missing a valid POC code. Please ask your POC to share the correct link with you.</p>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ──────────────────────────────────────────
+   SUPABASE CLIENT
+────────────────────────────────────────── */
+const SUPABASE_URL      = 'https://aebkutavunwlwzswuhbc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmt1dGF2dW53bHd6c3d1aGJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTAyNDksImV4cCI6MjA5NjQ4NjI0OX0.-tnBG6MDWB_WjHDJeeWCpiEwvbMSk9H8e4UneAKDR78';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ──────────────────────────────────────────
+   STORE DATA
+────────────────────────────────────────── */
+const STORES = {
+  Pune: [
+    {
+      name: 'Boulevard Tower',
+      addr: 'Boulevard Tower, Pune',
+      date: '20th July',
+      maps: 'https://maps.app.goo.gl/KYp7HCskWKcDVch96',
+    },
+    {
+      name: 'PMC Wakad',
+      addr: 'PMC Wakad, Pune',
+      date: '22nd July',
+      maps: 'https://maps.app.goo.gl/aPeEp228foBf8Nag7',
+    },
+  ],
+  Mumbai: [
+    {
+      name: 'IPCL JVPD, Juhu',
+      addr: 'IPCL JVPD, Juhu, Mumbai',
+      date: '20th July',
+      maps: 'https://maps.app.goo.gl/mEw56m4pTnKeWcmC7',
+    },
+    {
+      name: 'Hive 67, Kandivali West',
+      addr: 'Hive 67, Kandivali West, Mumbai',
+      date: '22nd July',
+      maps: 'https://maps.app.goo.gl/zDAcPRTeUJq57S8H7',
+    },
+    {
+      name: 'Sawan, Kharghar',
+      addr: 'Sawan, Kharghar, Navi Mumbai',
+      date: '24th July',
+      maps: 'https://maps.app.goo.gl/ii9GghYTaT1TpUZXA',
+    },
+  ],
+  Aurangabad: [
+    {
+      name: 'Prozone Mall',
+      addr: 'Prozone Mall, Aurangabad',
+      date: '21st July',
+      maps: 'https://maps.app.goo.gl/yQkqWDG8eCHKPWwr8',
+    },
+  ],
+};
+
+
+/* ──────────────────────────────────────────
+   STATE
+────────────────────────────────────────── */
+let pocData = null;
+
+/* ──────────────────────────────────────────
+   INIT
+────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const pocId  = params.get('poc');
+
+  if (!pocId) {
+    showInvalidScreen();
+    return;
+  }
+
+  // Fetch POC from Supabase
+  const { data: poc, error } = await db
+    .from('pocs')
+    .select('id, name, city, college')
+    .eq('id', pocId)
+    .single();
+
+  if (error || !poc) {
+    showInvalidScreen();
+    return;
+  }
+
+  pocData = poc;
+  renderPOCBanner(poc);
+  renderStores(poc.city);
+});
+
+/* ──────────────────────────────────────────
+   RENDER POC BANNER
+────────────────────────────────────────── */
+function renderPOCBanner(poc) {
+  const initials = poc.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('poc-avatar').textContent   = initials;
+  document.getElementById('poc-banner-name').textContent = poc.name;
+}
+
+/* ──────────────────────────────────────────
+   RENDER STORE CARDS
+────────────────────────────────────────── */
+function renderStores(city) {
+  const stores = STORES[city] || [];
+  const grid   = document.getElementById('stores-grid');
+
+  if (!stores.length) {
+    grid.innerHTML = `<div style="color:var(--text3);font-size:13px">No stores available for this city.</div>`;
+    return;
+  }
+
+  grid.innerHTML = stores.map((s, i) => `
+    <label class="store-card" id="store-card-${i}">
+      <input type="radio" name="preferred-store" value="${s.name}" id="store-radio-${i}" />
+      <div class="store-card-inner">
+        <div class="store-check">✓</div>
+        <div class="store-icon">🏪</div>
+        ${s.date ? `<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(227,24,55,0.09);border:1px solid rgba(227,24,55,0.2);border-radius:99px;padding:2px 9px;font-size:10px;font-weight:700;color:#B5142C;letter-spacing:0.4px;width:fit-content">📅 ${s.date}</div>` : ''}
+        <div class="store-name">${s.name}</div>
+        <div class="store-addr">${s.addr}</div>
+        <a href="${s.maps}" target="_blank" rel="noopener" class="store-directions"
+           onclick="event.stopPropagation()">
+          📍 Get Directions
+        </a>
+      </div>
+    </label>
+  `).join('');
+}
+
+
+/* ──────────────────────────────────────────
+   SHOW INVALID SCREEN
+────────────────────────────────────────── */
+function showInvalidScreen() {
+  document.getElementById('reg-hero').style.display        = 'none';
+  document.getElementById('reg-form-body').style.display   = 'none';
+  document.getElementById('invalid-screen').classList.add('visible');
+}
+
+/* ──────────────────────────────────────────
+   FIELD VALIDATION HELPERS
+────────────────────────────────────────── */
+function getVal(id)   { return document.getElementById(id)?.value?.trim() || ''; }
+function showErr(id, show) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible', show);
+}
+function setFieldError(inputId, errId, hasError) {
+  const input = document.getElementById(inputId);
+  if (input) input.classList.toggle('error', hasError);
+  showErr(errId, hasError);
+}
+
+function validateForm() {
+  let valid = true;
+
+  // Full name
+  const name = getVal('reg-fullname');
+  setFieldError('reg-fullname', 'err-fullname', !name);
+  if (!name) valid = false;
+
+  // Mobile — 10 digits
+  const mobile = getVal('reg-mobile');
+  const mobileOk = /^\d{10}$/.test(mobile);
+  setFieldError('reg-mobile', 'err-mobile', !mobileOk);
+  if (!mobileOk) valid = false;
+
+  // Email
+  const email = getVal('reg-email');
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  setFieldError('reg-email', 'err-email', !emailOk);
+  if (!emailOk) valid = false;
+
+  // College name
+  const college = getVal('reg-college-name');
+  setFieldError('reg-college-name', 'err-college-name', !college);
+  if (!college) valid = false;
+
+  // College city
+  const city = getVal('reg-college-city');
+  setFieldError('reg-college-city', 'err-college-city', !city);
+  if (!city) valid = false;
+
+  // Preferred store (radio)
+  const storeChecked = document.querySelector('input[name="preferred-store"]:checked');
+  showErr('err-store', !storeChecked);
+  if (!storeChecked) valid = false;
+
+  // Riot ID
+  const riotId = getVal('reg-riot-id');
+  setFieldError('reg-riot-id', 'err-riot-id', !riotId);
+  if (!riotId) valid = false;
+
+  // Rank
+  const rank = getVal('reg-rank');
+  setFieldError('reg-rank', 'err-rank', !rank);
+  if (!rank) valid = false;
+
+  return valid;
+}
+
+/* ──────────────────────────────────────────
+   HANDLE REGISTER SUBMIT
+────────────────────────────────────────── */
+async function handleRegister() {
+  const errBox = document.getElementById('submit-error');
+  errBox.classList.remove('visible');
+
+  if (!validateForm()) {
+    errBox.textContent = 'Please fill in all required fields correctly before submitting.';
+    errBox.classList.add('visible');
+    // Scroll to first error
+    const firstErr = document.querySelector('.field-error.visible');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn        = document.getElementById('reg-submit-btn');
+  btn.disabled     = true;
+  btn.innerHTML    = '<span class="spinner"></span> Registering…';
+
+  const mobile     = getVal('reg-mobile');
+  const email      = getVal('reg-email');
+  const fullName   = getVal('reg-fullname');
+  const collegeName = getVal('reg-college-name');
+  const collegeCity = getVal('reg-college-city');
+  const store      = document.querySelector('input[name="preferred-store"]:checked')?.value;
+  const riotId     = getVal('reg-riot-id');
+  const rank       = getVal('reg-rank');
+
+  try {
+    // ── Duplicate check: mobile ──
+    const { data: existingMobile } = await db
+      .from('registrations')
+      .select('id')
+      .eq('mobile', mobile)
+      .maybeSingle();
+
+    if (existingMobile) {
+      errBox.textContent = '⚠️ This mobile number is already registered. Each participant can only register once.';
+      errBox.classList.add('visible');
+      btn.disabled = false;
+      btn.innerHTML = '🎮 Register for the Challenge';
+      return;
+    }
+
+    // ── Duplicate check: email ──
+    const { data: existingEmail } = await db
+      .from('registrations')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingEmail) {
+      errBox.textContent = '⚠️ This email address is already registered. Each participant can only register once.';
+      errBox.classList.add('visible');
+      btn.disabled = false;
+      btn.innerHTML = '🎮 Register for the Challenge';
+      return;
+    }
+
+    // ── Insert registration ──
+    const { error: insertErr } = await db.from('registrations').insert({
+      poc_id:           pocData.id,
+      poc_name:         pocData.name,
+      full_name:        fullName,
+      mobile:           mobile,
+      email:            email,
+      college_name:     collegeName,
+      college_city:     collegeCity,
+      preferred_store:  store,
+      valorant_username: riotId,
+      current_rank:     rank,
+    });
+
+    if (insertErr) {
+      // Handle unique constraint violation from DB side as well
+      if (insertErr.code === '23505') {
+        errBox.textContent = '⚠️ You are already registered (duplicate mobile or email detected).';
+      } else {
+        errBox.textContent = '❌ Registration failed: ' + insertErr.message;
+      }
+      errBox.classList.add('visible');
+      btn.disabled = false;
+      btn.innerHTML = '🎮 Register for the Challenge';
+      return;
+    }
+
+    // ── Success ──
+    showSuccessScreen({ fullName, store, rank, riotId });
+
+  } catch (err) {
+    errBox.textContent = '❌ Something went wrong. Please try again.';
+    errBox.classList.add('visible');
+    btn.disabled = false;
+    btn.innerHTML = '🎮 Register for the Challenge';
+  }
+}
+
+/* ──────────────────────────────────────────
+   SHOW SUCCESS SCREEN
+────────────────────────────────────────── */
+function showSuccessScreen({ fullName, store, rank, riotId }) {
+  const storeName = store.replace('Reliance Digital — ', '');
+  document.getElementById('success-detail').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div><strong>👤 Name:</strong> ${fullName}</div>
+      <div><strong>🎮 Riot ID:</strong> ${riotId}</div>
+      <div><strong>🏅 Rank:</strong> ${rank}</div>
+      <div><strong>🏪 Store:</strong> ${storeName}</div>
+      <div><strong>🤝 POC:</strong> ${pocData.name}</div>
+    </div>
+  `;
+  document.getElementById('reg-hero').style.display      = 'none';
+  document.getElementById('reg-form-body').style.display = 'none';
+  document.getElementById('success-screen').classList.add('visible');
+}
+</script>
+
+</body>
+</html>

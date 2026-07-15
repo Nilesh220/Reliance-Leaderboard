@@ -194,14 +194,72 @@
       </div>
 
       <div class="poc-table-wrap">
-        <div class="poc-table-header">
+        <div class="poc-table-header poc-table-header--ext">
           <div>POC</div>
           <div class="col-city">City</div>
           <div>Points</div>
           <div>Action</div>
+          <div>Link</div>
         </div>
         <div id="poc-table-body">
           <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Registrations ── -->
+    <div class="admin-card" id="registrations-card">
+      <div class="admin-section-title">
+        <div class="icon">📝</div>
+        Valorant Registrations
+        <button class="btn btn-primary" id="export-csv-btn"
+          style="margin-left:auto;padding:6px 14px;font-size:13px;display:flex;align-items:center;gap:6px"
+          onclick="exportRegistrationsCSV()">
+          📥 Export CSV
+        </button>
+      </div>
+
+      <!-- KPI pills -->
+      <div class="reg-kpi-row" id="reg-kpi-row">
+        <div class="reg-kpi-pill">
+          <span class="reg-kpi-num" id="reg-kpi-total">—</span>
+          <span class="reg-kpi-lbl">Total</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)">
+          <span class="reg-kpi-num" id="reg-kpi-mumbai">—</span>
+          <span class="reg-kpi-lbl">Mumbai</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--red)">
+          <span class="reg-kpi-num" id="reg-kpi-pune">—</span>
+          <span class="reg-kpi-lbl">Pune</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--green)">
+          <span class="reg-kpi-num" id="reg-kpi-aurangabad">—</span>
+          <span class="reg-kpi-lbl">Aurangabad</span>
+        </div>
+      </div>
+
+      <!-- City filter -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="category-tab active reg-filter-btn" data-city="All" onclick="filterRegistrations('All')">All</button>
+        <button class="category-tab reg-filter-btn" data-city="Mumbai" onclick="filterRegistrations('Mumbai')">🏙️ Mumbai</button>
+        <button class="category-tab reg-filter-btn" data-city="Pune" onclick="filterRegistrations('Pune')">🌸 Pune</button>
+        <button class="category-tab reg-filter-btn" data-city="Aurangabad" onclick="filterRegistrations('Aurangabad')">🕌 Aurangabad</button>
+      </div>
+
+      <!-- Table -->
+      <div class="reg-table-wrap">
+        <div class="reg-table-header">
+          <div>Student</div>
+          <div>Mobile</div>
+          <div>College</div>
+          <div>Store</div>
+          <div>Rank</div>
+          <div>POC</div>
+          <div>Date</div>
+        </div>
+        <div id="reg-table-body">
+          <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading registrations…</div>
         </div>
       </div>
     </div>
@@ -461,6 +519,30 @@
 
 <!-- ══════════════ TOAST CONTAINER ══════════════ -->
 <div class="toast-container" id="toast-container"></div>
+
+<!-- ══════════════ POC LINK MODAL ══════════════ -->
+<div class="modal-overlay" id="poc-link-modal" onclick="if(event.target===this)closePOCLinkModal()">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-title">🔗 Student Registration Link</div>
+    <p style="color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:14px">
+      Share this link with students. They will be taken to the Valorant registration form
+      pre-configured for your city's stores.
+    </p>
+    <div id="poc-link-poc-name" style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;align-items:stretch">
+      <input type="text" id="poc-link-url" class="form-input"
+        style="flex:1;font-size:12px;background:var(--bg2);color:var(--text2)"
+        readonly />
+      <button class="btn btn-primary" id="poc-link-copy-btn" onclick="doCopyPOCLink()" style="flex-shrink:0">
+        📋 Copy
+      </button>
+    </div>
+    <div id="poc-link-copied" style="font-size:12px;color:var(--green);font-weight:600;margin-top:8px;display:none">✅ Copied to clipboard!</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closePOCLinkModal()">Close</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>

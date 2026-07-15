@@ -1096,3 +1096,182 @@ body.unauthorized .login-screen {
   to { transform: translate(-50%, -50%) scale(5); opacity: 0; }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   EXTENDED POC TABLE (with Link column)
+   ═══════════════════════════════════════════════════ */
+.poc-table-header--ext,
+.poc-table-row--ext {
+  grid-template-columns: 1fr 140px 80px 115px 70px !important;
+}
+
+/* Link button style */
+.action-btn-link {
+  background: var(--blue-pale) !important;
+  border-color: rgba(0,48,135,0.25) !important;
+  color: var(--blue) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 5px 10px !important;
+  white-space: nowrap;
+}
+.action-btn-link:hover {
+  background: var(--blue) !important;
+  border-color: var(--blue) !important;
+  color: #fff !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   REGISTRATION KPI PILLS
+   ═══════════════════════════════════════════════════ */
+.reg-kpi-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.reg-kpi-pill {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.reg-kpi-pill::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--kpi-color, linear-gradient(90deg, var(--blue), var(--red)));
+}
+.reg-kpi-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-blue); }
+
+.reg-kpi-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--blue);
+  line-height: 1;
+}
+.reg-kpi-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════
+   REGISTRATIONS TABLE
+   ═══════════════════════════════════════════════════ */
+.reg-table-wrap {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.reg-table-header {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1.4fr 1.4fr 0.9fr 1fr 0.8fr;
+  padding: 11px 16px;
+  background: linear-gradient(90deg, var(--blue) 0%, #004EC2 60%, var(--red) 100%);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+}
+
+.reg-table-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1.4fr 1.4fr 0.9fr 1fr 0.8fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  font-size: 13px;
+  transition: var(--transition);
+  animation: fadeInUp 0.3s ease both;
+}
+.reg-table-row:last-child { border-bottom: none; }
+.reg-table-row:hover { background: var(--blue-pale); }
+
+.reg-row-name    { font-weight: 700; color: var(--text); font-size: 13px; }
+.reg-row-email   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.reg-row-riot    { font-size: 11px; color: var(--blue-light); margin-top: 2px; font-weight: 600; }
+.reg-row-mono    { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: var(--text2); }
+.reg-row-college { font-size: 12px; font-weight: 600; color: var(--text); }
+.reg-row-city    { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.reg-row-store   { font-size: 12px; color: var(--text2); font-weight: 500; }
+.reg-row-poc     { font-size: 12px; color: var(--blue); font-weight: 600; }
+.reg-row-date    { font-size: 11px; color: var(--text3); }
+
+/* Rank badge chips */
+.rank-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.rank-badge.rank-iron       { background: rgba(120,85,70,0.10); color: #785546; border-color: rgba(120,85,70,0.2); }
+.rank-badge.rank-bronze     { background: rgba(160,82,45,0.10); color: #A0522D; border-color: rgba(160,82,45,0.2); }
+.rank-badge.rank-silver     { background: rgba(122,139,168,0.12); color: var(--text2); border-color: var(--border); }
+.rank-badge.rank-gold       { background: rgba(212,168,0,0.12); color: #9B7B00; border-color: rgba(212,168,0,0.25); }
+.rank-badge.rank-platinum   { background: rgba(0,134,90,0.10); color: var(--green); border-color: rgba(0,134,90,0.2); }
+.rank-badge.rank-diamond    { background: rgba(0,82,204,0.10); color: var(--blue-mid); border-color: rgba(0,82,204,0.2); }
+.rank-badge.rank-ascendant  { background: rgba(0,180,100,0.10); color: #007A40; border-color: rgba(0,180,100,0.2); }
+.rank-badge.rank-immortal   { background: rgba(180,20,44,0.10); color: var(--red-dark); border-color: rgba(180,20,44,0.2); }
+.rank-badge.rank-radiant    { background: linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,165,0,0.15)); color: #9B6800; border-color: rgba(212,168,0,0.35); }
+.rank-badge.rank-unranked   { background: var(--bg2); color: var(--text3); }
+
+/* ── Responsive: hide reg table cols on small screens ── */
+@media (max-width: 1200px) {
+  .reg-table-header,
+  .reg-table-row {
+    grid-template-columns: 1.8fr 1fr 1.4fr 1.4fr 0.9fr;
+  }
+  .reg-table-header > *:nth-child(6),
+  .reg-table-header > *:nth-child(7),
+  .reg-table-row    > *:nth-child(6),
+  .reg-table-row    > *:nth-child(7) { display: none; }
+}
+
+@media (max-width: 900px) {
+  .poc-table-header--ext,
+  .poc-table-row--ext {
+    grid-template-columns: 1fr 80px 115px 70px !important;
+  }
+  .poc-table-header--ext .col-city,
+  .poc-table-row--ext .poc-table-city { display: none !important; }
+
+  .reg-table-header,
+  .reg-table-row {
+    grid-template-columns: 1.8fr 1fr 1.4fr 0.9fr;
+  }
+  .reg-table-header > *:nth-child(4),
+  .reg-table-header > *:nth-child(6),
+  .reg-table-header > *:nth-child(7),
+  .reg-table-row    > *:nth-child(4),
+  .reg-table-row    > *:nth-child(6),
+  .reg-table-row    > *:nth-child(7) { display: none; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

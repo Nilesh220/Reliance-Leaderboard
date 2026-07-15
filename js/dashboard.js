@@ -29,8 +29,55 @@ async function initDashboard() {
     document.getElementById('welcome-pts').textContent = session.points || 0;
   }
 
+  // Render shareable registration link card
+  if (session.poc_id) {
+    renderShareLink(session.poc_id);
+  }
+
   await Promise.all([loadTasks(), loadSubmissions()]);
 }
+
+/* ─────────────────────────────────────────────
+   SHAREABLE REGISTRATION LINK
+   ───────────────────────────────────────────── */
+function renderShareLink(pocId) {
+  const card    = document.getElementById('share-link-card');
+  const urlInput = document.getElementById('share-link-url');
+  if (!card || !urlInput) return;
+
+  /* Build the unique registration URL */
+  const regUrl = `${window.location.origin}/register?poc=${pocId}`;
+  urlInput.value = regUrl;
+  card.style.display = 'flex';
+
+  /* Fetch registration count for this POC */
+  db.from('registrations')
+    .select('id', { count: 'exact', head: true })
+    .eq('poc_id', pocId)
+    .then(({ count }) => {
+      const badge = document.getElementById('share-reg-count');
+      if (badge && count !== null) {
+        badge.textContent  = `${count} registered`;
+        badge.style.display = 'inline-block';
+      }
+    });
+}
+
+async function copyShareLink() {
+  const urlInput  = document.getElementById('share-link-url');
+  const successEl = document.getElementById('share-copy-success');
+  try {
+    await navigator.clipboard.writeText(urlInput.value);
+  } catch {
+    urlInput.select();
+    document.execCommand('copy');
+  }
+  if (successEl) {
+    successEl.style.display = 'block';
+    setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+  }
+}
+
 
 async function loadTasks() {
   const { data: tasks, error } = await db

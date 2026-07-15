@@ -365,6 +365,73 @@ async function overridePoints(pocId, newPoints, reason) {
 }
 
 // ─────────────────────────────────────────────
+//  REGISTRATIONS — Fetch all / by city
+// ─────────────────────────────────────────────
+
+/**
+ * Fetch all Valorant challenge registrations, optionally filtered by city.
+ * City is resolved via the poc's city stored in poc_name-joined data.
+ * We store poc_id on each registration, and separately query pocs for city.
+ * Since we snapshot poc_name at insert time, we query the registrations table
+ * and join poc city via a separate pocs query.
+ * @param {string} [city] - 'Mumbai' | 'Pune' | 'Aurangabad' | undefined (all)
+ */
+async function getRegistrations(city) {
+  /* Fetch all registrations, newest first */
+  let query = db
+    .from('registrations')
+    .select('*')
+    .order('registered_at', { ascending: false });
+
+  const { data, error } = await query;
+  if (error) { console.error('getRegistrations:', error.message); return []; }
+
+  if (!city || city === 'All') return data || [];
+
+  /* Filter by POC city: fetch all pocs for those poc_ids to get city */
+  const pocIds  = [...new Set((data || []).map(r => r.poc_id))];
+  if (!pocIds.length) return [];
+
+  const { data: pocRows } = await db
+    .from('pocs')
+    .select('id, city')
+    .in('id', pocIds);
+
+  const pocCityMap = {};
+  (pocRows || []).forEach(p => { pocCityMap[p.id] = p.city; });
+
+  return (data || []).filter(r => pocCityMap[r.poc_id] === city);
+}
+
+/**
+ * Get registration counts: total + per-city breakdown.
+ */
+async function getRegistrationStats() {
+  const { data, error } = await db
+    .from('registrations')
+    .select('poc_id');
+
+  if (error || !data) return { total: 0, cities: {} };
+
+  const pocIds = [...new Set(data.map(r => r.poc_id))];
+  const { data: pocRows } = await db
+    .from('pocs')
+    .select('id, city')
+    .in('id', pocIds);
+
+  const pocCityMap = {};
+  (pocRows || []).forEach(p => { pocCityMap[p.id] = p.city; });
+
+  const cities = {};
+  data.forEach(r => {
+    const c = pocCityMap[r.poc_id] || 'Unknown';
+    cities[c] = (cities[c] || 0) + 1;
+  });
+
+  return { total: data.length, cities };
+}
+
+// ─────────────────────────────────────────────
 //  COLLEGE LEADERBOARD (computed from live data)
 // ─────────────────────────────────────────────
 function getCollegeLeaderboard(data, city) {

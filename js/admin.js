@@ -75,6 +75,7 @@ async function initializeAdminDashboard() {
   await renderPendingQueue();
   await renderHistory();
   await renderPOCTable();
+  await renderRegistrationsTab();
   setupQuantityInput();
   await updatePublishButton();
   await updatePendingIndicator();
@@ -430,8 +431,9 @@ async function renderPOCTable() {
   // Use data-* attributes to avoid ALL HTML quote-escaping bugs with POC names
   container.innerHTML = data.map(poc => {
     const safeName = (poc.name || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const regLink = `${window.location.origin}/register?poc=${poc.id}`;
     return `
-    <div class="poc-table-row" data-action="select" data-poc-id="${poc.id}">
+    <div class="poc-table-row poc-table-row--ext" data-action="select" data-poc-id="${poc.id}">
       <div>
         <div class="poc-table-name">${poc.name}</div>
         <div class="poc-table-college">${poc.college}</div>
@@ -442,6 +444,11 @@ async function renderPOCTable() {
         <button class="action-btn" data-action="history" data-poc-id="${poc.id}" data-poc-name="${safeName}" title="Point history">📈</button>
         <button class="action-btn" data-action="override" data-poc-id="${poc.id}" title="Edit points">✏️</button>
         <button class="action-btn action-btn-delete" data-action="delete" data-poc-id="${poc.id}" data-poc-name="${safeName}" title="Remove POC">🗑️</button>
+      </div>
+      <div>
+        <button class="action-btn action-btn-link" data-action="copylink"
+          data-poc-id="${poc.id}" data-poc-name="${safeName}" data-reg-link="${regLink}"
+          title="Get registration link">🔗 Link</button>
       </div>
     </div>`;
   }).join('');
@@ -457,6 +464,7 @@ async function renderPOCTable() {
     if (action === 'history')  openPointHistory(pocId, pocName);
     if (action === 'override') openOverrideModal(pocId);
     if (action === 'delete')   openDeletePOCModal(pocId, pocName);
+    if (action === 'copylink') openPOCLinkModal(pocId, pocName, btn.dataset.regLink);
   };
 }
 
@@ -550,8 +558,151 @@ document.addEventListener('click', e => {
     closeAddPOCModal();
     closePointHistory();
     closeDeletePOCModal();
+    closePOCLinkModal();
   }
 });
+
+/* ─────────────────────────────────────────────
+   POC LINK MODAL
+   ───────────────────────────────────────────── */
+function openPOCLinkModal(pocId, pocName, regLink) {
+  const modal    = document.getElementById('poc-link-modal');
+  const nameEl   = document.getElementById('poc-link-poc-name');
+  const urlInput = document.getElementById('poc-link-url');
+  const copied   = document.getElementById('poc-link-copied');
+  if (nameEl)   nameEl.textContent = `👤 ${decodeURIComponent(pocName)}`;
+  if (urlInput) urlInput.value     = regLink;
+  if (copied)   copied.style.display = 'none';
+  if (modal)    modal.classList.add('visible');
+}
+
+function closePOCLinkModal() {
+  const modal = document.getElementById('poc-link-modal');
+  if (modal) modal.classList.remove('visible');
+}
+
+async function doCopyPOCLink() {
+  const urlInput = document.getElementById('poc-link-url');
+  const copied   = document.getElementById('poc-link-copied');
+  try {
+    await navigator.clipboard.writeText(urlInput.value);
+    if (copied) { copied.style.display = 'block'; setTimeout(() => copied.style.display = 'none', 3000); }
+    showToast('Link copied to clipboard!', 'success');
+  } catch {
+    urlInput.select();
+    document.execCommand('copy');
+    showToast('Link copied!', 'success');
+  }
+}
+
+window.openPOCLinkModal  = openPOCLinkModal;
+window.closePOCLinkModal = closePOCLinkModal;
+window.doCopyPOCLink     = doCopyPOCLink;
+
+/* ─────────────────────────────────────────────
+   REGISTRATIONS TAB
+   ───────────────────────────────────────────── */
+let registrationsCurrentCity = 'All';
+let allRegistrations = [];
+
+async function renderRegistrationsTab() {
+  /* Load KPI stats */
+  const stats = await getRegistrationStats();
+  const el = id => document.getElementById(id);
+  if (el('reg-kpi-total'))      el('reg-kpi-total').textContent      = stats.total;
+  if (el('reg-kpi-mumbai'))     el('reg-kpi-mumbai').textContent     = stats.cities['Mumbai']     || 0;
+  if (el('reg-kpi-pune'))       el('reg-kpi-pune').textContent       = stats.cities['Pune']       || 0;
+  if (el('reg-kpi-aurangabad')) el('reg-kpi-aurangabad').textContent = stats.cities['Aurangabad'] || 0;
+
+  /* Load table */
+  allRegistrations = await getRegistrations('All');
+  renderRegistrationsTable(allRegistrations);
+}
+
+async function filterRegistrations(city) {
+  registrationsCurrentCity = city;
+  document.querySelectorAll('.reg-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.city === city);
+  });
+  const filtered = city === 'All'
+    ? allRegistrations
+    : await getRegistrations(city);
+  renderRegistrationsTable(filtered);
+}
+
+function renderRegistrationsTable(rows) {
+  const container = document.getElementById('reg-table-body');
+  if (!container) return;
+
+  if (!rows || rows.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--text3)">
+        <div style="font-size:32px;margin-bottom:10px">📝</div>
+        <div style="font-size:14px">No registrations yet</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = rows.map(r => {
+    const date = new Date(r.registered_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const store = (r.preferred_store || '').replace('Reliance Digital — ', '');
+    return `
+      <div class="reg-table-row">
+        <div>
+          <div class="reg-row-name">${r.full_name}</div>
+          <div class="reg-row-email">${r.email}</div>
+          <div class="reg-row-riot">🎮 ${r.valorant_username}</div>
+        </div>
+        <div class="reg-row-mono">${r.mobile}</div>
+        <div>
+          <div class="reg-row-college">${r.college_name}</div>
+          <div class="reg-row-city">${r.college_city}</div>
+        </div>
+        <div class="reg-row-store">${store}</div>
+        <div><span class="rank-badge rank-${(r.current_rank || '').toLowerCase()}">${r.current_rank}</span></div>
+        <div class="reg-row-poc">${r.poc_name}</div>
+        <div class="reg-row-date">${date}</div>
+      </div>`;
+  }).join('');
+}
+
+/* CSV Export */
+async function exportRegistrationsCSV() {
+  const rows = allRegistrations.length ? allRegistrations : await getRegistrations('All');
+  if (!rows.length) { showToast('No registrations to export', 'error'); return; }
+
+  const headers = ['Full Name','Mobile','Email','College Name','College City','Preferred Store','Valorant Username','Current Rank','POC Name','POC ID','Registered At'];
+  const csvRows = rows.map(r => [
+    `"${(r.full_name      || '').replace(/"/g,'""')}"`,
+    `"${(r.mobile         || '').replace(/"/g,'""')}"`,
+    `"${(r.email          || '').replace(/"/g,'""')}"`,
+    `"${(r.college_name   || '').replace(/"/g,'""')}"`,
+    `"${(r.college_city   || '').replace(/"/g,'""')}"`,
+    `"${(r.preferred_store|| '').replace(/"/g,'""')}"`,
+    `"${(r.valorant_username||'').replace(/"/g,'""')}"`,
+    `"${(r.current_rank   || '').replace(/"/g,'""')}"`,
+    `"${(r.poc_name       || '').replace(/"/g,'""')}"`,
+    `"${(r.poc_id         || '').replace(/"/g,'""')}"`,
+    `"${new Date(r.registered_at).toLocaleString('en-IN')}"`,
+  ].join(','));
+
+  const csvContent = [headers.join(','), ...csvRows].join('\n');
+  const blob       = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url        = URL.createObjectURL(blob);
+  const a          = document.createElement('a');
+  const timestamp  = new Date().toISOString().slice(0,10);
+  a.href           = url;
+  a.download       = `valorant_registrations_${timestamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast(`✅ Exported ${rows.length} registrations`, 'success');
+}
+
+window.renderRegistrationsTab   = renderRegistrationsTab;
+window.filterRegistrations      = filterRegistrations;
+window.exportRegistrationsCSV   = exportRegistrationsCSV;
 
 /* ─────────────────────────────────────────────
    ADD / REMOVE POC MANAGEMENT
