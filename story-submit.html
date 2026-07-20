@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Share Your Story — Bootup India × Reliance Digital</title>
+  <meta name="description" content="Upload your Instagram story tagging Reliance Digital & Vigorspace. Submit your story screenshot and next-day views for the Valorant Challenge." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+  <!-- Supabase (for POC lookup) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ──────────────────────────────────────────
+       DESIGN TOKENS
+    ────────────────────────────────────────── */
+    :root {
+      --blue:        #003087;
+      --blue-mid:    #0052CC;
+      --blue-light:  #1A73E8;
+      --blue-pale:   #EEF4FF;
+      --red:         #E31837;
+      --red-dark:    #B5142C;
+      --red-pale:    #FFF0F2;
+      --bg:          #F5F8FF;
+      --bg2:         #FFFFFF;
+      --border:      rgba(0,48,135,0.10);
+      --border2:     rgba(0,48,135,0.22);
+      --text:        #1A1F36;
+      --text2:       #374878;
+      --text3:       #7A8BA8;
+      --green:       #00865A;
+      --green-pale:  #E6F6F1;
+      --green-mid:   #00A36C;
+      --orange:      #E07C00;
+      --orange-pale: #FFF4E5;
+      --shadow:      0 4px 20px rgba(0,48,135,0.08);
+      --shadow-blue: 0 8px 32px rgba(0,48,135,0.18);
+      --shadow-red:  0 8px 32px rgba(227,24,55,0.18);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --radius-lg:   24px;
+      --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 900px 700px at -10% -10%, rgba(0,48,135,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 700px 600px at 110% 110%, rgba(227,24,55,0.05) 0%, transparent 70%);
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,134,90,0.4); }
+      50%       { box-shadow: 0 0 0 8px rgba(0,134,90,0); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    /* ──────────────────────────────────────────
+       NAVBAR
+    ────────────────────────────────────────── */
+    #ss-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border);
+      padding: 0 24px;
+    }
+    .ss-nav-inner {
+      max-width: 700px; margin: 0 auto;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .ss-nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--blue);
+      text-decoration: none;
+    }
+    .ss-nav-logo { height: 24px; width: auto; object-fit: contain; }
+    .ss-nav-divider { width: 1.5px; height: 20px; background: var(--border); border-radius: 99px; }
+    .ss-nav-badge {
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 3px 10px; border-radius: 99px;
+    }
+
+    /* ──────────────────────────────────────────
+       HERO
+    ────────────────────────────────────────── */
+    .ss-hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #002070 45%, #6B0011 75%, var(--red-dark) 100%);
+      padding: 52px 24px 44px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .ss-hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px,
+          transparent 1px, transparent 40px
+        );
+    }
+    .ss-hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+    .ss-hero-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
+    .ss-hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 99px; padding: 4px 14px; margin-bottom: 18px;
+      animation: fadeInDown 0.5s ease both;
+    }
+    .ss-hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 12px;
+      animation: fadeInDown 0.5s 0.1s ease both;
+    }
+    .ss-hero-title span {
+      background: linear-gradient(90deg, #FFD700, #FF6B35);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .ss-hero-sub {
+      font-size: 14px; color: rgba(255,255,255,0.72);
+      max-width: 480px; margin: 0 auto 24px;
+      line-height: 1.6;
+      animation: fadeInDown 0.5s 0.2s ease both;
+    }
+
+    /* Brand logos row in hero */
+    .ss-hero-brands {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.10);
+      border: 1.5px solid rgba(255,255,255,0.20);
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      animation: fadeInDown 0.5s 0.3s ease both;
+    }
+    .ss-hero-brands img { height: 22px; width: auto; object-fit: contain; filter: brightness(0) invert(1); }
+    .ss-hero-brand-div { width: 1.5px; height: 20px; background: rgba(255,255,255,0.3); border-radius: 99px; }
+    .ss-hero-brand-tag { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.5px; }
+
+    /* ──────────────────────────────────────────
+       PROGRESS STEPPER
+    ────────────────────────────────────────── */
+    .ss-stepper {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; max-width: 460px; margin: 28px auto 0;
+      animation: fadeInDown 0.5s 0.4s ease both;
+    }
+    .ss-step {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      flex: 1; position: relative;
+    }
+    .ss-step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.30);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.6);
+      transition: var(--transition);
+      position: relative; z-index: 1;
+    }
+    .ss-step.active .ss-step-circle {
+      background: #fff;
+      border-color: #fff;
+      color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+    }
+    .ss-step.done .ss-step-circle {
+      background: var(--green-mid);
+      border-color: var(--green-mid);
+      color: #fff;
+    }
+    .ss-step-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.55);
+      text-align: center; line-height: 1.3;
+    }
+    .ss-step.active .ss-step-label { color: rgba(255,255,255,0.9); }
+    .ss-step.done  .ss-step-label  { color: rgba(255,255,255,0.75); }
+    .ss-step-line {
+      flex: 1; height: 2px;
+      background: rgba(255,255,255,0.20);
+      margin-bottom: 20px; position: relative;
+    }
+    .ss-step-line.done { background: rgba(0,163,108,0.7); }
+
+    /* ──────────────────────────────────────────
+       MAIN BODY
+    ────────────────────────────────────────── */
+    .ss-body {
+      max-width: 700px; margin: 0 auto;
+      padding: 36px 24px 80px;
+      position: relative; z-index: 1;
+    }
+
+    /* Section cards */
+    .ss-card {
+      background: rgba(255,255,255,0.92);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.5s ease both;
+    }
+    .ss-card:nth-child(2) { animation-delay: 0.05s; }
+    .ss-card:nth-child(3) { animation-delay: 0.10s; }
+
+    .ss-card-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 22px; padding-bottom: 18px;
+      border-bottom: 1.5px solid var(--border);
+    }
+    .ss-card-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .ss-card-icon-blue { background: var(--blue-pale); }
+    .ss-card-icon-red  { background: var(--red-pale);  }
+    .ss-card-icon-green{ background: var(--green-pale); }
+    .ss-card-icon-orange{ background: var(--orange-pale); }
+    .ss-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px; font-weight: 800; color: var(--text);
+    }
+    .ss-card-subtitle { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .ss-card-step-badge {
+      margin-left: auto; flex-shrink: 0;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 99px;
+    }
+    .step-badge-blue { background: var(--blue-pale); color: var(--blue); border: 1px solid var(--border); }
+    .step-badge-green{ background: var(--green-pale); color: var(--green); border: 1px solid rgba(0,134,90,0.2); }
+    .step-badge-lock { background: #f5f5f5; color: var(--text3); border: 1px solid #eee; }
+
+    /* ──────────────────────────────────────────
+       FORM ELEMENTS
+    ────────────────────────────────────────── */
+    .ss-fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .ss-fg label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text3);
+    }
+    .ss-fg label span { color: var(--red); }
+    .ss-fg input, .ss-fg select, .ss-fg textarea {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none;
+      transition: var(--transition); width: 100%;
+    }
+    .ss-fg input::placeholder, .ss-fg textarea::placeholder { color: var(--text3); }
+    .ss-fg input:focus, .ss-fg select:focus, .ss-fg textarea:focus {
+      border-color: var(--blue-mid);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+    .ss-fg input.field-error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(227,24,55,0.08); }
+    .ss-field-err { font-size: 12px; color: var(--red); font-weight: 500; display: none; margin-top: 4px; }
+    .ss-field-err.visible { display: block; }
+
+    .ss-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ss-form-grid .span2 { grid-column: 1 / -1; }
+
+    /* ──────────────────────────────────────────
+       EMAIL LOOKUP
+    ────────────────────────────────────────── */
+    .email-lookup-row {
+      display: flex; gap: 10px; align-items: flex-end;
+    }
+    .email-lookup-row .ss-fg { flex: 1; margin-bottom: 0; }
+    .btn-lookup {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 11px 20px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,48,135,0.25);
+      transition: var(--transition); white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-lookup:hover {
+      background: linear-gradient(135deg, var(--blue-mid) 0%, var(--blue-light) 100%);
+      box-shadow: 0 6px 24px rgba(0,48,135,0.35);
+      transform: translateY(-2px);
+    }
+    .btn-lookup:active { transform: translateY(0); }
+    .btn-lookup:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner inside button */
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    .btn-lookup.loading .spinner { display: block; }
+    .btn-lookup.loading .btn-lookup-icon { display: none; }
+
+    /* Identity card (shown after lookup) */
+    .identity-card {
+      display: none;
+      background: var(--blue-pale);
+      border: 1.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 16px;
+      animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .identity-card.visible { display: flex; align-items: center; gap: 12px; }
+    .identity-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .identity-info { flex: 1; min-width: 0; }
+    .identity-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .identity-email { font-size: 12px; color: var(--text3); }
+    .identity-poc {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+      color: var(--blue); background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 99px; padding: 3px 10px; margin-top: 4px;
+      display: inline-block;
+    }
+    .identity-check { font-size: 22px; flex-shrink: 0; color: var(--green-mid); }
+
+    /* ──────────────────────────────────────────
+       POC PICKER (for unregistered students)
+    ────────────────────────────────────────── */
+    .poc-picker-wrap { margin-top: 16px; display: none; }
+    .poc-picker-wrap.visible { display: block; }
+    .poc-search-input {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px 10px 38px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none; transition: var(--transition); width: 100%;
+    }
+    .poc-search-input:focus {
+      border-color: var(--blue-mid); background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+    .poc-search-wrap { position: relative; }
+    .poc-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
+    .poc-dropdown {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: #fff; border: 1.5px solid var(--border2);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-blue);
+      max-height: 220px; overflow-y: auto;
+      z-index: 50; display: none;
+    }
+    .poc-dropdown.visible { display: block; }
+    .poc-option {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; cursor: pointer; transition: var(--transition);
+    }
+    .poc-option:hover { background: var(--bg); }
+    .poc-option-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .poc-option-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .poc-option-college { font-size: 11px; color: var(--text3); }
+    .poc-option-city {
+      margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 2px 8px; border-radius: 99px; flex-shrink: 0;
+    }
+    .city-mumbai    { background: #FFF4E5; color: #E07C00; }
+    .city-pune      { background: var(--red-pale); color: var(--red); }
+    .city-aurangabad{ background: var(--blue-pale); color: var(--blue); }
+
+    .selected-poc-pill {
+      display: none; align-items: center; gap: 8px;
+      background: var(--blue-pale); border: 1.5px solid var(--border2);
+      border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 8px;
+    }
+    .selected-poc-pill.visible { display: flex; }
+    .selected-poc-pill-name { font-size: 13px; font-weight: 700; color: var(--blue); }
+    .selected-poc-pill-clear {
+      margin-left: auto; background: none; border: none; cursor: pointer;
+      color: var(--text3); font-size: 16px; line-height: 1; padding: 0 4px;
+      transition: var(--transition);
+    }
+    .selected-poc-pill-clear:hover { color: var(--red); }
+
+    /* ──────────────────────────────────────────
+       IMAGE UPLOAD ZONE
+    ────────────────────────────────────────── */
+    .upload-zone {
+      border: 2px dashed var(--border2);
+      border-radius: var(--radius);
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+      background: var(--bg);
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--blue-mid);
+      background: var(--blue-pale);
+    }
+    .upload-zone.has-file {
+      border-color: var(--green-mid);
+      background: var(--green-pale);
+      border-style: solid;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 36px; margin-bottom: 10px; animation: bounce 2s ease infinite; }
+    .upload-zone.has-file .upload-icon { animation: none; }
+    .upload-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .upload-sub { font-size: 12px; color: var(--text3); }
+    .upload-hint {
+      display: inline-block; margin-top: 10px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+      color: var(--blue); background: var(--blue-pale);
+      border: 1px solid var(--border); border-radius: 99px; padding: 3px 12px;
+    }
+    .upload-zone.has-file .upload-hint { background: var(--green-pale); color: var(--green); border-color: rgba(0,134,90,0.2); }
+
+    /* Image preview */
+    .image-preview {
+      display: none; margin-top: 14px;
+      border-radius: var(--radius-sm); overflow: hidden;
+      border: 1.5px solid var(--border);
+      position: relative;
+    }
+    .image-preview.visible { display: block; }
+    .image-preview img {
+      width: 100%; max-height: 200px; object-fit: cover; display: block;
+    }
+    .image-preview-remove {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(0,0,0,0.6); color: #fff;
+      border: none; border-radius: 50%; width: 28px; height: 28px;
+      cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .image-preview-remove:hover { background: var(--red); }
+
+    /* Upload progress bar */
+    .upload-progress {
+      display: none; margin-top: 12px;
+      background: var(--bg2); border-radius: 99px;
+      border: 1px solid var(--border); overflow: hidden; height: 8px;
+    }
+    .upload-progress.visible { display: block; }
+    .upload-progress-bar {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* ──────────────────────────────────────────
+       LOCKED OVERLAY (views card)
+    ────────────────────────────────────────── */
+    .locked-overlay {
+      position: absolute; inset: 0; border-radius: var(--radius);
+      background: rgba(245,248,255,0.85);
+      backdrop-filter: blur(6px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; z-index: 10;
+      animation: fadeIn 0.3s ease;
+    }
+    .locked-overlay-icon { font-size: 40px; }
+    .locked-overlay-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 800; color: var(--text);
+    }
+    .locked-overlay-sub { font-size: 13px; color: var(--text3); text-align: center; max-width: 260px; }
+    .ss-card-relative { position: relative; }
+
+    /* ──────────────────────────────────────────
+       BUTTONS
+    ────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 28px; width: 100%;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 700; letter-spacing: 0.3px; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,48,135,0.28);
+      transition: var(--transition); margin-top: 8px;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--blue-mid) 0%, var(--blue-light) 100%);
+      box-shadow: 0 6px 24px rgba(0,48,135,0.38);
+      transform: translateY(-2px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-primary.loading .btn-spinner { display: block; }
+    .btn-primary.loading .btn-text { display: none; }
+
+    .btn-green {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%);
+      box-shadow: 0 4px 16px rgba(0,134,90,0.28);
+    }
+    .btn-green:hover {
+      box-shadow: 0 6px 24px rgba(0,134,90,0.38);
+    }
+
+    .btn-spinner {
+      width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+
+    /* ──────────────────────────────────────────
+       ALERTS / MESSAGES
+    ────────────────────────────────────────── */
+    .ss-alert {
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      font-size: 13px; font-weight: 500; line-height: 1.5;
+      display: none; margin-top: 12px; animation: slideUp 0.3s ease;
+    }
+    .ss-alert.visible { display: block; }
+    .ss-alert-error   { background: var(--red-pale); color: var(--red-dark); border: 1px solid rgba(227,24,55,0.2); }
+    .ss-alert-success { background: var(--green-pale); color: var(--green); border: 1px solid rgba(0,134,90,0.2); }
+    .ss-alert-info    { background: var(--blue-pale); color: var(--blue); border: 1px solid var(--border); }
+
+    /* Tags requirement banner */
+    .tag-requirement {
+      background: linear-gradient(135deg, rgba(0,48,135,0.05), rgba(227,24,55,0.04));
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px; margin-bottom: 20px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .tag-req-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .tag-req-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .tag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 700;
+      padding: 4px 12px; border-radius: 99px;
+    }
+    .tag-chip-blue { background: var(--blue-pale); color: var(--blue); border: 1px solid var(--border); }
+    .tag-chip-red  { background: var(--red-pale);  color: var(--red);  border: 1px solid rgba(227,24,55,0.2); }
+
+    /* Views count input */
+    .views-count-row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      padding: 12px 16px; margin-top: 16px;
+    }
+    .views-count-icon { font-size: 24px; flex-shrink: 0; }
+    .views-count-label { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+    .views-count-input {
+      width: 100px; text-align: center;
+      border: 1.5px solid var(--border2); border-radius: var(--radius-sm);
+      padding: 8px 12px; font-size: 18px; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif; color: var(--blue);
+      background: #fff; outline: none; transition: var(--transition);
+    }
+    .views-count-input:focus {
+      border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+
+    /* ──────────────────────────────────────────
+       SUCCESS SCREEN
+    ────────────────────────────────────────── */
+    .ss-success {
+      display: none; text-align: center; padding: 48px 24px;
+      animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .ss-success.visible { display: block; }
+    .ss-success-icon { font-size: 64px; margin-bottom: 20px; animation: bounce 1.5s ease infinite; }
+    .ss-success-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(24px, 5vw, 36px); font-weight: 800;
+      color: var(--text); margin-bottom: 10px;
+    }
+    .ss-success-title span {
+      background: linear-gradient(135deg, var(--blue), var(--red));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .ss-success-sub { font-size: 14px; color: var(--text3); line-height: 1.6; margin-bottom: 28px; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .ss-success-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-pale); color: var(--green);
+      border: 1.5px solid rgba(0,134,90,0.2); border-radius: 99px;
+      padding: 6px 18px; font-size: 13px; font-weight: 700;
+    }
+
+    /* ──────────────────────────────────────────
+       INVALID SCREEN
+    ────────────────────────────────────────── */
+    #invalid-screen {
+      display: none; text-align: center; padding: 80px 24px;
+    }
+    #invalid-screen.visible { display: block; }
+    #invalid-screen .invalid-icon { font-size: 56px; margin-bottom: 20px; }
+    #invalid-screen h2 {
+      font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800;
+      color: var(--text); margin-bottom: 10px;
+    }
+    #invalid-screen p { font-size: 14px; color: var(--text3); max-width: 320px; margin: 0 auto; line-height: 1.6; }
+
+    /* ──────────────────────────────────────────
+       RESPONSIVE
+    ────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .ss-form-grid { grid-template-columns: 1fr; }
+      .ss-form-grid .span2 { grid-column: 1; }
+      .email-lookup-row { flex-direction: column; }
+      .btn-lookup { width: 100%; justify-content: center; }
+      .ss-stepper { gap: 0; }
+    }
+    @media (max-width: 480px) {
+      .ss-card { padding: 20px; }
+      .ss-hero { padding: 36px 20px 36px; }
+      .ss-body { padding: 24px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav id="ss-nav">
+  <div class="ss-nav-inner">
+    <a href="/leaderboard" class="ss-nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
+           alt="Reliance Digital" class="ss-nav-logo" />
+      <div class="ss-nav-divider"></div>
+      <span>Bootup India</span>
+    </a>
+    <span class="ss-nav-badge">📸 Story Upload</span>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="ss-hero" id="ss-hero">
+  <div class="ss-hero-inner">
+    <div class="ss-hero-eyebrow">🎮 Valorant Store Challenge</div>
+    <h1 class="ss-hero-title">Share Your <span>Story</span></h1>
+    <p class="ss-hero-sub">
+      Upload your Instagram story screenshot tagging both brands below.<br />
+      Come back tomorrow to submit your story views!
+    </p>
+    <div class="ss-hero-brands">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" />
+      <div class="ss-hero-brand-div"></div>
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorspace" />
+    </div>
+
+    <!-- Stepper -->
+    <div class="ss-stepper" id="ss-stepper">
+      <div class="ss-step active" id="step-1">
+        <div class="ss-step-circle" id="step-1-circle">1</div>
+        <div class="ss-step-label">Identify</div>
+      </div>
+      <div class="ss-step-line" id="line-1"></div>
+      <div class="ss-step" id="step-2">
+        <div class="ss-step-circle" id="step-2-circle">2</div>
+        <div class="ss-step-label">Story</div>
+      </div>
+      <div class="ss-step-line" id="line-2"></div>
+      <div class="ss-step" id="step-3">
+        <div class="ss-step-circle" id="step-3-circle">✓</div>
+        <div class="ss-step-label">Views</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ BODY ══════════════ -->
+<div class="ss-body">
+
+  <!-- Invalid screen -->
+  <div id="invalid-screen">
+    <div class="invalid-icon">⚠️</div>
+    <h2>Something went wrong</h2>
+    <p>This link appears to be invalid. Please ask your POC for the correct link.</p>
+  </div>
+
+  <!-- Full success screen (both submissions done) -->
+  <div class="ss-success" id="ss-success-all">
+    <div class="ss-success-icon">🎉</div>
+    <div class="ss-success-title">All <span>Done!</span></div>
+    <p class="ss-success-sub">Both your story and views screenshots have been submitted. Our team will verify them shortly!</p>
+    <div class="ss-success-badge">✅ Submission Complete</div>
+  </div>
+
+  <!-- ── CARD 1: Identify ── -->
+  <div class="ss-card" id="card-identify">
+    <div class="ss-card-header">
+      <div class="ss-card-icon ss-card-icon-blue">🙋</div>
+      <div>
+        <div class="ss-card-title">Who are you?</div>
+        <div class="ss-card-subtitle">Enter your email to auto-fill your details</div>
+      </div>
+      <span class="ss-card-step-badge step-badge-blue">Step 1</span>
+    </div>
+
+    <div class="email-lookup-row">
+      <div class="ss-fg">
+        <label for="ss-email">Email Address <span>*</span></label>
+        <input type="email" id="ss-email" placeholder="yourname@example.com" autocomplete="email" />
+        <span class="ss-field-err" id="err-email">Please enter a valid email address</span>
+      </div>
+      <button class="btn-lookup" id="btn-lookup" onclick="lookupEmail()">
+        <span class="btn-lookup-icon">🔍</span>
+        <div class="spinner"></div>
+        Look up
+      </button>
+    </div>
+
+    <!-- Identity confirmed card -->
+    <div class="identity-card" id="identity-card">
+      <div class="identity-avatar" id="identity-avatar">?</div>
+      <div class="identity-info">
+        <div class="identity-name" id="identity-name">—</div>
+        <div class="identity-email" id="identity-email-disp">—</div>
+        <div class="identity-poc" id="identity-poc" style="display:none">via POC: —</div>
+      </div>
+      <div class="identity-check">✅</div>
+    </div>
+
+    <!-- Manual name/mobile (for unregistered students) -->
+    <div id="manual-fields" style="display:none; margin-top:16px;">
+      <div class="ss-alert ss-alert-info visible" style="margin-bottom:16px; margin-top:0;">
+        📋 You're not in our registration list. Please fill in your details below.
+      </div>
+      <div class="ss-form-grid">
+        <div class="ss-fg">
+          <label for="ss-fullname">Full Name <span>*</span></label>
+          <input type="text" id="ss-fullname" placeholder="Your full name" />
+          <span class="ss-field-err" id="err-fullname">Please enter your name</span>
+        </div>
+        <div class="ss-fg">
+          <label for="ss-mobile">Mobile Number</label>
+          <input type="tel" id="ss-mobile" placeholder="10-digit mobile" maxlength="10" />
+        </div>
+      </div>
+
+      <!-- POC Picker -->
+      <div class="ss-fg">
+        <label>Your POC / Referral <span>*</span></label>
+        <div class="poc-picker-wrap visible">
+          <div class="poc-search-wrap" style="position:relative;">
+            <span class="poc-search-icon">🔍</span>
+            <input type="text" class="poc-search-input" id="poc-search-input"
+                   placeholder="Search POC by name or college…" autocomplete="off"
+                   oninput="searchPOCs(this.value)" />
+            <div class="poc-dropdown" id="poc-dropdown"></div>
+          </div>
+          <div class="selected-poc-pill" id="selected-poc-pill">
+            <span>👤</span>
+            <span class="selected-poc-pill-name" id="selected-poc-pill-name">—</span>
+            <button class="selected-poc-pill-clear" onclick="clearPOC()" title="Clear">✕</button>
+          </div>
+        </div>
+        <span class="ss-field-err" id="err-poc">Please select your POC</span>
+      </div>
+    </div>
+
+    <div class="ss-alert ss-alert-error" id="identify-error"></div>
+
+    <button class="btn-primary" id="btn-confirm-identity" onclick="confirmIdentity()" style="display:none;">
+      <div class="btn-spinner"></div>
+      <span class="btn-text">Confirm & Continue →</span>
+    </button>
+  </div>
+
+  <!-- ── CARD 2: Story Upload ── -->
+  <div class="ss-card ss-card-relative" id="card-story" style="display:none;">
+    <div class="ss-card-header">
+      <div class="ss-card-icon ss-card-icon-red">📸</div>
+      <div>
+        <div class="ss-card-title">Upload Your Story</div>
+        <div class="ss-card-subtitle">Screenshot of your Instagram story (today)</div>
+      </div>
+      <span class="ss-card-step-badge step-badge-blue">Step 2</span>
+    </div>
+
+    <!-- Tag requirement -->
+    <div class="tag-requirement">
+      <div class="tag-req-icon">⚠️</div>
+      <div>
+        <div class="tag-req-title">Your story MUST tag both accounts:</div>
+        <div class="tag-chips">
+          <span class="tag-chip tag-chip-blue">📱 @reliancedigital</span>
+          <span class="tag-chip tag-chip-red">🚀 @vigorspace.in</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ss-fg">
+      <label>Story Screenshot <span>*</span></label>
+      <div class="upload-zone" id="story-upload-zone"
+           ondragover="handleDragOver(event,'story')"
+           ondragleave="handleDragLeave(event,'story')"
+           ondrop="handleDrop(event,'story')">
+        <input type="file" id="story-file-input" accept="image/*"
+               onchange="handleFileSelect(event,'story')" />
+        <div class="upload-icon" id="story-upload-icon">📷</div>
+        <div class="upload-title" id="story-upload-title">Tap to upload or drag & drop</div>
+        <div class="upload-sub">PNG, JPG, HEIC — max 10MB</div>
+        <div class="upload-hint" id="story-upload-hint">Select story screenshot</div>
+      </div>
+      <div class="image-preview" id="story-preview">
+        <img id="story-preview-img" src="" alt="Story preview" />
+        <button class="image-preview-remove" onclick="removeFile('story')" title="Remove">✕</button>
+      </div>
+      <div class="upload-progress" id="story-upload-progress">
+        <div class="upload-progress-bar" id="story-progress-bar"></div>
+      </div>
+      <span class="ss-field-err" id="err-story">Please upload your story screenshot</span>
+    </div>
+
+    <div class="ss-fg" style="margin-bottom: 4px;">
+      <label for="story-caption">Caption / Post Link (optional)</label>
+      <input type="text" id="story-caption" placeholder="e.g. check out @reliancedigital × @vigorspace.in! 🔥" />
+    </div>
+
+    <div class="ss-alert ss-alert-error" id="story-error"></div>
+    <div class="ss-alert ss-alert-success" id="story-success"></div>
+
+    <button class="btn-primary" id="btn-submit-story" onclick="submitStory()">
+      <div class="btn-spinner"></div>
+      <span class="btn-text">📤 Submit Story Screenshot</span>
+    </button>
+  </div>
+
+  <!-- ── CARD 3: Views Upload ── -->
+  <div class="ss-card ss-card-relative" id="card-views" style="display:none;">
+    <!-- Locked overlay (shown until story is submitted) -->
+    <div class="locked-overlay" id="views-locked-overlay">
+      <div class="locked-overlay-icon">🔒</div>
+      <div class="locked-overlay-title">Come Back Tomorrow</div>
+      <div class="locked-overlay-sub">After submitting your story today, come back tomorrow to upload your views screenshot.</div>
+    </div>
+
+    <div class="ss-card-header">
+      <div class="ss-card-icon ss-card-icon-green">👁️</div>
+      <div>
+        <div class="ss-card-title">Upload Story Views</div>
+        <div class="ss-card-subtitle">Screenshot showing your story view count (next day)</div>
+      </div>
+      <span class="ss-card-step-badge" id="views-step-badge" style="display:none;"></span>
+    </div>
+
+    <div class="tag-requirement" style="background: rgba(0,134,90,0.04); border-color: rgba(0,134,90,0.18);">
+      <div class="tag-req-icon">💡</div>
+      <div>
+        <div class="tag-req-title">How to find your story views:</div>
+        <div class="upload-sub" style="font-size:12px; color:var(--text3); line-height:1.5;">
+          Open Instagram → Your Story (within 24h) → Swipe up to see viewers → Screenshot the count
+        </div>
+      </div>
+    </div>
+
+    <!-- Views count -->
+    <div class="views-count-row">
+      <div class="views-count-icon">👁️</div>
+      <div class="views-count-label">How many views did your story get?</div>
+      <input type="number" class="views-count-input" id="views-count" min="0" max="99999" placeholder="0" />
+    </div>
+
+    <div class="ss-fg" style="margin-top: 16px;">
+      <label>Views Screenshot <span>*</span></label>
+      <div class="upload-zone" id="views-upload-zone"
+           ondragover="handleDragOver(event,'views')"
+           ondragleave="handleDragLeave(event,'views')"
+           ondrop="handleDrop(event,'views')">
+        <input type="file" id="views-file-input" accept="image/*"
+               onchange="handleFileSelect(event,'views')" />
+        <div class="upload-icon" id="views-upload-icon">👁️</div>
+        <div class="upload-title" id="views-upload-title">Tap to upload or drag & drop</div>
+        <div class="upload-sub">Screenshot of your story view count</div>
+        <div class="upload-hint" id="views-upload-hint">Select views screenshot</div>
+      </div>
+      <div class="image-preview" id="views-preview">
+        <img id="views-preview-img" src="" alt="Views preview" />
+        <button class="image-preview-remove" onclick="removeFile('views')" title="Remove">✕</button>
+      </div>
+      <div class="upload-progress" id="views-upload-progress">
+        <div class="upload-progress-bar" id="views-progress-bar"></div>
+      </div>
+      <span class="ss-field-err" id="err-views">Please upload your views screenshot</span>
+    </div>
+
+    <div class="ss-alert ss-alert-error" id="views-error"></div>
+    <div class="ss-alert ss-alert-success" id="views-success"></div>
+
+    <button class="btn-primary btn-green" id="btn-submit-views" onclick="submitViews()">
+      <div class="btn-spinner"></div>
+      <span class="btn-text">📤 Submit Views Screenshot</span>
+    </button>
+  </div>
+
+</div><!-- /.ss-body -->
+
+<script>
+/* ─────────────────────────────────────────────────────────
+   CONFIG
+───────────────────────────────────────────────────────── */
+const SUPABASE_URL      = 'https://aebkutavunwlwzswuhbc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmt1dGF2dW53bHd6c3d1aGJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTAyNDksImV4cCI6MjA5NjQ4NjI0OX0.-tnBG6MDWB_WjHDJeeWCpiEwvbMSk9H8e4UneAKDR78';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ─────────────────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────────────────── */
+let currentEmail     = '';
+let currentFullName  = '';
+let currentMobile    = '';
+let referralPocId    = null;
+let referralPocName  = null;
+let selectedPocId    = null;
+let selectedPocName  = null;
+let storyFileData    = null;  // { file, localUrl }
+let viewsFileData    = null;  // { file, localUrl }
+let storySubmitted   = false;
+let existingSubmission = null;
+let allPocs          = [];
+
+const params = new URLSearchParams(window.location.search);
+const urlPocId = params.get('poc');
+
+/* ─────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  // Pre-fetch POCs for picker
+  const { data: pocs } = await db.from('pocs').select('id, name, city, college').order('city');
+  allPocs = pocs || [];
+
+  // If POC ID in URL, resolve it
+  if (urlPocId) {
+    const found = allPocs.find(p => p.id === urlPocId);
+    if (found) {
+      referralPocId   = found.id;
+      referralPocName = found.name;
+    }
+  }
+});
+
+/* ─────────────────────────────────────────────────────────
+   STEP 1 — EMAIL LOOKUP
+───────────────────────────────────────────────────────── */
+async function lookupEmail() {
+  const emailEl = document.getElementById('ss-email');
+  const email   = emailEl.value.trim().toLowerCase();
+  const errEl   = document.getElementById('err-email');
+  const btn     = document.getElementById('btn-lookup');
+
+  // Validate
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.classList.add('visible');
+    emailEl.classList.add('field-error');
+    return;
+  }
+  errEl.classList.remove('visible');
+  emailEl.classList.remove('field-error');
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch('/api/story-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, type: 'lookup' }),
+    });
+    const data = await res.json();
+
+    currentEmail = email;
+    existingSubmission = data.existing_submission;
+
+    if (data.registered || existingSubmission) {
+      // Known user — prefill everything
+      currentFullName  = data.full_name  || '';
+      currentMobile    = data.mobile     || '';
+      referralPocId    = data.poc_id     || referralPocId;
+      referralPocName  = data.poc_name   || referralPocName;
+
+      showIdentityCard(currentFullName, email, referralPocName);
+      document.getElementById('manual-fields').style.display = 'none';
+    } else {
+      // Unknown user — show manual fields
+      document.getElementById('manual-fields').style.display = 'block';
+      document.getElementById('identity-card').classList.remove('visible');
+      // Pre-select POC from URL if set
+      if (referralPocId && referralPocName) {
+        selectedPocId   = referralPocId;
+        selectedPocName = referralPocName;
+        showSelectedPoc(referralPocName);
+      }
+    }
+
+    document.getElementById('btn-confirm-identity').style.display = 'flex';
+
+    // If both submissions already done → go to success
+    if (existingSubmission?.status === 'views_submitted' || existingSubmission?.status === 'verified') {
+      showAllSuccess();
+      return;
+    }
+    // If story already submitted → skip to views card
+    if (existingSubmission?.story_url) {
+      storySubmitted = true;
+      document.getElementById('btn-confirm-identity').textContent = 'Continue to Views Upload →';
+    }
+
+  } catch (err) {
+    showAlert('identify-error', '❌ Failed to check email. Please try again.');
+  }
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+}
+
+function showIdentityCard(name, email, pocName) {
+  const initials = name.split(' ').map(n => n[0] || '').join('').slice(0, 2).toUpperCase() || '?';
+  document.getElementById('identity-avatar').textContent = initials;
+  document.getElementById('identity-name').textContent   = name || email;
+  document.getElementById('identity-email-disp').textContent = email;
+
+  const pocEl = document.getElementById('identity-poc');
+  if (pocName) {
+    pocEl.textContent = `via POC: ${pocName}`;
+    pocEl.style.display = 'inline-block';
+  } else {
+    pocEl.style.display = 'none';
+  }
+  document.getElementById('identity-card').classList.add('visible');
+}
+
+async function confirmIdentity() {
+  const btn = document.getElementById('btn-confirm-identity');
+  hideAlert('identify-error');
+
+  // If manual fields visible, collect them
+  if (document.getElementById('manual-fields').style.display !== 'none') {
+    const name   = document.getElementById('ss-fullname').value.trim();
+    const mobile = document.getElementById('ss-mobile').value.trim();
+
+    let valid = true;
+    if (!name) { showFieldErr('err-fullname'); valid = false; }
+    else hideFieldErr('err-fullname');
+
+    const finalPocId = selectedPocId || referralPocId;
+    if (!finalPocId) { showFieldErr('err-poc'); valid = false; }
+    else hideFieldErr('err-poc');
+
+    if (!valid) return;
+
+    currentFullName  = name;
+    currentMobile    = mobile;
+    referralPocId    = finalPocId;
+    referralPocName  = selectedPocName || referralPocName;
+
+    showIdentityCard(name, currentEmail, referralPocName);
+    document.getElementById('manual-fields').style.display = 'none';
+  }
+
+  // Advance stepper
+  setStepDone(1);
+  setStepActive(2);
+
+  // Hide identify card, show story card
+  document.getElementById('card-identify').style.display = 'none';
+  document.getElementById('card-story').style.display    = 'block';
+  document.getElementById('card-views').style.display    = 'block';
+
+  if (storySubmitted && existingSubmission?.story_url) {
+    // Story already done — show success state on story card, unlock views
+    markStoryDone();
+    unlockViews();
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────────────────────
+   POC SEARCH (for unregistered students)
+───────────────────────────────────────────────────────── */
+async function searchPOCs(query) {
+  const dropdown = document.getElementById('poc-dropdown');
+  if (!query || query.length < 1) { dropdown.classList.remove('visible'); return; }
+
+  const q = query.toLowerCase();
+  const matches = allPocs.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.college.toLowerCase().includes(q) ||
+    p.city.toLowerCase().includes(q)
+  ).slice(0, 8);
+
+  if (!matches.length) {
+    dropdown.innerHTML = `<div style="padding:14px;text-align:center;color:var(--text3);font-size:13px;">No POC found</div>`;
+    dropdown.classList.add('visible');
+    return;
+  }
+
+  dropdown.innerHTML = matches.map(p => {
+    const initials = p.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    const cityClass = `city-${p.city.toLowerCase()}`;
+    return `
+      <div class="poc-option" onclick="selectPoc('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.city}')">
+        <div class="poc-option-avatar">${initials}</div>
+        <div>
+          <div class="poc-option-name">${p.name}</div>
+          <div class="poc-option-college">${p.college}</div>
+        </div>
+        <span class="poc-option-city ${cityClass}">${p.city}</span>
+      </div>`;
+  }).join('');
+  dropdown.classList.add('visible');
+
+  document.addEventListener('click', closePocDropdown, { once: true });
+}
+
+function selectPoc(id, name, city) {
+  selectedPocId   = id;
+  selectedPocName = name;
+  document.getElementById('poc-search-input').value = '';
+  document.getElementById('poc-dropdown').classList.remove('visible');
+  hideFieldErr('err-poc');
+  showSelectedPoc(name);
+}
+
+function showSelectedPoc(name) {
+  const pill = document.getElementById('selected-poc-pill');
+  document.getElementById('selected-poc-pill-name').textContent = name;
+  pill.classList.add('visible');
+}
+
+function clearPOC() {
+  selectedPocId = null;
+  selectedPocName = null;
+  document.getElementById('selected-poc-pill').classList.remove('visible');
+  document.getElementById('poc-search-input').value = '';
+}
+
+function closePocDropdown(e) {
+  if (!e.target.closest('#poc-search-input')) {
+    document.getElementById('poc-dropdown')?.classList.remove('visible');
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   FILE UPLOAD HANDLING
+───────────────────────────────────────────────────────── */
+function handleFileSelect(event, type) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  processFile(file, type);
+}
+
+function handleDragOver(event, type) {
+  event.preventDefault();
+  document.getElementById(`${type}-upload-zone`).classList.add('dragover');
+}
+
+function handleDragLeave(event, type) {
+  document.getElementById(`${type}-upload-zone`).classList.remove('dragover');
+}
+
+function handleDrop(event, type) {
+  event.preventDefault();
+  document.getElementById(`${type}-upload-zone`).classList.remove('dragover');
+  const file = event.dataTransfer.files?.[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  processFile(file, type);
+}
+
+function processFile(file, type) {
+  if (file.size > 10 * 1024 * 1024) {
+    showAlert(`${type}-error`, '❌ File too large — maximum 10MB');
+    return;
+  }
+
+  const localUrl = URL.createObjectURL(file);
+  if (type === 'story') {
+    storyFileData = { file, localUrl };
+  } else {
+    viewsFileData = { file, localUrl };
+  }
+
+  // Update upload zone UI
+  const zone = document.getElementById(`${type}-upload-zone`);
+  zone.classList.add('has-file');
+  document.getElementById(`${type}-upload-icon`).textContent = '✅';
+  document.getElementById(`${type}-upload-title`).textContent = file.name;
+  document.getElementById(`${type}-upload-hint`).textContent = 'Tap to change';
+
+  // Show preview
+  const preview = document.getElementById(`${type}-preview`);
+  document.getElementById(`${type}-preview-img`).src = localUrl;
+  preview.classList.add('visible');
+
+  hideFieldErr(`err-${type}`);
+  hideAlert(`${type}-error`);
+}
+
+function removeFile(type) {
+  if (type === 'story') storyFileData = null;
+  else viewsFileData = null;
+
+  const zone = document.getElementById(`${type}-upload-zone`);
+  zone.classList.remove('has-file');
+  document.getElementById(`${type}-upload-icon`).textContent = type === 'story' ? '📷' : '👁️';
+  document.getElementById(`${type}-upload-title`).textContent = 'Tap to upload or drag & drop';
+  document.getElementById(`${type}-upload-hint`).textContent = `Select ${type} screenshot`;
+  document.getElementById(`${type}-preview`).classList.remove('visible');
+  document.getElementById(`${type}-file-input`).value = '';
+}
+
+/* ─────────────────────────────────────────────────────────
+   UPLOAD TO CLOUDINARY via /api/upload
+───────────────────────────────────────────────────────── */
+async function uploadImage(file, progressBarId) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const progressBar = document.getElementById(progressBarId);
+  const progressWrap = progressBar?.parentElement;
+  if (progressWrap) progressWrap.classList.add('visible');
+
+  // Simulate progress while uploading
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + 10, 85);
+    if (progressBar) progressBar.style.width = `${progress}%`;
+  }, 150);
+
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    clearInterval(progressInterval);
+
+    if (progressBar) progressBar.style.width = '100%';
+    setTimeout(() => { if (progressWrap) progressWrap.classList.remove('visible'); }, 800);
+
+    if (!res.ok || !data.url) throw new Error(data.error || 'Upload failed');
+    return data.url;
+  } catch (err) {
+    clearInterval(progressInterval);
+    if (progressWrap) progressWrap.classList.remove('visible');
+    throw err;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   STEP 2 — SUBMIT STORY
+───────────────────────────────────────────────────────── */
+async function submitStory() {
+  hideAlert('story-error');
+  if (!storyFileData) { showFieldErr('err-story'); return; }
+  hideFieldErr('err-story');
+
+  const btn = document.getElementById('btn-submit-story');
+  setButtonLoading(btn, true);
+
+  try {
+    // Upload to Cloudinary
+    const storyUrl = await uploadImage(storyFileData.file, 'story-progress-bar');
+
+    // Save to Supabase via API
+    const res = await fetch('/api/story-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:             currentEmail,
+        full_name:         currentFullName,
+        mobile:            currentMobile || null,
+        referral_poc_id:   referralPocId   || null,
+        referral_poc_name: referralPocName || null,
+        type:              'story',
+        story_url:         storyUrl,
+        story_caption:     document.getElementById('story-caption').value.trim() || null,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Submission failed');
+
+    // Success!
+    storySubmitted = true;
+    markStoryDone();
+    unlockViews();
+    setStepDone(2);
+    setStepActive(3);
+
+    showAlert('story-success', '🎉 Story submitted successfully! Come back tomorrow to upload your views screenshot.');
+
+  } catch (err) {
+    showAlert('story-error', `❌ ${err.message}`);
+  }
+
+  setButtonLoading(btn, false);
+}
+
+function markStoryDone() {
+  const btn  = document.getElementById('btn-submit-story');
+  const zone = document.getElementById('story-upload-zone');
+  if (btn)  btn.disabled = true;
+  if (btn)  btn.style.background = 'var(--green-mid)';
+  if (btn)  btn.innerHTML = '✅ Story Submitted';
+  // Show existing URL if any
+  if (existingSubmission?.story_url && !storyFileData) {
+    const preview = document.getElementById('story-preview');
+    document.getElementById('story-preview-img').src = existingSubmission.story_url;
+    preview.classList.add('visible');
+    document.getElementById('story-preview-img').style.objectFit = 'contain';
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   STEP 3 — SUBMIT VIEWS
+───────────────────────────────────────────────────────── */
+function unlockViews() {
+  const overlay = document.getElementById('views-locked-overlay');
+  if (overlay) overlay.style.display = 'none';
+
+  const badge = document.getElementById('views-step-badge');
+  if (badge) {
+    badge.textContent = 'Step 3';
+    badge.className   = 'ss-card-step-badge step-badge-green';
+    badge.style.display = 'inline-flex';
+  }
+
+  // If views already submitted
+  if (existingSubmission?.views_url) {
+    markViewsDone();
+  }
+}
+
+async function submitViews() {
+  hideAlert('views-error');
+  if (!viewsFileData) { showFieldErr('err-views'); return; }
+  hideFieldErr('err-views');
+
+  const btn = document.getElementById('btn-submit-views');
+  setButtonLoading(btn, true);
+
+  try {
+    const viewsUrl   = await uploadImage(viewsFileData.file, 'views-progress-bar');
+    const viewsCount = parseInt(document.getElementById('views-count').value || '0', 10);
+
+    const res = await fetch('/api/story-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: currentEmail,
+        type:  'views',
+        views_url:   viewsUrl,
+        views_count: viewsCount,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Submission failed');
+
+    markViewsDone();
+    setStepDone(3);
+    setTimeout(() => showAllSuccess(), 1200);
+
+  } catch (err) {
+    showAlert('views-error', `❌ ${err.message}`);
+  }
+
+  setButtonLoading(btn, false);
+}
+
+function markViewsDone() {
+  const btn = document.getElementById('btn-submit-views');
+  if (btn) {
+    btn.disabled = true;
+    btn.style.background = 'var(--green-mid)';
+    btn.innerHTML = '✅ Views Submitted';
+  }
+  showAlert('views-success', '🎉 Views screenshot submitted! Our team will verify your submission shortly.');
+  if (existingSubmission?.views_url && !viewsFileData) {
+    document.getElementById('views-preview-img').src = existingSubmission.views_url;
+    document.getElementById('views-preview').classList.add('visible');
+  }
+}
+
+function showAllSuccess() {
+  document.getElementById('card-story').style.display = 'none';
+  document.getElementById('card-views').style.display = 'none';
+  document.getElementById('ss-success-all').classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ─────────────────────────────────────────────────────────
+   STEPPER UI
+───────────────────────────────────────────────────────── */
+function setStepActive(n) {
+  document.getElementById(`step-${n}`).classList.add('active');
+}
+function setStepDone(n) {
+  const step = document.getElementById(`step-${n}`);
+  step.classList.remove('active');
+  step.classList.add('done');
+  step.querySelector('.ss-step-circle').textContent = '✓';
+  const line = document.getElementById(`line-${n}`);
+  if (line) line.classList.add('done');
+}
+
+/* ─────────────────────────────────────────────────────────
+   UI HELPERS
+───────────────────────────────────────────────────────── */
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+function hideAlert(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('visible');
+}
+function showFieldErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('visible');
+}
+function hideFieldErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('visible');
+}
+function setButtonLoading(btn, loading) {
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+</script>
+</body>
+</html>

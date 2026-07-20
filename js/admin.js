@@ -79,6 +79,7 @@ async function initializeAdminDashboard() {
   setupQuantityInput();
   await updatePublishButton();
   await updatePendingIndicator();
+  await renderStorySubmissionsSection();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -946,3 +947,156 @@ function closePointHistory() {
 
 window.openPointHistory = openPointHistory;
 window.closePointHistory = closePointHistory;
+
+/* ─────────────────────────────────────────────
+   STORY SUBMISSIONS SECTION
+   ───────────────────────────────────────────── */
+let allStorySubmissions  = [];
+let storyCurrentFilter   = 'All';
+
+async function renderStorySubmissionsSection() {
+  const stats = await getStorySubmissionStats();
+  const el = id => document.getElementById(id);
+
+  /* KPI pills */
+  if (el('ss-kpi-total'))   el('ss-kpi-total').textContent   = stats.total            || 0;
+  if (el('ss-kpi-story'))   el('ss-kpi-story').textContent   = stats.story_submitted   || 0;
+  if (el('ss-kpi-views'))   el('ss-kpi-views').textContent   = stats.views_submitted   || 0;
+  if (el('ss-kpi-verified'))el('ss-kpi-verified').textContent= stats.verified          || 0;
+
+  /* Table */
+  allStorySubmissions = await getStorySubmissions('All');
+  renderStoryTable(allStorySubmissions);
+}
+
+async function filterStorySubmissions(status) {
+  storyCurrentFilter = status;
+  document.querySelectorAll('.ss-filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.status === status);
+  });
+  const filtered = status === 'All'
+    ? allStorySubmissions
+    : allStorySubmissions.filter(r => r.status === status);
+  renderStoryTable(filtered);
+}
+
+function renderStoryTable(rows) {
+  const container = document.getElementById('ss-table-body');
+  if (!container) return;
+
+  if (!rows || rows.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--text3)">
+        <div style="font-size:32px;margin-bottom:10px">📭</div>
+        <div style="font-size:14px">No story submissions yet</div>
+      </div>`;
+    return;
+  }
+
+  const statusBadge = s => {
+    const map = {
+      pending:         { label: 'Pending',         bg: '#f5f5f5',           color: 'var(--text3)',  border: '#eee' },
+      story_submitted: { label: 'Story Done',       bg: 'var(--blue-pale)',  color: 'var(--blue)',   border: 'var(--border)' },
+      views_submitted: { label: 'Views Done',       bg: 'var(--orange-pale)',color: 'var(--orange)', border: 'rgba(224,124,0,0.2)' },
+      verified:        { label: '✅ Verified',       bg: 'var(--green-pale)', color: 'var(--green)',  border: 'rgba(0,134,90,0.2)' },
+      rejected:        { label: '❌ Rejected',       bg: 'var(--red-pale)',   color: 'var(--red)',    border: 'rgba(227,24,55,0.2)' },
+    };
+    const c = map[s] || map.pending;
+    return `<span style="font-size:10px;font-weight:700;letter-spacing:0.4px;padding:3px 10px;border-radius:99px;background:${c.bg};color:${c.color};border:1px solid ${c.border}">${c.label}</span>`;
+  };
+
+  container.innerHTML = rows.map(r => {
+    const date       = new Date(r.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const name       = r.full_name || '—';
+    const initials   = name.split(' ').map(n => n[0] || '').join('').slice(0, 2).toUpperCase();
+    const pocDisplay = r.referral_poc_name ? `<span style="font-size:11px;color:var(--blue);background:var(--blue-pale);border:1px solid var(--border);border-radius:99px;padding:2px 8px;font-weight:700;">👤 ${r.referral_poc_name}</span>` : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+    const storyThumb = r.story_url
+      ? `<button onclick="previewImage('${r.story_url}','Story Screenshot')" style="background:none;border:none;cursor:pointer;padding:0;" title="View story"><img src="${r.story_url}" alt="Story" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);transition:var(--transition);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" /></button>`
+      : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+    const viewsThumb = r.views_url
+      ? `<button onclick="previewImage('${r.views_url}','Views Screenshot')" style="background:none;border:none;cursor:pointer;padding:0;" title="View screenshot"><img src="${r.views_url}" alt="Views" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);transition:var(--transition);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" /></button>`
+      : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+    const viewsCount = r.views_count != null ? `<span style="font-size:13px;font-weight:700;color:var(--text)">👁️ ${r.views_count.toLocaleString()}</span>` : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+
+    const canVerify = r.status === 'views_submitted' || r.status === 'story_submitted';
+    const canReject = r.status !== 'rejected';
+
+    return `
+      <div class="ss-table-row" id="ss-row-${r.id}">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${initials}</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text)">${name}</div>
+              <div style="font-size:11px;color:var(--text3)">${r.email}</div>
+            </div>
+          </div>
+        </div>
+        <div>${pocDisplay}</div>
+        <div>${storyThumb}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">${viewsThumb}${viewsCount}</div>
+        <div>${statusBadge(r.status)}</div>
+        <div style="font-size:11px;color:var(--text3);white-space:nowrap">${date}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${canVerify ? `<button onclick="verifyStory('${r.id}')" class="btn btn-primary" style="padding:5px 12px;font-size:11px;font-weight:700">✅ Verify</button>` : ''}
+          ${canReject ? `<button onclick="rejectStory('${r.id}')" class="btn btn-ghost" style="padding:5px 12px;font-size:11px;font-weight:700;color:var(--red);border-color:rgba(227,24,55,0.3)">✕ Reject</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function verifyStory(id) {
+  try {
+    await updateStorySubmissionStatus(id, 'verified');
+    const row = allStorySubmissions.find(r => r.id === id);
+    if (row) row.status = 'verified';
+    renderStoryTable(storyCurrentFilter === 'All' ? allStorySubmissions : allStorySubmissions.filter(r => r.status === storyCurrentFilter));
+    await renderStorySubmissionsSection();
+    showToast('✅ Story submission verified!', 'success');
+  } catch (err) {
+    showToast('Error verifying: ' + err.message, 'error');
+  }
+}
+
+async function rejectStory(id) {
+  try {
+    await updateStorySubmissionStatus(id, 'rejected');
+    const row = allStorySubmissions.find(r => r.id === id);
+    if (row) row.status = 'rejected';
+    renderStoryTable(storyCurrentFilter === 'All' ? allStorySubmissions : allStorySubmissions.filter(r => r.status === storyCurrentFilter));
+    await renderStorySubmissionsSection();
+    showToast('Story submission rejected.', 'error');
+  } catch (err) {
+    showToast('Error rejecting: ' + err.message, 'error');
+  }
+}
+
+/* Image preview lightbox */
+function previewImage(url, title) {
+  let overlay = document.getElementById('ss-image-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'ss-image-overlay';
+    overlay.style.cssText = `
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(0,20,60,0.85);
+      backdrop-filter:blur(8px);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+      cursor:pointer;animation:fadeIn 0.2s ease;
+    `;
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.8);letter-spacing:1px;text-transform:uppercase">${title}</div>
+    <img src="${url}" alt="${title}"
+         style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,0.5);" />
+    <div style="font-size:12px;color:rgba(255,255,255,0.4)">Click anywhere to close</div>`;
+  overlay.style.display = 'flex';
+}
+
+window.renderStorySubmissionsSection = renderStorySubmissionsSection;
+window.filterStorySubmissions        = filterStorySubmissions;
+window.verifyStory                   = verifyStory;
+window.rejectStory                   = rejectStory;
+window.previewImage                  = previewImage;

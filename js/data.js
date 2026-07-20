@@ -455,3 +455,62 @@ function getCampaignStats(data) {
   const activePocs  = data.filter(p => p.points > 0).length;
   return { totalPoints, activePocs, totalPocs: data.length };
 }
+
+// ─────────────────────────────────────────────
+//  STORY SUBMISSIONS — fetch all for admin
+// ─────────────────────────────────────────────
+/**
+ * Fetches all story_submissions rows ordered newest-first.
+ * @param {string} [status] Optional status filter (e.g. 'story_submitted').
+ *                          Pass 'All' or omit for unfiltered.
+ * @returns {Promise<Array>}
+ */
+async function getStorySubmissions(status) {
+  let query = db
+    .from('story_submissions')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (status && status !== 'All') {
+    query = query.eq('status', status);
+  }
+
+  const { data, error } = await query;
+  if (error) { console.error('getStorySubmissions:', error.message); return []; }
+  return data;
+}
+
+/**
+ * Returns counts per status for the admin KPI pills.
+ * @returns {Promise<{total, pending, story_submitted, views_submitted, verified, rejected}>}
+ */
+async function getStorySubmissionStats() {
+  const { data, error } = await db
+    .from('story_submissions')
+    .select('status');
+  if (error) { console.error('getStorySubmissionStats:', error.message); return {}; }
+
+  const counts = {
+    total:            data.length,
+    pending:          0,
+    story_submitted:  0,
+    views_submitted:  0,
+    verified:         0,
+    rejected:         0,
+  };
+  data.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
+  return counts;
+}
+
+/**
+ * Updates a story submission's status (verify / reject / reset).
+ * @param {string} id   UUID of the story_submissions row
+ * @param {string} status 'verified' | 'rejected' | 'story_submitted' | 'views_submitted'
+ * @param {string} [note] Optional admin note
+ */
+async function updateStorySubmissionStatus(id, status, note) {
+  const patch = { status };
+  if (note !== undefined) patch.admin_note = note;
+  const { error } = await db.from('story_submissions').update(patch).eq('id', id);
+  if (error) { console.error('updateStorySubmissionStatus:', error.message); throw error; }
+}

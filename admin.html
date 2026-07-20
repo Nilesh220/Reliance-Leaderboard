@@ -264,6 +264,93 @@
       </div>
     </div>
 
+    <!-- ── Story Submissions ── -->
+    <div class="admin-card" id="story-submissions-card">
+      <div class="admin-section-title">
+        <div class="icon">📸</div>
+        Story Submissions
+        <a href="/story-submit.html" target="_blank"
+           class="btn btn-primary"
+           style="margin-left:auto;padding:6px 14px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          🔗 Share Link ↗
+        </a>
+      </div>
+
+      <!-- KPI pills -->
+      <div class="reg-kpi-row" id="ss-kpi-row" style="margin-bottom:16px;">
+        <div class="reg-kpi-pill">
+          <span class="reg-kpi-num" id="ss-kpi-total">—</span>
+          <span class="reg-kpi-lbl">Total</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)">
+          <span class="reg-kpi-num" id="ss-kpi-story">—</span>
+          <span class="reg-kpi-lbl">Story Done</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--orange)">
+          <span class="reg-kpi-num" id="ss-kpi-views">—</span>
+          <span class="reg-kpi-lbl">Views Done</span>
+        </div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--green)">
+          <span class="reg-kpi-num" id="ss-kpi-verified">—</span>
+          <span class="reg-kpi-lbl">Verified</span>
+        </div>
+      </div>
+
+      <!-- Status filter tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="category-tab active ss-filter-btn" data-status="All"             onclick="filterStorySubmissions('All')">All</button>
+        <button class="category-tab ss-filter-btn" data-status="story_submitted"        onclick="filterStorySubmissions('story_submitted')">📸 Story Done</button>
+        <button class="category-tab ss-filter-btn" data-status="views_submitted"        onclick="filterStorySubmissions('views_submitted')">👁️ Views Done</button>
+        <button class="category-tab ss-filter-btn" data-status="verified"               onclick="filterStorySubmissions('verified')">✅ Verified</button>
+        <button class="category-tab ss-filter-btn" data-status="rejected"               onclick="filterStorySubmissions('rejected')">❌ Rejected</button>
+      </div>
+
+      <!-- Table -->
+      <div class="poc-table-wrap" style="overflow-x:auto;">
+        <div class="ss-table-header">
+          <div>Student</div>
+          <div>Referred by POC</div>
+          <div>Story</div>
+          <div>Views</div>
+          <div>Status</div>
+          <div>Date</div>
+          <div>Actions</div>
+        </div>
+        <div id="ss-table-body">
+          <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading submissions…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Story Submissions Table Styles -->
+    <style>
+      .ss-table-header {
+        display: grid;
+        grid-template-columns: 2fr 1.6fr 60px 80px 1fr 90px 1fr;
+        gap: 0;
+        background: var(--bg2);
+        font-size: 11px; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+        color: var(--text2);
+        padding: 10px 14px;
+        border-bottom: 2px solid var(--border);
+        border-radius: 8px 8px 0 0;
+        min-width: 700px;
+      }
+      .ss-table-row {
+        display: grid;
+        grid-template-columns: 2fr 1.6fr 60px 80px 1fr 90px 1fr;
+        gap: 0;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+        transition: background 0.18s;
+        min-width: 700px;
+      }
+      .ss-table-row:hover { background: var(--bg2); }
+      .ss-table-row:last-child { border-bottom: none; }
+    </style>
+
     <!-- ── Task Management ── -->
     <div class="admin-card" id="task-management-card">
       <div class="admin-section-title">
