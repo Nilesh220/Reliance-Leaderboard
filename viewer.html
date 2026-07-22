@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard — Bootup India · Reliance Digital</title>
+  <meta name="description" content="Live leaderboard for Reliance Digital's Bootup India campus campaign. Track POC rankings, college scores, and campaign progress across Mumbai, Pune, and Aurangabad." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Auth Nav */
+    #auth-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1.5px solid var(--border); }
+    .auth-nav-inner { max-width: 1200px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .auth-nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .auth-nav-divider { width: 1.5px; height: 22px; background: var(--border); border-radius: 99px; }
+    .auth-nav-links { display: flex; align-items: center; gap: 8px; }
+    .auth-nav-link { font-size: 13px; font-weight: 600; color: var(--text2); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: var(--transition); }
+    .auth-nav-link:hover, .auth-nav-link.active { background: var(--bg2); color: var(--blue); }
+    .auth-nav-user { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
+    .auth-nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--red)); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .auth-nav-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .auth-nav-logout { font-size: 12px; font-weight: 600; color: var(--red); background: rgba(227,24,55,0.07); border: 1px solid rgba(227,24,55,0.15); border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: var(--transition); }
+    .auth-nav-logout:hover { background: var(--red); color: #fff; }
+    .wrapper { padding-top: 56px; }
+    /* Viewer badge */
+    .viewer-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; background: var(--blue-pale); color: var(--blue); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="auth-nav">
+  <div class="auth-nav-inner">
+    <a href="/leaderboard" class="auth-nav-logo">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" style="height:28px;width:auto">
+      <div class="auth-nav-divider"></div>
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad" style="height:26px;width:auto">
+    </a>
+    <div class="auth-nav-links">
+      <span class="viewer-badge">👁 Viewer Mode</span>
+    </div>
+  </div>
+</div>
+
+<!-- Update notification banner -->
+<div id="refresh-banner" style="
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:linear-gradient(90deg,#00b85e,#00e676);
+  color:#000; font-weight:700; font-size:14px;
+  text-align:center; padding:10px;
+  transform:translateY(-100%); transition:transform 0.3s ease;">
+  🔄 Leaderboard updated!
+</div>
+
+<style>
+  #refresh-banner.visible { transform: translateY(0); }
+</style>
+
+<div class="wrapper">
+
+  <!-- Brand top bar -->
+  <div class="brand-bar"></div>
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+
+    <div class="hero-logo-bar">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" class="hero-brand-logo" />
+      <div class="logo-divider"></div>
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad" class="vigor-logo" />
+    </div>
+
+    <div class="hero-eyebrow">✦ Campus Campaign 2026</div>
+
+    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780982027/Reliance_Digital_Bootup_Campaign_Campus_Ambassador_Program_1_rv8mqc.png" alt="Reliance Digital Bootup Campaign Logo" class="hero-campaign-logo" />
+    <p class="hero-subtitle">Igniting the Next Generation of Digital Champions</p>
+
+    <!-- Campaign Stats -->
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-total-pts">0</span>
+        <span class="hero-stat-label">Total Points</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-total-pocs">48</span>
+        <span class="hero-stat-label">POCs Enrolled</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-active-pocs">0</span>
+        <span class="hero-stat-label">Active POCs</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-colleges">48</span>
+        <span class="hero-stat-label">Colleges</span>
+      </div>
+    </div>
+
+    <div class="scroll-cue">↓</div>
+  </section>
+
+  <!-- ══════════════ COUNTDOWN STRIP ══════════════ -->
+  <div class="countdown-strip">
+    <span class="countdown-label">Next Update In</span>
+    <span class="countdown-time" id="countdown-time">00:00:00</span>
+    <span style="opacity:0.3;color:#fff">|</span>
+    <span class="live-dot"></span>
+    <span class="last-updated" id="last-updated">Checking...</span>
+  </div>
+  <div class="red-strip"></div>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="main-content">
+
+    <!-- City Filter Tabs -->
+    <div id="city-tabs" class="city-tabs" style="margin-bottom:48px"></div>
+
+    <!-- ── PODIUM ── -->
+    <section class="podium-section" data-reveal>
+      <div class="section-header">
+        <div class="section-icon">🏆</div>
+        <div>
+          <div class="section-title">Top Performers</div>
+          <div class="section-subtitle">The leaders pushing Bootup India forward</div>
+        </div>
+      </div>
+      <div class="podium" id="podium">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── FULL RANKINGS ── -->
+    <section class="rankings-section" data-reveal data-delay="100">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <div>
+          <div class="section-title">Individual Rankings</div>
+          <div class="section-subtitle">All 48 POCs ranked by total points</div>
+        </div>
+      </div>
+
+      <div class="rankings-table-wrap">
+        <div class="rankings-header">
+          <div>#</div>
+          <div>POC</div>
+          <div class="col-city">City</div>
+          <div class="col-tasks">Tasks</div>
+          <div style="text-align:right">Points</div>
+        </div>
+        <div id="rankings-body">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CITY STANDINGS ── -->
+    <section class="college-section" data-reveal data-delay="200">
+      <div class="section-header">
+        <div class="section-icon">🏙️</div>
+        <div>
+          <div class="section-title">City Standings</div>
+          <div class="section-subtitle">Ranked by Average Points per POC (Fair Comparison)</div>
+        </div>
+      </div>
+      <div class="college-grid" id="city-rankings-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── POINTS REFERENCE ── -->
+    <section class="points-reference" data-reveal data-delay="300">
+      <div class="section-header">
+        <div class="section-icon">💡</div>
+        <div>
+          <div class="section-title">How Points Are Earned</div>
+          <div class="section-subtitle">Complete these activities to climb the leaderboard</div>
+        </div>
+      </div>
+      <div class="points-grid" id="points-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer class="footer">
+    <div class="footer-logo">⚡ Reliance Digital × Vigorlaunchpad</div>
+    <div>Bootup India Campaign 2026 · All Rights Reserved</div>
+    <div style="margin-top:8px">
+      <a href="admin.html" style="color:var(--text3);font-size:12px;text-decoration:none;opacity:0.5">Admin Portal →</a>
+    </div>
+  </footer>
+
+</div>
+
+<script src="js/effects.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/data.js"></script>
+  <script src="js/leaderboard.js"></script>
+</body>
+</html>

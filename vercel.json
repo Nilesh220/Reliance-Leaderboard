@@ -4,6 +4,7 @@
     { "source": "/leaderboard",   "destination": "/leaderboard.html"   },
     { "source": "/dashboard",     "destination": "/dashboard.html"     },
     { "source": "/admin",         "destination": "/admin.html"         },
-    { "source": "/story-submit",  "destination": "/story-submit.html"  }
+    { "source": "/story-submit",  "destination": "/story-submit.html"  },
+    { "source": "/viewer",         "destination": "/viewer.html"         }
   ]
 }
