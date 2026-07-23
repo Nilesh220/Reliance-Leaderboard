@@ -40,34 +40,58 @@ function doGet(e) {
 // ── doPost: receive registration rows from admin.js ────────────
 function doPost(e) {
   try {
-    // Browser sends as URLSearchParams with no-cors (no preflight).
-    // The payload JSON is stored in the 'data' form field.
     let data;
-    if (e.postData.type === 'application/x-www-form-urlencoded') {
-      const raw = e.postData.contents;               // "data=%7B%22action%22..."
-      const decoded = decodeURIComponent(raw.replace(/^data=/, ''));
-      data = JSON.parse(decoded);
+    const raw     = e.postData ? e.postData.contents  : '';
+    const ctype   = e.postData ? e.postData.type      : '';
+
+    // ── Parse: try every known format ──────────────────────────
+    if (ctype.indexOf('application/x-www-form-urlencoded') !== -1) {
+      // URLSearchParams sent by browser no-cors fetch
+      // Body looks like: data=%7B%22action%22...%7D
+      const match = raw.match(/(?:^|&)data=([^&]*)/);
+      if (match) {
+        data = JSON.parse(decodeURIComponent(match[1]));
+      } else {
+        // Fallback: whole body might be the JSON percent-encoded
+        data = JSON.parse(decodeURIComponent(raw));
+      }
     } else {
-      // Fallback: plain JSON body
-      data = JSON.parse(e.postData.contents);
+      // plain JSON body (future-proof)
+      data = JSON.parse(raw);
+    }
+
+    if (!data || !data.action) {
+      return ok({ status: 'error', message: 'Missing action field' });
     }
 
     if (data.action === 'append') {
+      // Single row (legacy / new registration hook)
       const result = appendRow(data);
-      return ContentService.createTextOutput(
-        JSON.stringify({ status: 'ok', inserted: result.inserted, reason: result.reason })
-      ).setMimeType(ContentService.MimeType.JSON);
+      return ok({ status: 'ok', inserted: result.inserted, reason: result.reason });
     }
 
-    return ContentService.createTextOutput(
-      JSON.stringify({ status: 'error', message: 'Unknown action: ' + data.action })
-    ).setMimeType(ContentService.MimeType.JSON);
+    if (data.action === 'batch_append') {
+      // Bulk insert — all rows in one shot (used by Sync All button)
+      if (!Array.isArray(data.rows) || !data.rows.length) {
+        return ok({ status: 'error', message: 'No rows provided for batch_append' });
+      }
+      const result = appendBatch(data.rows);
+      return ok({ status: 'ok', inserted: result.inserted, skipped: result.skipped, total: data.rows.length });
+    }
+
+    return ok({ status: 'error', message: 'Unknown action: ' + data.action });
 
   } catch (err) {
-    return ContentService.createTextOutput(
-      JSON.stringify({ status: 'error', message: err.toString() })
-    ).setMimeType(ContentService.MimeType.JSON);
+    // Log to Apps Script execution log for debugging
+    console.error('doPost error:', err.toString(), '| raw:', e.postData ? e.postData.contents : 'N/A');
+    return ok({ status: 'error', message: err.toString() });
   }
+}
+
+function ok(payload) {
+  return ContentService
+    .createTextOutput(JSON.stringify(payload))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 // ── appendRow: idempotent insert (skip duplicates by mobile) ───
@@ -122,4 +146,73 @@ function appendRow(data) {
        .setBackground(newRow % 2 === 0 ? '#F3F7FF' : '#FFFFFF');
 
   return { inserted: true, reason: 'ok' };
+}
+
+// ── appendBatch: bulk insert, one setValues() call ─────────────
+function appendBatch(rows) {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  let   sheet = ss.getSheetByName(SHEET_NAME);
+
+  // Create sheet + headers if missing
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    const hdr = sheet.getRange(1, 1, 1, HEADER_ROW.length);
+    hdr.setValues([HEADER_ROW])
+       .setFontWeight('bold')
+       .setBackground('#003087')
+       .setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidths(1, HEADER_ROW.length, 160);
+  }
+
+  // Build a Set of existing mobile numbers for deduplication
+  const lastRow     = sheet.getLastRow();
+  const existingSet = new Set();
+  if (lastRow > 1) {
+    const mobileValues = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+    mobileValues.forEach(([mob]) => existingSet.add(String(mob).trim()));
+  }
+
+  // Filter and map only new rows
+  const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  const newRows = [];
+  rows.forEach(row => {
+    const mob = String(row.mobile || '').trim();
+    if (!existingSet.has(mob)) {
+      existingSet.add(mob); // prevent duplicates within the batch itself
+      newRows.push([
+        row.full_name         || '',
+        row.mobile            || '',
+        row.email             || '',
+        row.college_name      || '',
+        row.college_city      || '',
+        row.preferred_store   || '',
+        row.valorant_username || '',
+        row.current_rank      || '',
+        row.poc_name          || '',
+        row.registered_at     || '',
+        now,
+      ]);
+    }
+  });
+
+  const skipped = rows.length - newRows.length;
+
+  if (newRows.length === 0) {
+    return { inserted: 0, skipped };
+  }
+
+  // Write all new rows in ONE API call
+  const startRow = sheet.getLastRow() + 1;
+  sheet.getRange(startRow, 1, newRows.length, HEADER_ROW.length)
+       .setValues(newRows);
+
+  // Alternating row colours (batch)
+  newRows.forEach((_, i) => {
+    const r = startRow + i;
+    sheet.getRange(r, 1, 1, HEADER_ROW.length)
+         .setBackground(r % 2 === 0 ? '#F3F7FF' : '#FFFFFF');
+  });
+
+  return { inserted: newRows.length, skipped };
 }

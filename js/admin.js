@@ -1134,55 +1134,20 @@ function initSheetButton() {
 }
 
 /**
- * Sync a single registration row to Google Sheets via Apps Script Web App.
+ * Sync a SINGLE registration row to Google Sheets.
  * @param {Object} row - A registration record from Supabase
- * @returns {Promise<boolean>} - true if sync succeeded
  */
 async function syncRegistrationToSheet(row) {
-  if (!APPS_SCRIPT_URL) return false;
-  try {
-    const payload = {
-      action:            'append',
-      full_name:          row.full_name         || '',
-      mobile:             row.mobile            || '',
-      email:              row.email             || '',
-      college_name:       row.college_name      || '',
-      college_city:       row.college_city      || '',
-      preferred_store:    row.preferred_store   || '',
-      valorant_username:  row.valorant_username || '',
-      current_rank:       row.current_rank      || '',
-      poc_name:           row.poc_name          || '',
-      registered_at:      row.registered_at
-        ? new Date(row.registered_at).toLocaleString('en-IN')
-        : '',
-    };
-
-    // Google Apps Script Web Apps require no-cors mode from browser.
-    // We use a form-encoded body to avoid triggering a CORS preflight.
-    const form = new URLSearchParams();
-    form.set('data', JSON.stringify(payload));
-
-    await fetch(APPS_SCRIPT_URL, {
-      method:  'POST',
-      mode:    'no-cors', // required for Apps Script — response will be opaque
-      body:    form,
-    });
-
-    // With no-cors we can't read the response, but if no error thrown = success
-    return true;
-  } catch (err) {
-    console.error('[SheetSync] syncRegistrationToSheet error:', err);
-    return false;
-  }
+  return syncBatchToSheet([row]);
 }
 
 /**
- * Sync ALL current registrations to Google Sheet.
+ * Sync ALL registrations in a SINGLE batch request — fast.
  * Called by the "↑ Sync All" button.
  */
 async function syncAllToSheet() {
   if (!APPS_SCRIPT_URL) {
-    showToast('⚠️ Apps Script URL not configured. See admin.js comments.', 'error');
+    showToast('⚠️ Apps Script URL not configured. See admin.js.', 'error');
     return;
   }
 
@@ -1190,27 +1155,71 @@ async function syncAllToSheet() {
   if (syncBtn) { syncBtn.disabled = true; syncBtn.textContent = '⏳ Syncing…'; }
 
   try {
-    /* Load all registrations */
-    const rows = allRegistrations.length ? allRegistrations : await getRegistrations('All');
-    if (!rows.length) {
+    /* Load all registrations from Supabase */
+    const rows = (typeof allRegistrations !== 'undefined' && allRegistrations.length)
+      ? allRegistrations
+      : await getRegistrations('All');
+
+    if (!rows || !rows.length) {
       showToast('No registrations to sync', 'error');
       return;
     }
 
-    /* Batch POST to Apps Script (one row at a time — Apps Script handles deduplication) */
-    let successCount = 0;
-    for (const row of rows) {
-      const ok = await syncRegistrationToSheet(row);
-      if (ok) successCount++;
-    }
+    /* Send ONE batch request with all rows */
+    const ok = await syncBatchToSheet(rows);
 
-    updateSheetSyncStatus(successCount);
-    showToast(`✅ Synced ${successCount} / ${rows.length} registrations to Google Sheet`, 'success');
+    if (ok) {
+      updateSheetSyncStatus(rows.length);
+      showToast(`✅ Batch synced ${rows.length} registrations to Google Sheet`, 'success');
+    } else {
+      showToast('❌ Batch sync failed. Check Apps Script logs.', 'error');
+    }
   } catch (err) {
     console.error('[SheetSync] syncAllToSheet error:', err);
-    showToast('❌ Sheet sync failed. Check console.', 'error');
+    showToast('❌ Sheet sync error. Check console.', 'error');
   } finally {
     if (syncBtn) { syncBtn.disabled = false; syncBtn.textContent = '↑ Sync All'; }
+  }
+}
+
+/**
+ * Core batch sender — sends an array of rows in ONE POST.
+ * @param {Object[]} rows
+ * @returns {Promise<boolean>}
+ */
+async function syncBatchToSheet(rows) {
+  if (!APPS_SCRIPT_URL) return false;
+  try {
+    /* Map Supabase rows to the flat payload the Apps Script expects */
+    const mapped = rows.map(row => ({
+      full_name:         row.full_name         || '',
+      mobile:            row.mobile            || '',
+      email:             row.email             || '',
+      college_name:      row.college_name      || '',
+      college_city:      row.college_city      || '',
+      preferred_store:   row.preferred_store   || '',
+      valorant_username: row.valorant_username || '',
+      current_rank:      row.current_rank      || '',
+      poc_name:          row.poc_name          || '',
+      registered_at:     row.registered_at
+        ? new Date(row.registered_at).toLocaleString('en-IN')
+        : '',
+    }));
+
+    /* URLSearchParams with no-cors (avoids CORS preflight) */
+    const form = new URLSearchParams();
+    form.set('data', JSON.stringify({ action: 'batch_append', rows: mapped }));
+
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors', // required — response will be opaque but request goes through
+      body:   form,
+    });
+
+    return true; // no-cors hides response; absence of exception = success
+  } catch (err) {
+    console.error('[SheetSync] syncBatchToSheet error:', err);
+    return false;
   }
 }
 
