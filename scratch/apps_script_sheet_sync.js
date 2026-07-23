@@ -40,7 +40,17 @@ function doGet(e) {
 // ── doPost: receive registration rows from admin.js ────────────
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // Browser sends as URLSearchParams with no-cors (no preflight).
+    // The payload JSON is stored in the 'data' form field.
+    let data;
+    if (e.postData.type === 'application/x-www-form-urlencoded') {
+      const raw = e.postData.contents;               // "data=%7B%22action%22..."
+      const decoded = decodeURIComponent(raw.replace(/^data=/, ''));
+      data = JSON.parse(decoded);
+    } else {
+      // Fallback: plain JSON body
+      data = JSON.parse(e.postData.contents);
+    }
 
     if (data.action === 'append') {
       const result = appendRow(data);

@@ -1157,13 +1157,19 @@ async function syncRegistrationToSheet(row) {
         : '',
     };
 
-    const res = await fetch(APPS_SCRIPT_URL, {
+    // Google Apps Script Web Apps require no-cors mode from browser.
+    // We use a form-encoded body to avoid triggering a CORS preflight.
+    const form = new URLSearchParams();
+    form.set('data', JSON.stringify(payload));
+
+    await fetch(APPS_SCRIPT_URL, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
+      mode:    'no-cors', // required for Apps Script — response will be opaque
+      body:    form,
     });
 
-    return res.ok;
+    // With no-cors we can't read the response, but if no error thrown = success
+    return true;
   } catch (err) {
     console.error('[SheetSync] syncRegistrationToSheet error:', err);
     return false;
