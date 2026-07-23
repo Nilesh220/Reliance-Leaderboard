@@ -9,38 +9,47 @@
 </head>
 <body class="unauthorized">
 
+<!-- Scroll progress bar -->
+<div id="scroll-progress"></div>
+
+<!-- Custom cursor (desktop only) -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
 <!-- ══════════════ ADMIN LOGIN SCREEN ══════════════ -->
-<div class="login-screen">
-  <div class="login-card">
+<div class="login-screen" id="login-screen">
+  <div class="login-card" id="login-card">
     <div class="login-brand-bar"></div>
     <div class="login-icon">🔒</div>
     <h2 class="login-title">Admin Access Required</h2>
     <p class="login-subtitle">Bootup India Campaign · Vigorlaunchpad</p>
-    
+
     <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="form-group" style="margin-bottom: 20px;">
-        <label class="form-label" style="text-align: left; display: block; margin-bottom: 8px;">Enter Admin Password</label>
+      <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+        <label class="form-label" for="login-password">Enter Admin Password</label>
         <input type="password"
                id="login-password"
                class="form-input"
                placeholder="••••••••"
-               style="width: 100%; text-align: center; font-size: 18px; letter-spacing: 2px;"
+               style="text-align: center; font-size: 20px; letter-spacing: 3px;"
                required />
       </div>
       <div id="login-error" class="login-error-msg"></div>
-      <button type="submit" class="btn btn-publish btn-full">
-        Unlock Portal
+      <button type="submit" class="btn btn-primary btn-full" id="login-submit-btn">
+        🔓 Unlock Portal
       </button>
     </form>
   </div>
 </div>
 
 <!-- ══════════════ ADMIN HEADER ══════════════ -->
-<header class="admin-header">
+<header class="admin-header" id="admin-header">
   <div class="admin-logo">
-    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital Logo" class="admin-logo-img" />
+    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
+         alt="Reliance Digital Logo" class="admin-logo-img" />
     <div class="admin-logo-divider"></div>
-    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Vigorlaunchpad" class="admin-vigor-logo" />
+    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png"
+         alt="Vigorlaunchpad" class="admin-vigor-logo" />
     <div class="admin-logo-divider"></div>
     <div>
       <div class="admin-logo-text">Bootup India · Admin Portal</div>
@@ -48,48 +57,49 @@
     </div>
   </div>
 
-  <div class="admin-header-actions">
-    <div class="pending-indicator">
+  <div class="admin-header-actions" id="admin-header-actions">
+    <div class="pending-indicator" id="pending-indicator-wrap">
       <span id="header-pending-count">0 pending</span>
       <div class="pending-count" id="header-pending-badge">0</div>
     </div>
-    <a href="/leaderboard" class="view-leaderboard-btn" target="_blank">
-      🏆 View Leaderboard ↗
+    <a href="/leaderboard" class="view-leaderboard-btn" target="_blank" id="view-lb-btn">
+      🏆 Leaderboard ↗
     </a>
-    <button onclick="handleLogout()" class="view-leaderboard-btn" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
+    <button onclick="handleLogout()" class="view-leaderboard-btn" id="logout-btn"
+            style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
       🔒 Log Out
     </button>
   </div>
 </header>
 
 <!-- ══════════════ ADMIN LAYOUT ══════════════ -->
-<div class="admin-layout">
+<div class="admin-layout" id="admin-layout">
 
   <!-- ════ LEFT: MAIN PANEL ════ -->
-  <div class="admin-main">
+  <div class="admin-main" id="admin-main-panel">
 
     <!-- ── Stats Overview ── -->
-    <div class="stats-overview">
-      <div class="stat-card">
+    <div class="stats-overview" id="stats-overview">
+      <div class="stat-card" id="stat-card-total-pts">
         <div class="stat-card-value" id="admin-stat-total-pts">0</div>
         <div class="stat-card-label">Total Pts Live</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" id="stat-card-active-pocs">
         <div class="stat-card-value" id="admin-stat-active-pocs">0</div>
         <div class="stat-card-label">Active POCs</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" id="stat-card-total-pocs">
         <div class="stat-card-value" id="admin-stat-total-pocs">48</div>
         <div class="stat-card-label">Total POCs</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" id="stat-card-pending">
         <div class="stat-card-value" id="admin-stat-pending" style="color:var(--orange)">0</div>
         <div class="stat-card-label">In Queue</div>
       </div>
     </div>
 
     <!-- ── Task Logger ── -->
-    <div class="admin-card">
+    <div class="admin-card" id="task-logger-card">
       <div class="admin-section-title">
         <div class="icon">➕</div>
         Log a Task
@@ -97,7 +107,7 @@
 
       <!-- Step 1: Select POC -->
       <div style="margin-bottom:20px">
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
           Step 1 — Select POC
         </div>
         <div style="position:relative" id="search-wrap">
@@ -116,13 +126,11 @@
           <div class="selected-poc-details">
             <div class="selected-poc-name" id="sel-poc-name">—</div>
             <div class="selected-poc-college" id="sel-poc-college">—</div>
-            <div>
-              <span id="sel-poc-city" class="city-tag"></span>
-            </div>
+            <div><span id="sel-poc-city" class="city-tag"></span></div>
           </div>
-          <div style="text-align:right">
+          <div style="text-align:right;flex-shrink:0">
             <div class="selected-poc-points" id="sel-poc-points">0 <span>pts</span></div>
-            <div style="font-size:11px;color:var(--text3)">current</div>
+            <div style="font-size:10px;color:var(--text3)">current</div>
           </div>
           <button class="clear-selection" onclick="clearSelection()" title="Clear selection">✕</button>
         </div>
@@ -130,7 +138,7 @@
 
       <!-- Step 2: Select Task -->
       <div style="margin-bottom:20px">
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
           Step 2 — Select Task
         </div>
         <div class="category-tabs" id="category-tabs"></div>
@@ -139,16 +147,16 @@
 
       <!-- Step 3: Quantity (for multiplier tasks) -->
       <div id="qty-wrap" style="display:none;margin-bottom:20px;flex-direction:column;gap:8px">
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">
           Step 3 — Enter Quantity
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Quantity</label>
+            <label class="form-label" for="qty-input">Quantity</label>
             <input type="number" id="qty-input" class="form-input" value="1" min="1" max="999" />
           </div>
           <div class="form-group">
-            <label class="form-label">Note (optional)</label>
+            <label class="form-label" for="task-note">Note (optional)</label>
             <input type="text" id="task-note" class="form-input" placeholder="e.g. Group names, details…" />
           </div>
         </div>
@@ -157,16 +165,16 @@
       <!-- Note for non-multiplier tasks -->
       <div id="note-wrap" style="margin-bottom:20px">
         <div class="form-group">
-          <label class="form-label">Note (optional)</label>
+          <label class="form-label" for="task-note-single">Note (optional)</label>
           <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event name…" />
         </div>
       </div>
 
       <!-- Points Preview -->
-      <div class="points-preview">
+      <div class="points-preview" id="points-preview-row">
         <div>
           <div class="points-preview-label">Points to be awarded</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
         </div>
         <div class="points-preview-value" id="points-preview-value">— pts</div>
       </div>
@@ -178,45 +186,79 @@
     </div>
 
     <!-- ── Full POC Table ── -->
-    <div class="admin-card">
+    <div class="admin-card" id="all-pocs-card">
       <div class="admin-section-title">
         <div class="icon">👥</div>
         All POCs
-        <button class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="openAddPOCModal()">+ Add POC</button>
+        <button class="btn btn-primary"
+                style="margin-left:auto;padding:6px 14px;font-size:12px"
+                onclick="openAddPOCModal()"
+                id="add-poc-trigger-btn">
+          + Add POC
+        </button>
       </div>
 
       <!-- Filter tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="category-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')">All Cities</button>
-        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')">🏙️ Mumbai</button>
-        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')">🌸 Pune</button>
-        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')">🕌 Aurangabad</button>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="poc-city-filter-row">
+        <button class="category-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')" id="poc-filter-all">All Cities</button>
+        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')" id="poc-filter-mumbai">🏙️ Mumbai</button>
+        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')" id="poc-filter-pune">🌸 Pune</button>
+        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')" id="poc-filter-aurangabad">🕌 Aurangabad</button>
       </div>
 
-      <div class="poc-table-wrap">
-        <div class="poc-table-header poc-table-header--ext">
-          <div>POC</div>
-          <div class="col-city">City</div>
-          <div>Points</div>
-          <div>Action</div>
-          <div>Link</div>
-        </div>
-        <div id="poc-table-body">
-          <!-- Rendered by JS -->
+      <div class="table-scroll">
+        <div class="poc-table-wrap" id="poc-table-outer">
+          <div class="poc-table-header poc-table-header--ext" id="poc-table-header-row">
+            <div>POC</div>
+            <div class="col-city">City</div>
+            <div>Points</div>
+            <div>Action</div>
+            <div>Link</div>
+          </div>
+          <div id="poc-table-body">
+            <!-- Rendered by JS -->
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ── Registrations ── -->
+    <!-- ── Valorant Registrations ── -->
     <div class="admin-card" id="registrations-card">
       <div class="admin-section-title">
         <div class="icon">📝</div>
         Valorant Registrations
-        <button class="btn btn-primary" id="export-csv-btn"
-          style="margin-left:auto;padding:6px 14px;font-size:13px;display:flex;align-items:center;gap:6px"
-          onclick="exportRegistrationsCSV()">
-          📥 Export CSV
+        <span id="reg-live-badge"
+              style="font-size:10px;background:var(--green-pale);color:var(--green);border:1px solid rgba(0,134,90,0.20);border-radius:var(--radius-pill);padding:3px 10px;font-weight:700;letter-spacing:0.5px">
+          ● LIVE
+        </span>
+        <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
+          <a id="open-sheet-btn"
+             href="https://docs.google.com/spreadsheets"
+             target="_blank"
+             class="btn btn-green-soft"
+             title="Open live Google Sheet">
+            📊 Open Sheet ↗
+          </a>
+          <button class="btn btn-primary"
+                  id="export-csv-btn"
+                  style="padding:6px 13px;font-size:12px;display:flex;align-items:center;gap:5px"
+                  onclick="exportRegistrationsCSV()">
+            📥 Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Google Sheet sync status strip -->
+      <div class="sheet-sync-strip" id="sheet-sync-strip">
+        <div class="sheet-sync-dot"></div>
+        <span class="sheet-sync-label">Connected to Google Sheet</span>
+        <button class="btn btn-green-soft"
+                onclick="syncAllToSheet()"
+                id="sync-all-sheet-btn"
+                style="padding:4px 10px;font-size:11px">
+          ↑ Sync All
         </button>
+        <span class="sheet-sync-time" id="sheet-last-sync">—</span>
       </div>
 
       <!-- KPI pills -->
@@ -240,26 +282,31 @@
       </div>
 
       <!-- City filter -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="category-tab active reg-filter-btn" data-city="All" onclick="filterRegistrations('All')">All</button>
-        <button class="category-tab reg-filter-btn" data-city="Mumbai" onclick="filterRegistrations('Mumbai')">🏙️ Mumbai</button>
-        <button class="category-tab reg-filter-btn" data-city="Pune" onclick="filterRegistrations('Pune')">🌸 Pune</button>
-        <button class="category-tab reg-filter-btn" data-city="Aurangabad" onclick="filterRegistrations('Aurangabad')">🕌 Aurangabad</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="reg-city-filter-row">
+        <button class="category-tab active reg-filter-btn" data-city="All" onclick="filterRegistrations('All')" id="reg-filter-all">All</button>
+        <button class="category-tab reg-filter-btn" data-city="Mumbai" onclick="filterRegistrations('Mumbai')" id="reg-filter-mumbai">🏙️ Mumbai</button>
+        <button class="category-tab reg-filter-btn" data-city="Pune" onclick="filterRegistrations('Pune')" id="reg-filter-pune">🌸 Pune</button>
+        <button class="category-tab reg-filter-btn" data-city="Aurangabad" onclick="filterRegistrations('Aurangabad')" id="reg-filter-aurangabad">🕌 Aurangabad</button>
       </div>
 
-      <!-- Table -->
-      <div class="reg-table-wrap">
-        <div class="reg-table-header">
-          <div>Student</div>
-          <div>Mobile</div>
-          <div>College</div>
-          <div>Store</div>
-          <div>Rank</div>
-          <div>POC</div>
-          <div>Date</div>
-        </div>
-        <div id="reg-table-body">
-          <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading registrations…</div>
+      <!-- Table (with horizontal scroll) -->
+      <div class="table-scroll" id="reg-table-scroll">
+        <div class="reg-table-wrap" id="reg-table-outer">
+          <div class="reg-table-header" id="reg-table-header-row">
+            <div>Student</div>
+            <div>Mobile</div>
+            <div>College</div>
+            <div>Store</div>
+            <div>Rank</div>
+            <div>POC</div>
+            <div>Date</div>
+          </div>
+          <div id="reg-table-body">
+            <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px">
+              <div class="skeleton" style="height:14px;width:60%;margin:0 auto 10px"></div>
+              <div class="skeleton" style="height:14px;width:40%;margin:0 auto"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -271,13 +318,14 @@
         Story Submissions
         <a href="/story-submit.html" target="_blank"
            class="btn btn-primary"
-           style="margin-left:auto;padding:6px 14px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+           style="margin-left:auto;padding:6px 14px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;"
+           id="share-story-link-btn">
           🔗 Share Link ↗
         </a>
       </div>
 
       <!-- KPI pills -->
-      <div class="reg-kpi-row" id="ss-kpi-row" style="margin-bottom:16px;">
+      <div class="reg-kpi-row" id="ss-kpi-row" style="margin-bottom:16px">
         <div class="reg-kpi-pill">
           <span class="reg-kpi-num" id="ss-kpi-total">—</span>
           <span class="reg-kpi-lbl">Total</span>
@@ -297,78 +345,57 @@
       </div>
 
       <!-- Status filter tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="category-tab active ss-filter-btn" data-status="All"             onclick="filterStorySubmissions('All')">All</button>
-        <button class="category-tab ss-filter-btn" data-status="story_submitted"        onclick="filterStorySubmissions('story_submitted')">📸 Story Done</button>
-        <button class="category-tab ss-filter-btn" data-status="views_submitted"        onclick="filterStorySubmissions('views_submitted')">👁️ Views Done</button>
-        <button class="category-tab ss-filter-btn" data-status="verified"               onclick="filterStorySubmissions('verified')">✅ Verified</button>
-        <button class="category-tab ss-filter-btn" data-status="rejected"               onclick="filterStorySubmissions('rejected')">❌ Rejected</button>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="ss-filter-row">
+        <button class="category-tab active ss-filter-btn" data-status="All"            onclick="filterStorySubmissions('All')" id="ss-filter-all">All</button>
+        <button class="category-tab ss-filter-btn" data-status="story_submitted"       onclick="filterStorySubmissions('story_submitted')" id="ss-filter-story">📸 Story Done</button>
+        <button class="category-tab ss-filter-btn" data-status="views_submitted"       onclick="filterStorySubmissions('views_submitted')" id="ss-filter-views">👁️ Views Done</button>
+        <button class="category-tab ss-filter-btn" data-status="verified"              onclick="filterStorySubmissions('verified')" id="ss-filter-verified">✅ Verified</button>
+        <button class="category-tab ss-filter-btn" data-status="rejected"              onclick="filterStorySubmissions('rejected')" id="ss-filter-rejected">❌ Rejected</button>
       </div>
 
-      <!-- Table -->
-      <div class="poc-table-wrap" style="overflow-x:auto;">
-        <div class="ss-table-header">
-          <div>Student</div>
-          <div>Referred by POC</div>
-          <div>Story</div>
-          <div>Views</div>
-          <div>Status</div>
-          <div>Date</div>
-          <div>Actions</div>
-        </div>
-        <div id="ss-table-body">
-          <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading submissions…</div>
+      <!-- Table (with horizontal scroll) -->
+      <div class="table-scroll" id="ss-table-scroll">
+        <div class="poc-table-wrap" id="ss-table-outer">
+          <div class="ss-table-header" id="ss-table-header-row">
+            <div>Student</div>
+            <div>Referred by POC</div>
+            <div>Story</div>
+            <div>Views</div>
+            <div>Status</div>
+            <div>Date</div>
+            <div>Actions</div>
+          </div>
+          <div id="ss-table-body">
+            <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading submissions…</div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Story Submissions Table Styles -->
-    <style>
-      .ss-table-header {
-        display: grid;
-        grid-template-columns: 2fr 1.6fr 60px 80px 1fr 90px 1fr;
-        gap: 0;
-        background: var(--bg2);
-        font-size: 11px; font-weight: 700;
-        letter-spacing: 1px; text-transform: uppercase;
-        color: var(--text2);
-        padding: 10px 14px;
-        border-bottom: 2px solid var(--border);
-        border-radius: 8px 8px 0 0;
-        min-width: 700px;
-      }
-      .ss-table-row {
-        display: grid;
-        grid-template-columns: 2fr 1.6fr 60px 80px 1fr 90px 1fr;
-        gap: 0;
-        padding: 12px 14px;
-        border-bottom: 1px solid var(--border);
-        align-items: center;
-        transition: background 0.18s;
-        min-width: 700px;
-      }
-      .ss-table-row:hover { background: var(--bg2); }
-      .ss-table-row:last-child { border-bottom: none; }
-    </style>
 
     <!-- ── Task Management ── -->
     <div class="admin-card" id="task-management-card">
       <div class="admin-section-title">
         <div class="icon">📋</div>
         Task Management
-        <button class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:13px" onclick="toggleCreateTaskForm()">+ Create Task</button>
+        <button class="btn btn-primary"
+                style="margin-left:auto;padding:6px 14px;font-size:12px"
+                onclick="toggleCreateTaskForm()"
+                id="create-task-trigger-btn">
+          + Create Task
+        </button>
       </div>
 
       <!-- Create Task Form -->
-      <div id="create-task-form" style="display:none;background:var(--bg2);border-radius:12px;padding:20px;margin-bottom:20px;border:1.5px solid var(--border)">
+      <div id="create-task-form"
+           style="display:none;background:var(--bg2);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;border:1.5px solid var(--border)">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">New Task</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Task Title</label>
+            <label class="form-label" for="ntask-title">Task Title</label>
             <input type="text" id="ntask-title" class="form-input" placeholder="e.g. Post a Story with #BootupIndia" />
           </div>
           <div class="form-group">
-            <label class="form-label">Task Type</label>
+            <label class="form-label" for="ntask-type">Task Type</label>
             <select id="ntask-type" class="form-input">
               <option value="story_screenshot">📸 Story Screenshot</option>
               <option value="store_visit">🏪 Store Visit</option>
@@ -376,35 +403,36 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Description (one-liner shown to POCs)</label>
+        <div class="form-group" style="margin-bottom:14px">
+          <label class="form-label" for="ntask-desc">Description (shown to POCs)</label>
           <input type="text" id="ntask-desc" class="form-input" placeholder="e.g. Upload a story screenshot tagging @reliancedigital" />
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Points Awarded</label>
+            <label class="form-label" for="ntask-pts">Points Awarded</label>
             <input type="number" id="ntask-pts" class="form-input" value="50" min="1" />
           </div>
           <div class="form-group">
-            <label class="form-label">Deadline (optional)</label>
+            <label class="form-label" for="ntask-deadline">Deadline (optional)</label>
             <input type="datetime-local" id="ntask-deadline" class="form-input" />
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-live">
             <input type="checkbox" id="ntask-live" style="width:16px;height:16px;accent-color:var(--green)" />
             Make live immediately
           </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" title="After deadline, submissions still accepted but earn only 50% of the points">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-late-penalty"
+                 title="After deadline, submissions still accepted but earn only 50% of the points">
             <input type="checkbox" id="ntask-late-penalty" style="width:16px;height:16px;accent-color:var(--orange)" />
-            ⏰ Late submission = 50% points
+            ⏰ Late = 50% points
           </label>
         </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-primary" onclick="createTask()">Create Task</button>
-          <button class="btn btn-ghost" onclick="toggleCreateTaskForm()">Cancel</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="createTask()" id="create-task-submit-btn">Create Task</button>
+          <button class="btn btn-ghost" onclick="toggleCreateTaskForm()" id="create-task-cancel-btn">Cancel</button>
         </div>
-        <div id="create-task-msg" style="font-size:13px;margin-top:8px"></div>
+        <div id="create-task-msg" style="font-size:12px;margin-top:8px"></div>
       </div>
 
       <!-- Task List -->
@@ -414,7 +442,7 @@
     </div>
 
     <!-- ── Audit History ── -->
-    <div class="admin-card">
+    <div class="admin-card" id="activity-history-card">
       <div class="admin-section-title">
         <div class="icon">📜</div>
         Activity History
@@ -424,13 +452,13 @@
       </div>
     </div>
 
-  </div>
+  </div><!-- /admin-main -->
 
   <!-- ════ RIGHT: SIDEBAR ════ -->
-  <div class="admin-sidebar">
+  <div class="admin-sidebar" id="admin-sidebar-panel">
 
     <!-- Publish Section -->
-    <div class="publish-section">
+    <div class="publish-section" id="publish-section">
       <div class="publish-title">🚀 Publish to Leaderboard</div>
       <div class="publish-desc">
         Review queued tasks below, then publish to push all changes live to the public leaderboard.
@@ -438,29 +466,32 @@
       <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
         ✅ Publish Update Now
       </button>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:12px">
+      <div style="font-size:10px;color:var(--text3);margin-top:10px">
         Typically done daily at 8:00 PM IST
       </div>
     </div>
 
     <!-- Task Submissions Review -->
-    <div class="admin-card" style="margin-bottom:24px">
-      <div class="admin-section-title" style="font-size:16px">
+    <div class="admin-card" id="task-submissions-card" style="margin-bottom:20px">
+      <div class="admin-section-title" style="font-size:15px">
         <div class="icon">📥</div>
         Task Submissions
-        <span id="pending-sub-count" style="font-size:12px;background:var(--red);color:#fff;padding:2px 8px;border-radius:99px;margin-left:auto">0</span>
+        <span id="pending-sub-count"
+              style="font-size:11px;background:var(--red);color:#fff;padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">
+          0
+        </span>
       </div>
       <div id="task-submissions-list">
-        <div style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Loading submissions...</div>
+        <div style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Loading submissions...</div>
       </div>
     </div>
 
     <!-- Pending Queue -->
-    <div style="margin-bottom:24px">
-      <div class="admin-section-title" style="font-size:16px">
+    <div style="margin-bottom:20px" id="pending-queue-section">
+      <div class="admin-section-title" style="font-size:15px">
         <div class="icon">⏳</div>
         Pending Queue
-        <span id="queue-total-pts" style="font-size:13px;color:var(--accent);margin-left:auto;font-weight:600"></span>
+        <span id="queue-total-pts" style="font-size:12px;color:var(--red);margin-left:auto;font-weight:600"></span>
       </div>
       <div id="pending-queue">
         <!-- Rendered by JS -->
@@ -468,92 +499,92 @@
     </div>
 
     <!-- Quick Reference -->
-    <div class="admin-card">
-      <div class="admin-section-title" style="font-size:15px">
+    <div class="admin-card" id="point-reference-card">
+      <div class="admin-section-title" style="font-size:14px">
         <div class="icon">💡</div>
         Point Reference
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Instagram</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>📸 Story + tag</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🔥 Engagement bonus</span><span style="color:var(--accent);font-weight:700">+20 pts</span></div>
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">WhatsApp</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>💬 Per group share</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Events</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎓 12 June Seminar</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>📢 12 June Orientation</span><span style="color:var(--accent);font-weight:700">10 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🎯 Webinar attendee</span><span style="color:var(--accent);font-weight:700">15 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🤖 AI Webinar student</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Store</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏪 Store visit</span><span style="color:var(--accent);font-weight:700">3 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🇮🇳 15 Aug visit</span><span style="color:var(--accent);font-weight:700">5 pts</span></div>
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin:8px 0 4px">Bonus</div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🏆 Weekly top</span><span style="color:var(--gold);font-weight:700">+50 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>🥇 Top college/month</span><span style="color:var(--gold);font-weight:700">+100 pts</span></div>
-        <div style="font-size:13px;color:var(--text2);display:flex;justify-content:space-between"><span>⭐ Weekly consistency</span><span style="color:var(--gold);font-weight:700">+25 pts</span></div>
+      <div>
+        <div class="point-ref-section">Instagram</div>
+        <div class="point-ref-row"><span>📸 Story + tag</span><span class="point-ref-val">10 pts</span></div>
+        <div class="point-ref-row"><span>🔥 Engagement bonus</span><span class="point-ref-val">+20 pts</span></div>
+        <div class="point-ref-section">WhatsApp</div>
+        <div class="point-ref-row"><span>💬 Per group share</span><span class="point-ref-val">5 pts</span></div>
+        <div class="point-ref-section">Events</div>
+        <div class="point-ref-row"><span>🎓 12 June Seminar</span><span class="point-ref-val">10 pts</span></div>
+        <div class="point-ref-row"><span>📢 12 June Orientation</span><span class="point-ref-val">10 pts</span></div>
+        <div class="point-ref-row"><span>🎯 Webinar attendee</span><span class="point-ref-val">15 pts</span></div>
+        <div class="point-ref-row"><span>🤖 AI Webinar student</span><span class="point-ref-val">3 pts</span></div>
+        <div class="point-ref-section">Store</div>
+        <div class="point-ref-row"><span>🏪 Store visit</span><span class="point-ref-val">3 pts</span></div>
+        <div class="point-ref-row"><span>🇮🇳 15 Aug visit</span><span class="point-ref-val">5 pts</span></div>
+        <div class="point-ref-section">Bonus</div>
+        <div class="point-ref-row"><span>🏆 Weekly top</span><span class="point-ref-val gold">+50 pts</span></div>
+        <div class="point-ref-row"><span>🥇 Top college/month</span><span class="point-ref-val gold">+100 pts</span></div>
+        <div class="point-ref-row"><span>⭐ Weekly consistency</span><span class="point-ref-val gold">+25 pts</span></div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /admin-sidebar -->
+</div><!-- /admin-layout -->
 
 <!-- ══════════════ PUBLISH CONFIRMATION MODAL ══════════════ -->
 <div class="modal-overlay" id="publish-modal" onclick="if(event.target===this)closePublishModal()">
-  <div class="modal">
+  <div class="modal" id="publish-modal-box">
     <div class="modal-title">🚀 Confirm Publish</div>
     <div id="publish-summary" style="color:var(--text2);font-size:14px;line-height:1.6"></div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closePublishModal()">Cancel</button>
-      <button class="btn btn-success" onclick="confirmPublish()">✅ Yes, Publish Now</button>
+      <button class="btn btn-ghost" onclick="closePublishModal()" id="publish-cancel-btn">Cancel</button>
+      <button class="btn btn-success" onclick="confirmPublish()" id="publish-confirm-btn">✅ Yes, Publish Now</button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════ OVERRIDE MODAL ══════════════ -->
 <div class="modal-overlay" id="override-modal" onclick="if(event.target===this)closeOverrideModal()">
-  <div class="modal">
+  <div class="modal" id="override-modal-box">
     <div class="modal-title">✏️ Manual Point Override</div>
     <input type="hidden" id="override-poc-id" />
-    <div style="color:var(--text2);margin-bottom:16px">
+    <div style="color:var(--text2);margin-bottom:16px;font-size:14px">
       Editing: <strong id="override-poc-name" style="color:var(--text)">—</strong>
     </div>
     <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">New Total Points</label>
+      <label class="form-label" for="override-pts-input">New Total Points</label>
       <input type="number" id="override-pts-input" class="form-input" min="0" />
     </div>
-    <div class="form-group" style="margin-bottom:0">
-      <label class="form-label">Reason</label>
+    <div class="form-group">
+      <label class="form-label" for="override-reason">Reason</label>
       <input type="text" id="override-reason" class="form-input" placeholder="e.g. Correction, bonus award…" />
     </div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeOverrideModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmOverride()">Save Override</button>
+      <button class="btn btn-ghost" onclick="closeOverrideModal()" id="override-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmOverride()" id="override-save-btn">Save Override</button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════ ADD POC MODAL ══════════════ -->
 <div class="modal-overlay" id="add-poc-modal" onclick="if(event.target===this)closeAddPOCModal()">
-  <div class="modal">
+  <div class="modal" id="add-poc-modal-box">
     <div class="modal-title">👤 Add New POC</div>
-    
+
     <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">Name</label>
+      <label class="form-label" for="new-poc-name">Name</label>
       <input type="text" id="new-poc-name" class="form-input" placeholder="e.g. Rahul Sharma" required />
     </div>
-    
+
     <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">Email</label>
+      <label class="form-label" for="new-poc-email">Email</label>
       <input type="email" id="new-poc-email" class="form-input" placeholder="e.g. rahul@example.com" required />
     </div>
 
     <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">College</label>
+      <label class="form-label" for="new-poc-college">College</label>
       <input type="text" id="new-poc-college" class="form-input" placeholder="e.g. IIT Bombay" required />
     </div>
 
     <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">City</label>
+      <label class="form-label" for="new-poc-city">City</label>
       <select id="new-poc-city" class="form-input" required>
         <option value="Mumbai">Mumbai</option>
         <option value="Pune">Pune</option>
@@ -562,54 +593,56 @@
     </div>
 
     <div class="form-group" style="margin-bottom:16px">
-      <label class="form-label">Starting Points</label>
+      <label class="form-label" for="new-poc-points">Starting Points</label>
       <input type="number" id="new-poc-points" class="form-input" value="0" min="0" />
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeAddPOCModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmAddPOC()">Add POC</button>
+      <button class="btn btn-ghost" onclick="closeAddPOCModal()" id="add-poc-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAddPOC()" id="add-poc-confirm-btn">Add POC</button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════ DELETE CONFIRMATION MODAL ══════════════ -->
 <div class="modal-overlay" id="delete-poc-modal" onclick="if(event.target===this)closeDeletePOCModal()">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal" id="delete-poc-modal-box" style="max-width:400px">
     <div class="modal-title" style="color:var(--red)">⚠️ Delete POC</div>
-    <div style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px;">
+    <div style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px">
       Are you sure you want to permanently delete <strong id="delete-poc-name" style="color:var(--text)">—</strong>?<br>
       This will permanently remove them, their points, and all their logged activity history.
     </div>
     <input type="hidden" id="delete-poc-id" />
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeDeletePOCModal()">Cancel</button>
-      <button class="btn" style="background:var(--red); border-color:var(--red); color:#fff;" onclick="confirmDeletePOC()">🗑️ Yes, Delete</button>
+      <button class="btn btn-ghost" onclick="closeDeletePOCModal()" id="delete-poc-cancel-btn">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeletePOC()" id="delete-poc-confirm-btn"
+              style="background:var(--red);border-color:var(--red);color:#fff">
+        🗑️ Yes, Delete
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ══════════════ POINT HISTORY MODAL ══════════════ -->
 <div class="modal-overlay" id="point-history-modal" onclick="if(event.target===this)closePointHistory()">
-  <div class="modal" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">
+  <div class="modal" id="point-history-modal-box" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">
     <div class="modal-title" style="display:flex;align-items:center;gap:10px">
       <span>📈</span>
       <span id="point-history-title">Point History</span>
-      <button onclick="closePointHistory()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1">✕</button>
+      <button onclick="closePointHistory()"
+              style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1"
+              id="point-history-close-btn">✕</button>
     </div>
-    <div id="point-history-summary" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap"></div>
+    <div id="point-history-summary" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"></div>
     <div id="point-history-body" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px">
       <div style="text-align:center;padding:20px;color:var(--text3)">Loading...</div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ TOAST CONTAINER ══════════════ -->
-<div class="toast-container" id="toast-container"></div>
-
 <!-- ══════════════ POC LINK MODAL ══════════════ -->
 <div class="modal-overlay" id="poc-link-modal" onclick="if(event.target===this)closePOCLinkModal()">
-  <div class="modal" style="max-width:480px">
+  <div class="modal" id="poc-link-modal-box" style="max-width:480px">
     <div class="modal-title">🔗 Student Registration Link</div>
     <p style="color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:14px">
       Share this link with students. They will be taken to the Valorant registration form
@@ -618,26 +651,39 @@
     <div id="poc-link-poc-name" style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;align-items:stretch">
       <input type="text" id="poc-link-url" class="form-input"
-        style="flex:1;font-size:12px;background:var(--bg2);color:var(--text2)"
-        readonly />
+             style="flex:1;font-size:12px;background:var(--bg2);color:var(--text2)" readonly />
       <button class="btn btn-primary" id="poc-link-copy-btn" onclick="doCopyPOCLink()" style="flex-shrink:0">
         📋 Copy
       </button>
     </div>
-    <div id="poc-link-copied" style="font-size:12px;color:var(--green);font-weight:600;margin-top:8px;display:none">✅ Copied to clipboard!</div>
+    <div id="poc-link-copied" style="font-size:12px;color:var(--green);font-weight:600;margin-top:8px;display:none">
+      ✅ Copied to clipboard!
+    </div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closePOCLinkModal()">Close</button>
+      <button class="btn btn-ghost" onclick="closePOCLinkModal()" id="poc-link-close-btn">Close</button>
     </div>
   </div>
 </div>
 
+<!-- ══════════════ TOAST CONTAINER ══════════════ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/admin_tasks.js"></script>
 <script src="js/effects.js"></script>
 <script>
-  // Sync category-tab active state for POC filter buttons
+  /* ── Scroll progress bar ── */
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
+    const bar = document.getElementById('scroll-progress');
+    if (bar) bar.style.width = (scrolled * 100) + '%';
+  });
+
+  /* ── Sync POC filter active state ── */
   document.querySelectorAll('.poc-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.poc-filter-btn').forEach(b => b.classList.remove('active'));
@@ -645,11 +691,10 @@
     });
   });
 
-  // Note field sync for single tasks
+  /* ── Note field sync between multiplier / single note inputs ── */
   document.addEventListener('DOMContentLoaded', () => {
     const noteEl       = document.getElementById('task-note');
     const noteSingleEl = document.getElementById('task-note-single');
-
     if (noteEl && noteSingleEl) {
       noteSingleEl.addEventListener('input', () => noteEl.value = noteSingleEl.value);
       noteEl.addEventListener('input', () => noteSingleEl.value = noteEl.value);

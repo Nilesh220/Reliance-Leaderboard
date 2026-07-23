@@ -4,6 +4,19 @@
  */
 
 /* ─────────────────────────────────────────────
+   GOOGLE SHEETS LIVE SYNC CONFIG
+   ─────────────────────────────────────────────
+   Steps to activate:
+   1. Open your Google Sheet → Extensions → Apps Script
+   2. Paste the code from /scratch/apps_script_sheet_sync.js
+   3. Deploy as Web App (Execute as: Me, Access: Anyone)
+   4. Copy the Web App URL and paste it into APPS_SCRIPT_URL below
+   5. Set GOOGLE_SHEET_ID from your sheet's URL
+   ───────────────────────────────────────────── */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0QAm4qQgz_nm7pd77Yj3NcNf7LHDRd7_T-JZd9TG6dcZygZdoo42bTgurpOTiOShNCA/exec';
+const GOOGLE_SHEET_ID = '1kcYifDMCqYBg3l4KegwLYULpCzFTnc6kD1NniDMP3dU';
+
+/* ─────────────────────────────────────────────
    STATE
    ───────────────────────────────────────────── */
 let selectedPOC    = null;
@@ -1099,4 +1112,122 @@ window.renderStorySubmissionsSection = renderStorySubmissionsSection;
 window.filterStorySubmissions        = filterStorySubmissions;
 window.verifyStory                   = verifyStory;
 window.rejectStory                   = rejectStory;
-window.previewImage                  = previewImage;
+window.previewImage                  = previewImage;
+
+/* ─────────────────────────────────────────────
+   GOOGLE SHEETS LIVE SYNC
+   ───────────────────────────────────────────── */
+
+/**
+ * Update the "Open Sheet ↗" button href using GOOGLE_SHEET_ID.
+ * Called once on init.
+ */
+function initSheetButton() {
+  const btn = document.getElementById('open-sheet-btn');
+  if (!btn) return;
+  if (GOOGLE_SHEET_ID) {
+    btn.href = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/edit`;
+  }
+  // Show/hide sync strip based on whether Apps Script is configured
+  const strip = document.getElementById('sheet-sync-strip');
+  if (strip) strip.style.display = APPS_SCRIPT_URL ? 'flex' : 'none';
+}
+
+/**
+ * Sync a single registration row to Google Sheets via Apps Script Web App.
+ * @param {Object} row - A registration record from Supabase
+ * @returns {Promise<boolean>} - true if sync succeeded
+ */
+async function syncRegistrationToSheet(row) {
+  if (!APPS_SCRIPT_URL) return false;
+  try {
+    const payload = {
+      action:            'append',
+      full_name:          row.full_name         || '',
+      mobile:             row.mobile            || '',
+      email:              row.email             || '',
+      college_name:       row.college_name      || '',
+      college_city:       row.college_city      || '',
+      preferred_store:    row.preferred_store   || '',
+      valorant_username:  row.valorant_username || '',
+      current_rank:       row.current_rank      || '',
+      poc_name:           row.poc_name          || '',
+      registered_at:      row.registered_at
+        ? new Date(row.registered_at).toLocaleString('en-IN')
+        : '',
+    };
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+
+    return res.ok;
+  } catch (err) {
+    console.error('[SheetSync] syncRegistrationToSheet error:', err);
+    return false;
+  }
+}
+
+/**
+ * Sync ALL current registrations to Google Sheet.
+ * Called by the "↑ Sync All" button.
+ */
+async function syncAllToSheet() {
+  if (!APPS_SCRIPT_URL) {
+    showToast('⚠️ Apps Script URL not configured. See admin.js comments.', 'error');
+    return;
+  }
+
+  const syncBtn = document.getElementById('sync-all-sheet-btn');
+  if (syncBtn) { syncBtn.disabled = true; syncBtn.textContent = '⏳ Syncing…'; }
+
+  try {
+    /* Load all registrations */
+    const rows = allRegistrations.length ? allRegistrations : await getRegistrations('All');
+    if (!rows.length) {
+      showToast('No registrations to sync', 'error');
+      return;
+    }
+
+    /* Batch POST to Apps Script (one row at a time — Apps Script handles deduplication) */
+    let successCount = 0;
+    for (const row of rows) {
+      const ok = await syncRegistrationToSheet(row);
+      if (ok) successCount++;
+    }
+
+    updateSheetSyncStatus(successCount);
+    showToast(`✅ Synced ${successCount} / ${rows.length} registrations to Google Sheet`, 'success');
+  } catch (err) {
+    console.error('[SheetSync] syncAllToSheet error:', err);
+    showToast('❌ Sheet sync failed. Check console.', 'error');
+  } finally {
+    if (syncBtn) { syncBtn.disabled = false; syncBtn.textContent = '↑ Sync All'; }
+  }
+}
+
+/**
+ * Update the last-sync timestamp shown in the strip.
+ * @param {number} [count] - number of rows synced (optional display)
+ */
+function updateSheetSyncStatus(count) {
+  const el = document.getElementById('sheet-last-sync');
+  if (!el) return;
+  const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  el.textContent = count !== undefined
+    ? `Last synced ${count} rows at ${now}`
+    : `Last synced at ${now}`;
+}
+
+window.syncAllToSheet           = syncAllToSheet;
+window.syncRegistrationToSheet  = syncRegistrationToSheet;
+window.initSheetButton          = initSheetButton;
+
+/* ── Wire initSheetButton into the dashboard bootstrap ── */
+const _origInit = initializeAdminDashboard;
+initializeAdminDashboard = async function () {
+  await _origInit();
+  initSheetButton();
+};
