@@ -3,532 +3,575 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal — Bootup India Campaign</title>
-  <meta name="description" content="Admin portal for managing Bootup India campaign point entries and publishing updates to the leaderboard." />
+  <title>Admin Portal — Bootup India</title>
+  <meta name="description" content="Admin portal for Bootup India campaign — manage POCs, log tasks, and publish to leaderboard." />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body class="unauthorized">
 
-<!-- Scroll progress bar -->
-<div id="scroll-progress"></div>
-
-<!-- Custom cursor (desktop only) -->
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
-
-<!-- ══════════════ ADMIN LOGIN SCREEN ══════════════ -->
+<!-- ══════════ LOGIN SCREEN ══════════ -->
 <div class="login-screen" id="login-screen">
   <div class="login-card" id="login-card">
     <div class="login-brand-bar"></div>
+    <div class="login-logo-row">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" class="login-brand-logo" />
+    </div>
     <div class="login-icon">🔒</div>
-    <h2 class="login-title">Admin Access Required</h2>
+    <h1 class="login-title">Admin Portal</h1>
     <p class="login-subtitle">Bootup India Campaign · Vigorlaunchpad</p>
-
     <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="form-group" style="margin-bottom: 20px; text-align: left;">
-        <label class="form-label" for="login-password">Enter Admin Password</label>
-        <input type="password"
-               id="login-password"
-               class="form-input"
-               placeholder="••••••••"
-               style="text-align: center; font-size: 20px; letter-spacing: 3px;"
-               required />
+      <div class="login-field">
+        <label class="form-label" for="login-password">Password</label>
+        <input type="password" id="login-password" class="form-input login-input"
+               placeholder="Enter admin password" required />
       </div>
       <div id="login-error" class="login-error-msg"></div>
       <button type="submit" class="btn btn-primary btn-full" id="login-submit-btn">
-        🔓 Unlock Portal
+        Unlock Portal
       </button>
     </form>
   </div>
 </div>
 
-<!-- ══════════════ ADMIN HEADER ══════════════ -->
-<header class="admin-header" id="admin-header">
-  <div class="admin-logo">
-    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
-         alt="Reliance Digital Logo" class="admin-logo-img" />
-    <div class="admin-logo-divider"></div>
-    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png"
-         alt="Vigorlaunchpad" class="admin-vigor-logo" />
-    <div class="admin-logo-divider"></div>
-    <div>
-      <div class="admin-logo-text">Bootup India · Admin Portal</div>
-      <div class="admin-logo-sub">Powered by Vigorlaunchpad</div>
-    </div>
-  </div>
+<!-- ══════════ APP SHELL ══════════ -->
+<div class="app-shell" id="app-shell">
 
-  <div class="admin-header-actions" id="admin-header-actions">
-    <div class="pending-indicator" id="pending-indicator-wrap">
-      <span id="header-pending-count">0 pending</span>
-      <div class="pending-count" id="header-pending-badge">0</div>
-    </div>
-    <a href="/leaderboard" class="view-leaderboard-btn" target="_blank" id="view-lb-btn">
-      🏆 Leaderboard ↗
-    </a>
-    <button onclick="handleLogout()" class="view-leaderboard-btn" id="logout-btn"
-            style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15)">
-      🔒 Log Out
-    </button>
-  </div>
-</header>
+  <!-- ── LEFT SIDEBAR NAV ── -->
+  <aside class="nav-sidebar" id="nav-sidebar">
 
-<!-- ══════════════ ADMIN LAYOUT ══════════════ -->
-<div class="admin-layout" id="admin-layout">
-
-  <!-- ════ LEFT: MAIN PANEL ════ -->
-  <div class="admin-main" id="admin-main-panel">
-
-    <!-- ── Stats Overview ── -->
-    <div class="stats-overview" id="stats-overview">
-      <div class="stat-card" id="stat-card-total-pts">
-        <div class="stat-card-value" id="admin-stat-total-pts">0</div>
-        <div class="stat-card-label">Total Pts Live</div>
-      </div>
-      <div class="stat-card" id="stat-card-active-pocs">
-        <div class="stat-card-value" id="admin-stat-active-pocs">0</div>
-        <div class="stat-card-label">Active POCs</div>
-      </div>
-      <div class="stat-card" id="stat-card-total-pocs">
-        <div class="stat-card-value" id="admin-stat-total-pocs">48</div>
-        <div class="stat-card-label">Total POCs</div>
-      </div>
-      <div class="stat-card" id="stat-card-pending">
-        <div class="stat-card-value" id="admin-stat-pending" style="color:var(--orange)">0</div>
-        <div class="stat-card-label">In Queue</div>
+    <!-- Brand -->
+    <div class="nav-brand" id="nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
+           alt="Reliance Digital" class="nav-brand-logo" />
+      <div class="nav-brand-divider"></div>
+      <div class="nav-brand-text">
+        <div class="nav-brand-title">Admin</div>
+        <div class="nav-brand-sub">Bootup India</div>
       </div>
     </div>
 
-    <!-- ── Task Logger ── -->
-    <div class="admin-card" id="task-logger-card">
-      <div class="admin-section-title">
-        <div class="icon">➕</div>
-        Log a Task
-      </div>
+    <!-- Nav items -->
+    <nav class="nav-menu" id="nav-menu">
+      <button class="nav-item active" data-section="dashboard" onclick="switchSection('dashboard')" id="nav-dashboard">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="7" height="7" rx="1.5" fill="currentColor" opacity=".9"/>
+            <rect x="11" y="2" width="7" height="7" rx="1.5" fill="currentColor" opacity=".5"/>
+            <rect x="2" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity=".5"/>
+            <rect x="11" y="11" width="7" height="7" rx="1.5" fill="currentColor" opacity=".3"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Dashboard</span>
+      </button>
 
-      <!-- Step 1: Select POC -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
-          Step 1 — Select POC
-        </div>
-        <div style="position:relative" id="search-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text"
-                 id="poc-search"
-                 class="search-input"
-                 placeholder="Search by name, college or city…"
-                 autocomplete="off" />
-          <div id="search-results" class="search-results"></div>
-        </div>
+      <button class="nav-item" data-section="pocs" onclick="switchSection('pocs')" id="nav-pocs">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="7" r="3.5" fill="currentColor" opacity=".9"/>
+            <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">All POCs</span>
+        <span class="nav-badge" id="nav-badge-pocs">48</span>
+      </button>
 
-        <!-- Selected POC card -->
-        <div class="selected-poc-card" id="selected-poc-card">
-          <div class="selected-poc-avatar" id="sel-poc-avatar">—</div>
-          <div class="selected-poc-details">
-            <div class="selected-poc-name" id="sel-poc-name">—</div>
-            <div class="selected-poc-college" id="sel-poc-college">—</div>
-            <div><span id="sel-poc-city" class="city-tag"></span></div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div class="selected-poc-points" id="sel-poc-points">0 <span>pts</span></div>
-            <div style="font-size:10px;color:var(--text3)">current</div>
-          </div>
-          <button class="clear-selection" onclick="clearSelection()" title="Clear selection">✕</button>
-        </div>
-      </div>
+      <button class="nav-item" data-section="valorant" onclick="switchSection('valorant')" id="nav-valorant">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2L12.5 8H18L13.5 11.5L15.5 18L10 14.5L4.5 18L6.5 11.5L2 8H7.5L10 2Z" fill="currentColor" opacity=".9"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Valorant Reg.</span>
+        <span class="nav-badge nav-badge-red" id="nav-badge-valorant">—</span>
+      </button>
 
-      <!-- Step 2: Select Task -->
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">
-          Step 2 — Select Task
-        </div>
-        <div class="category-tabs" id="category-tabs"></div>
-        <div class="tasks-grid" id="tasks-grid"></div>
-      </div>
+      <button class="nav-item" data-section="stories" onclick="switchSection('stories')" id="nav-stories">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+            <circle cx="10" cy="10" r="3" fill="currentColor" opacity=".9"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Stories</span>
+        <span class="nav-badge nav-badge-orange" id="nav-badge-stories">—</span>
+      </button>
 
-      <!-- Step 3: Quantity (for multiplier tasks) -->
-      <div id="qty-wrap" style="display:none;margin-bottom:20px;flex-direction:column;gap:8px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">
-          Step 3 — Enter Quantity
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="qty-input">Quantity</label>
-            <input type="number" id="qty-input" class="form-input" value="1" min="1" max="999" />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="task-note">Note (optional)</label>
-            <input type="text" id="task-note" class="form-input" placeholder="e.g. Group names, details…" />
-          </div>
-        </div>
-      </div>
+      <button class="nav-item" data-section="tasks" onclick="switchSection('tasks')" id="nav-tasks">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="14" height="2" rx="1" fill="currentColor" opacity=".9"/>
+            <rect x="3" y="9" width="10" height="2" rx="1" fill="currentColor" opacity=".7"/>
+            <rect x="3" y="15" width="7" height="2" rx="1" fill="currentColor" opacity=".4"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Tasks</span>
+      </button>
 
-      <!-- Note for non-multiplier tasks -->
-      <div id="note-wrap" style="margin-bottom:20px">
-        <div class="form-group">
-          <label class="form-label" for="task-note-single">Note (optional)</label>
-          <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event name…" />
-        </div>
-      </div>
+      <button class="nav-item" data-section="history" onclick="switchSection('history')" id="nav-history">
+        <span class="nav-item-icon">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">History</span>
+      </button>
+    </nav>
 
-      <!-- Points Preview -->
-      <div class="points-preview" id="points-preview-row">
-        <div>
-          <div class="points-preview-label">Points to be awarded</div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
-        </div>
-        <div class="points-preview-value" id="points-preview-value">— pts</div>
-      </div>
-
-      <!-- Add to Queue Button -->
-      <button class="btn btn-primary btn-full" onclick="addToQueue()" id="add-to-queue-btn">
-        ➕ Add to Queue
+    <!-- Bottom actions -->
+    <div class="nav-footer" id="nav-footer">
+      <a href="/leaderboard" target="_blank" class="nav-footer-btn" id="nav-view-lb">
+        <span>🏆</span> View Leaderboard
+      </a>
+      <button onclick="handleLogout()" class="nav-footer-btn nav-footer-btn-ghost" id="nav-logout">
+        <span>🔒</span> Log Out
       </button>
     </div>
+  </aside>
 
-    <!-- ── Full POC Table ── -->
-    <div class="admin-card" id="all-pocs-card">
-      <div class="admin-section-title">
-        <div class="icon">👥</div>
-        All POCs
-        <button class="btn btn-primary"
-                style="margin-left:auto;padding:6px 14px;font-size:12px"
-                onclick="openAddPOCModal()"
-                id="add-poc-trigger-btn">
-          + Add POC
+  <!-- ── MAIN AREA ── -->
+  <div class="main-area" id="main-area">
+
+    <!-- Top bar -->
+    <header class="top-bar" id="top-bar">
+      <!-- Mobile menu toggle -->
+      <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Page title (updates with section) -->
+      <div class="top-bar-title" id="top-bar-title">
+        <span id="top-bar-icon">📊</span>
+        <span id="top-bar-label">Dashboard</span>
+      </div>
+
+      <!-- Right cluster -->
+      <div class="top-bar-right">
+        <div class="pending-pill" id="pending-indicator-wrap">
+          <div class="pending-pill-dot" id="header-pending-badge-dot"></div>
+          <span id="header-pending-count">0 pending</span>
+          <div class="pending-count" id="header-pending-badge">0</div>
+        </div>
+        <button class="icon-btn" title="Refresh" onclick="location.reload()" id="refresh-btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+            <path d="M17 10A7 7 0 1 1 3.93 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M3 3v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </button>
       </div>
+    </header>
 
-      <!-- Filter tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="poc-city-filter-row">
-        <button class="category-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')" id="poc-filter-all">All Cities</button>
-        <button class="category-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')" id="poc-filter-mumbai">🏙️ Mumbai</button>
-        <button class="category-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')" id="poc-filter-pune">🌸 Pune</button>
-        <button class="category-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')" id="poc-filter-aurangabad">🕌 Aurangabad</button>
-      </div>
+    <!-- ══ SECTION: DASHBOARD ══ -->
+    <section class="content-section active" id="section-dashboard">
 
-      <div class="table-scroll">
-        <div class="poc-table-wrap" id="poc-table-outer">
-          <div class="poc-table-header poc-table-header--ext" id="poc-table-header-row">
-            <div>POC</div>
-            <div class="col-city">City</div>
-            <div>Points</div>
-            <div>Action</div>
-            <div>Link</div>
+      <!-- KPI row -->
+      <div class="kpi-grid" id="stats-overview">
+        <div class="kpi-card" id="stat-card-total-pts">
+          <div class="kpi-card-icon kpi-icon-blue">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 1L13 7H19L14 11L16 17L10 13.5L4 17L6 11L1 7H7L10 1Z"/>
+            </svg>
           </div>
-          <div id="poc-table-body">
-            <!-- Rendered by JS -->
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="admin-stat-total-pts">0</div>
+            <div class="kpi-label">Total Points Live</div>
+          </div>
+          <div class="kpi-trend kpi-trend-up">↑ Live</div>
+        </div>
+
+        <div class="kpi-card" id="stat-card-active-pocs">
+          <div class="kpi-card-icon kpi-icon-green">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="7" r="3.5"/>
+              <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="admin-stat-active-pocs">0</div>
+            <div class="kpi-label">Active POCs</div>
+          </div>
+          <div class="kpi-trend kpi-trend-up">↑ Active</div>
+        </div>
+
+        <div class="kpi-card" id="stat-card-total-pocs">
+          <div class="kpi-card-icon kpi-icon-blue">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M7 9A3 3 0 1 0 7 3a3 3 0 0 0 0 6zM1 17c0-3.314 2.686-5 6-5 .37 0 .733.03 1.085.086M13 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 17c0-3.314-2.686-5-6-5-3.314 0-6 1.686-6 5"/>
+            </svg>
+          </div>
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="admin-stat-total-pocs">48</div>
+            <div class="kpi-label">Total POCs</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="stat-card-pending">
+          <div class="kpi-card-icon kpi-icon-orange">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+              <circle cx="10" cy="10" r="8" opacity=".2"/>
+              <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </div>
+          <div class="kpi-card-body">
+            <div class="kpi-value" id="admin-stat-pending" style="color:var(--orange)">0</div>
+            <div class="kpi-label">In Queue</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ── Valorant Registrations ── -->
-    <div class="admin-card" id="registrations-card">
-      <div class="admin-section-title">
-        <div class="icon">📝</div>
-        Valorant Registrations
-        <span id="reg-live-badge"
-              style="font-size:10px;background:var(--green-pale);color:var(--green);border:1px solid rgba(0,134,90,0.20);border-radius:var(--radius-pill);padding:3px 10px;font-weight:700;letter-spacing:0.5px">
-          ● LIVE
-        </span>
-        <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
-          <a id="open-sheet-btn"
-             href="https://docs.google.com/spreadsheets"
-             target="_blank"
-             class="btn btn-green-soft"
-             title="Open live Google Sheet">
-            📊 Open Sheet ↗
-          </a>
-          <button class="btn btn-primary"
-                  id="export-csv-btn"
-                  style="padding:6px 13px;font-size:12px;display:flex;align-items:center;gap:5px"
-                  onclick="exportRegistrationsCSV()">
-            📥 Export CSV
+      <!-- Two column: Log task + Quick ref -->
+      <div class="dashboard-grid">
+
+        <!-- Log a Task card -->
+        <div class="panel" id="task-logger-card">
+          <div class="panel-header">
+            <div class="panel-header-icon">➕</div>
+            <div class="panel-header-text">
+              <div class="panel-title">Log a Task</div>
+              <div class="panel-subtitle">Award points to a POC</div>
+            </div>
+          </div>
+
+          <!-- Step 1 -->
+          <div class="step-block">
+            <div class="step-label"><span class="step-num">1</span> Select POC</div>
+            <div style="position:relative" id="search-wrap">
+              <span class="search-icon">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" opacity=".5">
+                  <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="text" id="poc-search" class="search-input"
+                     placeholder="Search name, college or city…" autocomplete="off" />
+              <div id="search-results" class="search-results"></div>
+            </div>
+            <div class="selected-poc-card" id="selected-poc-card">
+              <div class="selected-poc-avatar" id="sel-poc-avatar">—</div>
+              <div class="selected-poc-details">
+                <div class="selected-poc-name" id="sel-poc-name">—</div>
+                <div class="selected-poc-college" id="sel-poc-college">—</div>
+                <div><span id="sel-poc-city" class="city-tag"></span></div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div class="selected-poc-points" id="sel-poc-points">0 <span>pts</span></div>
+                <div style="font-size:10px;color:var(--text3)">current</div>
+              </div>
+              <button class="clear-selection" onclick="clearSelection()" title="Clear">✕</button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-block">
+            <div class="step-label"><span class="step-num">2</span> Select Task</div>
+            <div class="category-tabs" id="category-tabs"></div>
+            <div class="tasks-grid" id="tasks-grid"></div>
+          </div>
+
+          <!-- Step 3 -->
+          <div id="qty-wrap" style="display:none;flex-direction:column;gap:8px" class="step-block">
+            <div class="step-label"><span class="step-num">3</span> Quantity</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="qty-input">Qty</label>
+                <input type="number" id="qty-input" class="form-input" value="1" min="1" max="999" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="task-note">Note (optional)</label>
+                <input type="text" id="task-note" class="form-input" placeholder="Details…" />
+              </div>
+            </div>
+          </div>
+
+          <div id="note-wrap" class="step-block" style="padding-top:0">
+            <div class="form-group">
+              <label class="form-label" for="task-note-single">Note (optional)</label>
+              <input type="text" id="task-note-single" class="form-input" placeholder="e.g. Post link, event name…" />
+            </div>
+          </div>
+
+          <!-- Preview + CTA -->
+          <div class="points-preview" id="points-preview-row">
+            <div>
+              <div class="points-preview-label">Points to award</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px" id="preview-task-name">Select a task above</div>
+            </div>
+            <div class="points-preview-value" id="points-preview-value">— pts</div>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="addToQueue()" id="add-to-queue-btn">
+            ➕ Add to Queue
           </button>
         </div>
+
+        <!-- Right column: Publish + Queue + Ref -->
+        <div class="dashboard-right-col" id="dashboard-right-col">
+
+          <!-- Publish card -->
+          <div class="publish-card" id="publish-section">
+            <div class="publish-glow"></div>
+            <div class="publish-card-inner">
+              <div class="publish-title">🚀 Publish to Leaderboard</div>
+              <div class="publish-desc">Push all queued points live to the public leaderboard.</div>
+              <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
+                ✅ Publish Update Now
+              </button>
+              <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:8px">
+                Typically done daily at 8:00 PM IST
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Submissions -->
+          <div class="panel" id="task-submissions-card" style="margin-bottom:16px">
+            <div class="panel-header">
+              <div class="panel-header-icon">📥</div>
+              <div class="panel-header-text">
+                <div class="panel-title">Task Submissions</div>
+              </div>
+              <span id="pending-sub-count" class="count-badge count-badge-red">0</span>
+            </div>
+            <div id="task-submissions-list">
+              <div class="loading-state">Loading submissions…</div>
+            </div>
+          </div>
+
+          <!-- Pending Queue -->
+          <div class="panel" id="pending-queue-section">
+            <div class="panel-header">
+              <div class="panel-header-icon">⏳</div>
+              <div class="panel-header-text">
+                <div class="panel-title">Pending Queue</div>
+              </div>
+              <span id="queue-total-pts" style="font-size:12px;color:var(--red);font-weight:700;margin-left:auto"></span>
+            </div>
+            <div id="pending-queue"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION: POCs ══ -->
+    <section class="content-section" id="section-pocs">
+      <div class="section-page-header">
+        <div>
+          <h2 class="section-page-title">All POCs</h2>
+          <p class="section-page-sub">Manage and monitor all Point of Contact members</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddPOCModal()" id="add-poc-trigger-btn">+ Add POC</button>
       </div>
 
-      <!-- Google Sheet sync status strip -->
+      <div class="panel" id="all-pocs-card">
+        <!-- Filter tabs -->
+        <div class="filter-row" id="poc-city-filter-row">
+          <button class="filter-tab active poc-filter-btn" data-city="All" onclick="filterPOCTable('All')" id="poc-filter-all">All Cities</button>
+          <button class="filter-tab poc-filter-btn" data-city="Mumbai" onclick="filterPOCTable('Mumbai')" id="poc-filter-mumbai">🏙️ Mumbai</button>
+          <button class="filter-tab poc-filter-btn" data-city="Pune" onclick="filterPOCTable('Pune')" id="poc-filter-pune">🌸 Pune</button>
+          <button class="filter-tab poc-filter-btn" data-city="Aurangabad" onclick="filterPOCTable('Aurangabad')" id="poc-filter-aurangabad">🕌 Aurangabad</button>
+        </div>
+        <div class="table-scroll" id="poc-table-scroll">
+          <div class="poc-table-wrap" id="poc-table-outer">
+            <div class="poc-table-header poc-table-header--ext" id="poc-table-header-row">
+              <div>POC</div>
+              <div class="col-city">City</div>
+              <div>Points</div>
+              <div>Action</div>
+              <div>Link</div>
+            </div>
+            <div id="poc-table-body"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION: VALORANT ══ -->
+    <section class="content-section" id="section-valorant">
+      <div class="section-page-header">
+        <div>
+          <h2 class="section-page-title">Valorant Registrations</h2>
+          <p class="section-page-sub">All student challenge sign-ups — synced live to Google Sheet</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <a id="open-sheet-btn" href="https://docs.google.com/spreadsheets" target="_blank"
+             class="btn btn-green-soft">📊 Open Sheet ↗</a>
+          <button class="btn btn-primary" id="export-csv-btn"
+                  style="display:flex;align-items:center;gap:6px"
+                  onclick="exportRegistrationsCSV()">📥 Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Sheet sync strip -->
       <div class="sheet-sync-strip" id="sheet-sync-strip">
         <div class="sheet-sync-dot"></div>
         <span class="sheet-sync-label">Connected to Google Sheet</span>
-        <button class="btn btn-green-soft"
-                onclick="syncAllToSheet()"
-                id="sync-all-sheet-btn"
-                style="padding:4px 10px;font-size:11px">
-          ↑ Sync All
-        </button>
+        <button class="btn btn-green-soft" onclick="syncAllToSheet()" id="sync-all-sheet-btn"
+                style="padding:4px 12px;font-size:11px">↑ Sync All</button>
         <span class="sheet-sync-time" id="sheet-last-sync">—</span>
       </div>
 
       <!-- KPI pills -->
       <div class="reg-kpi-row" id="reg-kpi-row">
-        <div class="reg-kpi-pill">
-          <span class="reg-kpi-num" id="reg-kpi-total">—</span>
-          <span class="reg-kpi-lbl">Total</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)">
-          <span class="reg-kpi-num" id="reg-kpi-mumbai">—</span>
-          <span class="reg-kpi-lbl">Mumbai</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--red)">
-          <span class="reg-kpi-num" id="reg-kpi-pune">—</span>
-          <span class="reg-kpi-lbl">Pune</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--green)">
-          <span class="reg-kpi-num" id="reg-kpi-aurangabad">—</span>
-          <span class="reg-kpi-lbl">Aurangabad</span>
-        </div>
+        <div class="reg-kpi-pill"><span class="reg-kpi-num" id="reg-kpi-total">—</span><span class="reg-kpi-lbl">Total</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)"><span class="reg-kpi-num" id="reg-kpi-mumbai">—</span><span class="reg-kpi-lbl">Mumbai</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--red)"><span class="reg-kpi-num" id="reg-kpi-pune">—</span><span class="reg-kpi-lbl">Pune</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--green)"><span class="reg-kpi-num" id="reg-kpi-aurangabad">—</span><span class="reg-kpi-lbl">Aurangabad</span></div>
       </div>
 
-      <!-- City filter -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="reg-city-filter-row">
-        <button class="category-tab active reg-filter-btn" data-city="All" onclick="filterRegistrations('All')" id="reg-filter-all">All</button>
-        <button class="category-tab reg-filter-btn" data-city="Mumbai" onclick="filterRegistrations('Mumbai')" id="reg-filter-mumbai">🏙️ Mumbai</button>
-        <button class="category-tab reg-filter-btn" data-city="Pune" onclick="filterRegistrations('Pune')" id="reg-filter-pune">🌸 Pune</button>
-        <button class="category-tab reg-filter-btn" data-city="Aurangabad" onclick="filterRegistrations('Aurangabad')" id="reg-filter-aurangabad">🕌 Aurangabad</button>
-      </div>
-
-      <!-- Table (with horizontal scroll) -->
-      <div class="table-scroll" id="reg-table-scroll">
-        <div class="reg-table-wrap" id="reg-table-outer">
-          <div class="reg-table-header" id="reg-table-header-row">
-            <div>Student</div>
-            <div>Mobile</div>
-            <div>College</div>
-            <div>Store</div>
-            <div>Rank</div>
-            <div>POC</div>
-            <div>Date</div>
-          </div>
-          <div id="reg-table-body">
-            <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px">
-              <div class="skeleton" style="height:14px;width:60%;margin:0 auto 10px"></div>
-              <div class="skeleton" style="height:14px;width:40%;margin:0 auto"></div>
+      <div class="panel" id="registrations-card">
+        <div class="filter-row" id="reg-city-filter-row">
+          <button class="filter-tab active reg-filter-btn" data-city="All" onclick="filterRegistrations('All')" id="reg-filter-all">All</button>
+          <button class="filter-tab reg-filter-btn" data-city="Mumbai" onclick="filterRegistrations('Mumbai')" id="reg-filter-mumbai">🏙️ Mumbai</button>
+          <button class="filter-tab reg-filter-btn" data-city="Pune" onclick="filterRegistrations('Pune')" id="reg-filter-pune">🌸 Pune</button>
+          <button class="filter-tab reg-filter-btn" data-city="Aurangabad" onclick="filterRegistrations('Aurangabad')" id="reg-filter-aurangabad">🕌 Aurangabad</button>
+        </div>
+        <div class="table-scroll" id="reg-table-scroll">
+          <div class="reg-table-wrap" id="reg-table-outer">
+            <div class="reg-table-header" id="reg-table-header-row">
+              <div>Student</div><div>Mobile</div><div>College</div>
+              <div>Store</div><div>Rank</div><div>POC</div><div>Date</div>
+            </div>
+            <div id="reg-table-body">
+              <div class="loading-state">Loading registrations…</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── Story Submissions ── -->
-    <div class="admin-card" id="story-submissions-card">
-      <div class="admin-section-title">
-        <div class="icon">📸</div>
-        Story Submissions
-        <a href="/story-submit.html" target="_blank"
-           class="btn btn-primary"
-           style="margin-left:auto;padding:6px 14px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;"
-           id="share-story-link-btn">
-          🔗 Share Link ↗
-        </a>
+    <!-- ══ SECTION: STORIES ══ -->
+    <section class="content-section" id="section-stories">
+      <div class="section-page-header">
+        <div>
+          <h2 class="section-page-title">Story Submissions</h2>
+          <p class="section-page-sub">Review and verify student Instagram story submissions</p>
+        </div>
+        <a href="/story-submit.html" target="_blank" class="btn btn-primary"
+           style="text-decoration:none" id="share-story-link-btn">🔗 Share Form ↗</a>
       </div>
 
-      <!-- KPI pills -->
-      <div class="reg-kpi-row" id="ss-kpi-row" style="margin-bottom:16px">
-        <div class="reg-kpi-pill">
-          <span class="reg-kpi-num" id="ss-kpi-total">—</span>
-          <span class="reg-kpi-lbl">Total</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)">
-          <span class="reg-kpi-num" id="ss-kpi-story">—</span>
-          <span class="reg-kpi-lbl">Story Done</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--orange)">
-          <span class="reg-kpi-num" id="ss-kpi-views">—</span>
-          <span class="reg-kpi-lbl">Views Done</span>
-        </div>
-        <div class="reg-kpi-pill" style="--kpi-color:var(--green)">
-          <span class="reg-kpi-num" id="ss-kpi-verified">—</span>
-          <span class="reg-kpi-lbl">Verified</span>
-        </div>
+      <!-- KPI -->
+      <div class="reg-kpi-row" id="ss-kpi-row">
+        <div class="reg-kpi-pill"><span class="reg-kpi-num" id="ss-kpi-total">—</span><span class="reg-kpi-lbl">Total</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--blue)"><span class="reg-kpi-num" id="ss-kpi-story">—</span><span class="reg-kpi-lbl">Story Done</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--orange)"><span class="reg-kpi-num" id="ss-kpi-views">—</span><span class="reg-kpi-lbl">Views Done</span></div>
+        <div class="reg-kpi-pill" style="--kpi-color:var(--green)"><span class="reg-kpi-num" id="ss-kpi-verified">—</span><span class="reg-kpi-lbl">Verified</span></div>
       </div>
 
-      <!-- Status filter tabs -->
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="ss-filter-row">
-        <button class="category-tab active ss-filter-btn" data-status="All"            onclick="filterStorySubmissions('All')" id="ss-filter-all">All</button>
-        <button class="category-tab ss-filter-btn" data-status="story_submitted"       onclick="filterStorySubmissions('story_submitted')" id="ss-filter-story">📸 Story Done</button>
-        <button class="category-tab ss-filter-btn" data-status="views_submitted"       onclick="filterStorySubmissions('views_submitted')" id="ss-filter-views">👁️ Views Done</button>
-        <button class="category-tab ss-filter-btn" data-status="verified"              onclick="filterStorySubmissions('verified')" id="ss-filter-verified">✅ Verified</button>
-        <button class="category-tab ss-filter-btn" data-status="rejected"              onclick="filterStorySubmissions('rejected')" id="ss-filter-rejected">❌ Rejected</button>
-      </div>
-
-      <!-- Table (with horizontal scroll) -->
-      <div class="table-scroll" id="ss-table-scroll">
-        <div class="poc-table-wrap" id="ss-table-outer">
-          <div class="ss-table-header" id="ss-table-header-row">
-            <div>Student</div>
-            <div>Referred by POC</div>
-            <div>Story</div>
-            <div>Views</div>
-            <div>Status</div>
-            <div>Date</div>
-            <div>Actions</div>
-          </div>
-          <div id="ss-table-body">
-            <div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">Loading submissions…</div>
+      <div class="panel" id="story-submissions-card">
+        <div class="filter-row" id="ss-filter-row">
+          <button class="filter-tab active ss-filter-btn" data-status="All"           onclick="filterStorySubmissions('All')" id="ss-filter-all">All</button>
+          <button class="filter-tab ss-filter-btn" data-status="story_submitted"      onclick="filterStorySubmissions('story_submitted')" id="ss-filter-story">📸 Story Done</button>
+          <button class="filter-tab ss-filter-btn" data-status="views_submitted"      onclick="filterStorySubmissions('views_submitted')" id="ss-filter-views">👁️ Views Done</button>
+          <button class="filter-tab ss-filter-btn" data-status="verified"             onclick="filterStorySubmissions('verified')" id="ss-filter-verified">✅ Verified</button>
+          <button class="filter-tab ss-filter-btn" data-status="rejected"             onclick="filterStorySubmissions('rejected')" id="ss-filter-rejected">❌ Rejected</button>
+        </div>
+        <div class="table-scroll" id="ss-table-scroll">
+          <div class="poc-table-wrap" id="ss-table-outer">
+            <div class="ss-table-header" id="ss-table-header-row">
+              <div>Student</div><div>Referred by</div><div>Story</div>
+              <div>Views</div><div>Status</div><div>Date</div><div>Actions</div>
+            </div>
+            <div id="ss-table-body">
+              <div class="loading-state">Loading submissions…</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- ── Task Management ── -->
-    <div class="admin-card" id="task-management-card">
-      <div class="admin-section-title">
-        <div class="icon">📋</div>
-        Task Management
-        <button class="btn btn-primary"
-                style="margin-left:auto;padding:6px 14px;font-size:12px"
-                onclick="toggleCreateTaskForm()"
-                id="create-task-trigger-btn">
-          + Create Task
-        </button>
+    <!-- ══ SECTION: TASKS ══ -->
+    <section class="content-section" id="section-tasks">
+      <div class="section-page-header">
+        <div>
+          <h2 class="section-page-title">Task Management</h2>
+          <p class="section-page-sub">Create and manage campaign tasks for POCs</p>
+        </div>
+        <button class="btn btn-primary" onclick="toggleCreateTaskForm()" id="create-task-trigger-btn">+ Create Task</button>
       </div>
 
       <!-- Create Task Form -->
-      <div id="create-task-form"
-           style="display:none;background:var(--bg2);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;border:1.5px solid var(--border)">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">New Task</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="ntask-title">Task Title</label>
-            <input type="text" id="ntask-title" class="form-input" placeholder="e.g. Post a Story with #BootupIndia" />
+      <div id="create-task-form" style="display:none;margin-bottom:20px">
+        <div class="panel" id="create-task-form-panel">
+          <div class="panel-header">
+            <div class="panel-header-icon">✨</div>
+            <div class="panel-header-text">
+              <div class="panel-title">New Task</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="ntask-type">Task Type</label>
-            <select id="ntask-type" class="form-input">
-              <option value="story_screenshot">📸 Story Screenshot</option>
-              <option value="store_visit">🏪 Store Visit</option>
-              <option value="reel_link">🎬 Reel Link</option>
-            </select>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="ntask-title">Task Title</label>
+              <input type="text" id="ntask-title" class="form-input" placeholder="e.g. Post a Story with #BootupIndia" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ntask-type">Task Type</label>
+              <select id="ntask-type" class="form-input">
+                <option value="story_screenshot">📸 Story Screenshot</option>
+                <option value="store_visit">🏪 Store Visit</option>
+                <option value="reel_link">🎬 Reel Link</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="form-group" style="margin-bottom:14px">
-          <label class="form-label" for="ntask-desc">Description (shown to POCs)</label>
-          <input type="text" id="ntask-desc" class="form-input" placeholder="e.g. Upload a story screenshot tagging @reliancedigital" />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="ntask-pts">Points Awarded</label>
-            <input type="number" id="ntask-pts" class="form-input" value="50" min="1" />
+          <div class="form-group" style="margin-bottom:14px">
+            <label class="form-label" for="ntask-desc">Description (shown to POCs)</label>
+            <input type="text" id="ntask-desc" class="form-input" placeholder="e.g. Upload screenshot tagging @reliancedigital" />
           </div>
-          <div class="form-group">
-            <label class="form-label" for="ntask-deadline">Deadline (optional)</label>
-            <input type="datetime-local" id="ntask-deadline" class="form-input" />
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="ntask-pts">Points Awarded</label>
+              <input type="number" id="ntask-pts" class="form-input" value="50" min="1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ntask-deadline">Deadline (optional)</label>
+              <input type="datetime-local" id="ntask-deadline" class="form-input" />
+            </div>
           </div>
+          <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-live">
+              <input type="checkbox" id="ntask-live" style="width:16px;height:16px;accent-color:var(--green)" />
+              Make live immediately
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-late-penalty">
+              <input type="checkbox" id="ntask-late-penalty" style="width:16px;height:16px;accent-color:var(--orange)" />
+              ⏰ Late = 50% points
+            </label>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="createTask()" id="create-task-submit-btn">Create Task</button>
+            <button class="btn btn-ghost" onclick="toggleCreateTaskForm()" id="create-task-cancel-btn">Cancel</button>
+          </div>
+          <div id="create-task-msg" style="font-size:12px;margin-top:8px"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-live">
-            <input type="checkbox" id="ntask-live" style="width:16px;height:16px;accent-color:var(--green)" />
-            Make live immediately
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2)" for="ntask-late-penalty"
-                 title="After deadline, submissions still accepted but earn only 50% of the points">
-            <input type="checkbox" id="ntask-late-penalty" style="width:16px;height:16px;accent-color:var(--orange)" />
-            ⏰ Late = 50% points
-          </label>
+      </div>
+
+      <div class="panel" id="task-management-card">
+        <div id="admin-tasks-list">
+          <div class="loading-state">Loading tasks…</div>
         </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="createTask()" id="create-task-submit-btn">Create Task</button>
-          <button class="btn btn-ghost" onclick="toggleCreateTaskForm()" id="create-task-cancel-btn">Cancel</button>
+      </div>
+    </section>
+
+    <!-- ══ SECTION: HISTORY ══ -->
+    <section class="content-section" id="section-history">
+      <div class="section-page-header">
+        <div>
+          <h2 class="section-page-title">Activity History</h2>
+          <p class="section-page-sub">Complete audit trail of all logged point events</p>
         </div>
-        <div id="create-task-msg" style="font-size:12px;margin-top:8px"></div>
       </div>
+      <div class="panel" id="activity-history-card">
+        <div class="history-log" id="history-log"></div>
+      </div>
+    </section>
 
-      <!-- Task List -->
-      <div id="admin-tasks-list">
-        <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Loading tasks...</div>
-      </div>
-    </div>
+  </div><!-- /main-area -->
+</div><!-- /app-shell -->
 
-    <!-- ── Audit History ── -->
-    <div class="admin-card" id="activity-history-card">
-      <div class="admin-section-title">
-        <div class="icon">📜</div>
-        Activity History
-      </div>
-      <div class="history-log" id="history-log">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
+<!-- Mobile nav overlay -->
+<div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="toggleMobileNav()"></div>
 
-  </div><!-- /admin-main -->
-
-  <!-- ════ RIGHT: SIDEBAR ════ -->
-  <div class="admin-sidebar" id="admin-sidebar-panel">
-
-    <!-- Publish Section -->
-    <div class="publish-section" id="publish-section">
-      <div class="publish-title">🚀 Publish to Leaderboard</div>
-      <div class="publish-desc">
-        Review queued tasks below, then publish to push all changes live to the public leaderboard.
-      </div>
-      <button class="btn btn-publish btn-full" id="publish-btn" onclick="publishUpdate()">
-        ✅ Publish Update Now
-      </button>
-      <div style="font-size:10px;color:var(--text3);margin-top:10px">
-        Typically done daily at 8:00 PM IST
-      </div>
-    </div>
-
-    <!-- Task Submissions Review -->
-    <div class="admin-card" id="task-submissions-card" style="margin-bottom:20px">
-      <div class="admin-section-title" style="font-size:15px">
-        <div class="icon">📥</div>
-        Task Submissions
-        <span id="pending-sub-count"
-              style="font-size:11px;background:var(--red);color:#fff;padding:2px 8px;border-radius:var(--radius-pill);margin-left:auto">
-          0
-        </span>
-      </div>
-      <div id="task-submissions-list">
-        <div style="font-size:12px;color:var(--text3);text-align:center;padding:16px">Loading submissions...</div>
-      </div>
-    </div>
-
-    <!-- Pending Queue -->
-    <div style="margin-bottom:20px" id="pending-queue-section">
-      <div class="admin-section-title" style="font-size:15px">
-        <div class="icon">⏳</div>
-        Pending Queue
-        <span id="queue-total-pts" style="font-size:12px;color:var(--red);margin-left:auto;font-weight:600"></span>
-      </div>
-      <div id="pending-queue">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-
-    <!-- Quick Reference -->
-    <div class="admin-card" id="point-reference-card">
-      <div class="admin-section-title" style="font-size:14px">
-        <div class="icon">💡</div>
-        Point Reference
-      </div>
-      <div>
-        <div class="point-ref-section">Instagram</div>
-        <div class="point-ref-row"><span>📸 Story + tag</span><span class="point-ref-val">10 pts</span></div>
-        <div class="point-ref-row"><span>🔥 Engagement bonus</span><span class="point-ref-val">+20 pts</span></div>
-        <div class="point-ref-section">WhatsApp</div>
-        <div class="point-ref-row"><span>💬 Per group share</span><span class="point-ref-val">5 pts</span></div>
-        <div class="point-ref-section">Events</div>
-        <div class="point-ref-row"><span>🎓 12 June Seminar</span><span class="point-ref-val">10 pts</span></div>
-        <div class="point-ref-row"><span>📢 12 June Orientation</span><span class="point-ref-val">10 pts</span></div>
-        <div class="point-ref-row"><span>🎯 Webinar attendee</span><span class="point-ref-val">15 pts</span></div>
-        <div class="point-ref-row"><span>🤖 AI Webinar student</span><span class="point-ref-val">3 pts</span></div>
-        <div class="point-ref-section">Store</div>
-        <div class="point-ref-row"><span>🏪 Store visit</span><span class="point-ref-val">3 pts</span></div>
-        <div class="point-ref-row"><span>🇮🇳 15 Aug visit</span><span class="point-ref-val">5 pts</span></div>
-        <div class="point-ref-section">Bonus</div>
-        <div class="point-ref-row"><span>🏆 Weekly top</span><span class="point-ref-val gold">+50 pts</span></div>
-        <div class="point-ref-row"><span>🥇 Top college/month</span><span class="point-ref-val gold">+100 pts</span></div>
-        <div class="point-ref-row"><span>⭐ Weekly consistency</span><span class="point-ref-val gold">+25 pts</span></div>
-      </div>
-    </div>
-
-  </div><!-- /admin-sidebar -->
-</div><!-- /admin-layout -->
-
-<!-- ══════════════ PUBLISH CONFIRMATION MODAL ══════════════ -->
+<!-- ══════════ MODALS ══════════ -->
 <div class="modal-overlay" id="publish-modal" onclick="if(event.target===this)closePublishModal()">
   <div class="modal" id="publish-modal-box">
     <div class="modal-title">🚀 Confirm Publish</div>
@@ -540,7 +583,6 @@
   </div>
 </div>
 
-<!-- ══════════════ OVERRIDE MODAL ══════════════ -->
 <div class="modal-overlay" id="override-modal" onclick="if(event.target===this)closeOverrideModal()">
   <div class="modal" id="override-modal-box">
     <div class="modal-title">✏️ Manual Point Override</div>
@@ -563,26 +605,21 @@
   </div>
 </div>
 
-<!-- ══════════════ ADD POC MODAL ══════════════ -->
 <div class="modal-overlay" id="add-poc-modal" onclick="if(event.target===this)closeAddPOCModal()">
   <div class="modal" id="add-poc-modal-box">
     <div class="modal-title">👤 Add New POC</div>
-
     <div class="form-group" style="margin-bottom:12px">
       <label class="form-label" for="new-poc-name">Name</label>
       <input type="text" id="new-poc-name" class="form-input" placeholder="e.g. Rahul Sharma" required />
     </div>
-
     <div class="form-group" style="margin-bottom:12px">
       <label class="form-label" for="new-poc-email">Email</label>
       <input type="email" id="new-poc-email" class="form-input" placeholder="e.g. rahul@example.com" required />
     </div>
-
     <div class="form-group" style="margin-bottom:12px">
       <label class="form-label" for="new-poc-college">College</label>
       <input type="text" id="new-poc-college" class="form-input" placeholder="e.g. IIT Bombay" required />
     </div>
-
     <div class="form-group" style="margin-bottom:12px">
       <label class="form-label" for="new-poc-city">City</label>
       <select id="new-poc-city" class="form-input" required>
@@ -591,12 +628,10 @@
         <option value="Aurangabad">Aurangabad</option>
       </select>
     </div>
-
     <div class="form-group" style="margin-bottom:16px">
       <label class="form-label" for="new-poc-points">Starting Points</label>
       <input type="number" id="new-poc-points" class="form-input" value="0" min="0" />
     </div>
-
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeAddPOCModal()" id="add-poc-cancel-btn">Cancel</button>
       <button class="btn btn-primary" onclick="confirmAddPOC()" id="add-poc-confirm-btn">Add POC</button>
@@ -604,49 +639,43 @@
   </div>
 </div>
 
-<!-- ══════════════ DELETE CONFIRMATION MODAL ══════════════ -->
 <div class="modal-overlay" id="delete-poc-modal" onclick="if(event.target===this)closeDeletePOCModal()">
   <div class="modal" id="delete-poc-modal-box" style="max-width:400px">
     <div class="modal-title" style="color:var(--red)">⚠️ Delete POC</div>
     <div style="color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:20px">
-      Are you sure you want to permanently delete <strong id="delete-poc-name" style="color:var(--text)">—</strong>?<br>
-      This will permanently remove them, their points, and all their logged activity history.
+      Are you sure you want to permanently delete
+      <strong id="delete-poc-name" style="color:var(--text)">—</strong>?<br>
+      This will remove them, their points, and all activity history.
     </div>
     <input type="hidden" id="delete-poc-id" />
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeDeletePOCModal()" id="delete-poc-cancel-btn">Cancel</button>
-      <button class="btn btn-danger" onclick="confirmDeletePOC()" id="delete-poc-confirm-btn"
-              style="background:var(--red);border-color:var(--red);color:#fff">
-        🗑️ Yes, Delete
-      </button>
+      <button class="btn" style="background:var(--red);color:#fff;border-color:var(--red)"
+              onclick="confirmDeletePOC()" id="delete-poc-confirm-btn">🗑️ Yes, Delete</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ POINT HISTORY MODAL ══════════════ -->
 <div class="modal-overlay" id="point-history-modal" onclick="if(event.target===this)closePointHistory()">
   <div class="modal" id="point-history-modal-box" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">
     <div class="modal-title" style="display:flex;align-items:center;gap:10px">
       <span>📈</span>
       <span id="point-history-title">Point History</span>
-      <button onclick="closePointHistory()"
-              style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1"
-              id="point-history-close-btn">✕</button>
+      <button onclick="closePointHistory()" id="point-history-close-btn"
+              style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">✕</button>
     </div>
     <div id="point-history-summary" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap"></div>
     <div id="point-history-body" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:8px">
-      <div style="text-align:center;padding:20px;color:var(--text3)">Loading...</div>
+      <div style="text-align:center;padding:20px;color:var(--text3)">Loading…</div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ POC LINK MODAL ══════════════ -->
 <div class="modal-overlay" id="poc-link-modal" onclick="if(event.target===this)closePOCLinkModal()">
   <div class="modal" id="poc-link-modal-box" style="max-width:480px">
     <div class="modal-title">🔗 Student Registration Link</div>
     <p style="color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:14px">
-      Share this link with students. They will be taken to the Valorant registration form
-      pre-configured for your city's stores.
+      Share this link with students for the Valorant registration form pre-configured for their city's stores.
     </p>
     <div id="poc-link-poc-name" style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:10px"></div>
     <div style="display:flex;gap:8px;align-items:stretch">
@@ -665,25 +694,59 @@
   </div>
 </div>
 
-<!-- ══════════════ TOAST CONTAINER ══════════════ -->
+<!-- Toast -->
 <div class="toast-container" id="toast-container"></div>
 
-<!-- ══════════════ SCRIPTS ══════════════ -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/data.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/admin_tasks.js"></script>
 <script src="js/effects.js"></script>
 <script>
-  /* ── Scroll progress bar ── */
-  window.addEventListener('scroll', () => {
-    const doc = document.documentElement;
-    const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
-    const bar = document.getElementById('scroll-progress');
-    if (bar) bar.style.width = (scrolled * 100) + '%';
-  });
+  /* ── Section switching ── */
+  const SECTION_META = {
+    dashboard: { icon: '📊', label: 'Dashboard' },
+    pocs:      { icon: '👥', label: 'All POCs' },
+    valorant:  { icon: '🎮', label: 'Valorant Registrations' },
+    stories:   { icon: '📸', label: 'Story Submissions' },
+    tasks:     { icon: '📋', label: 'Task Management' },
+    history:   { icon: '📜', label: 'Activity History' },
+  };
 
-  /* ── Sync POC filter active state ── */
+  function switchSection(id) {
+    // Update nav items
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === id);
+    });
+    // Update sections
+    document.querySelectorAll('.content-section').forEach(el => {
+      el.classList.toggle('active', el.id === 'section-' + id);
+    });
+    // Update top bar
+    const meta = SECTION_META[id] || {};
+    const iconEl  = document.getElementById('top-bar-icon');
+    const labelEl = document.getElementById('top-bar-label');
+    if (iconEl)  iconEl.textContent  = meta.icon  || '';
+    if (labelEl) labelEl.textContent = meta.label || '';
+    // Close mobile nav
+    closeMobileNav();
+  }
+
+  /* ── Mobile nav ── */
+  function toggleMobileNav() {
+    const sidebar  = document.getElementById('nav-sidebar');
+    const overlay  = document.getElementById('mobile-nav-overlay');
+    const isOpen   = sidebar.classList.contains('mobile-open');
+    sidebar.classList.toggle('mobile-open', !isOpen);
+    overlay.classList.toggle('visible', !isOpen);
+  }
+  function closeMobileNav() {
+    document.getElementById('nav-sidebar')?.classList.remove('mobile-open');
+    document.getElementById('mobile-nav-overlay')?.classList.remove('visible');
+  }
+
+  /* ── POC filter active state ── */
   document.querySelectorAll('.poc-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.poc-filter-btn').forEach(b => b.classList.remove('active'));
@@ -691,7 +754,7 @@
     });
   });
 
-  /* ── Note field sync between multiplier / single note inputs ── */
+  /* ── Note field sync ── */
   document.addEventListener('DOMContentLoaded', () => {
     const noteEl       = document.getElementById('task-note');
     const noteSingleEl = document.getElementById('task-note-single');
