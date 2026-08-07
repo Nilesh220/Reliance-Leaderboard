@@ -1270,6 +1270,8 @@ async function loadWalkinData() {
 
     if (error) {
       console.error('Error loading walkin data:', error);
+      document.getElementById('walkin-table-body').innerHTML = `<tr><td colspan="11" style="color:var(--red);text-align:center;padding:20px;">Error loading data: ${error.message}</td></tr>`;
+      document.getElementById('walkin-poc-table-body').innerHTML = `<tr><td colspan="8" style="color:var(--red);text-align:center;padding:20px;">Error loading data: ${error.message}</td></tr>`;
       return;
     }
 
