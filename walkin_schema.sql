@@ -65,6 +65,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS set_walkin_registrations_updated_at ON walkin_registrations;
 CREATE TRIGGER set_walkin_registrations_updated_at
   BEFORE UPDATE ON walkin_registrations
   FOR EACH ROW EXECUTE FUNCTION trigger_walkin_set_updated_at();
@@ -73,6 +74,7 @@ CREATE TRIGGER set_walkin_registrations_updated_at
 ALTER TABLE walkin_registrations ENABLE ROW LEVEL SECURITY;
 
 -- 5. RLS Policy (anon key — public read/write)
+DROP POLICY IF EXISTS "Allow all on walkin_registrations" ON walkin_registrations;
 CREATE POLICY "Allow all on walkin_registrations"
   ON walkin_registrations FOR ALL
   USING (true)
