@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Story Screenshot — Bootup India × Reliance Digital</title>
+  <meta name="description" content="Submit your Instagram story screenshot for the Reliance Digital Store Walk-in Experience." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --blue:        #003087;
+      --blue-mid:    #0052CC;
+      --blue-light:  #1A73E8;
+      --blue-pale:   #EEF4FF;
+      --red:         #E31837;
+      --red-dark:    #B5142C;
+      --red-pale:    #FFF0F2;
+      --bg:          #F5F8FF;
+      --border:      rgba(0,48,135,0.10);
+      --border2:     rgba(0,48,135,0.22);
+      --text:        #1A1F36;
+      --text2:       #374878;
+      --text3:       #7A8BA8;
+      --green:       #00865A;
+      --green-pale:  #E6F6F1;
+      --shadow:      0 4px 20px rgba(0,48,135,0.08);
+      --shadow-blue: 0 8px 32px rgba(0,48,135,0.18);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 800px 600px at -10% -10%, rgba(0,48,135,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 110% 110%, rgba(227,24,55,0.05) 0%, transparent 70%);
+    }
+
+    /* Nav */
+    .nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1.5px solid var(--border); padding: 0 24px; }
+    .nav-inner { max-width: 600px; margin: 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: var(--blue); text-decoration: none; }
+    .nav-logo { height: 24px; width: auto; }
+    .nav-divider { width: 1.5px; height: 20px; background: var(--border); }
+    .nav-badge { background: linear-gradient(90deg, var(--blue), var(--red)); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, var(--blue) 0%, #001A4D 50%, var(--red-dark) 100%); padding: 44px 24px; text-align: center; position: relative; overflow: hidden; }
+    .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.5) 50%, transparent 95%); }
+    .hero-inner { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; }
+    .hero-icon { font-size: 48px; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+    .hero-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 5vw, 40px); font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 10px; }
+    .hero-sub { font-size: 14px; color: rgba(255,255,255,0.7); max-width: 420px; margin: 0 auto; line-height: 1.6; }
+
+    /* Main */
+    .main { max-width: 600px; margin: 0 auto; padding: 32px 24px 80px; position: relative; z-index: 1; }
+
+    /* Card */
+    .card { background: rgba(255,255,255,0.88); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); backdrop-filter: blur(12px); margin-bottom: 24px; animation: fadeInUp 0.5s ease both; }
+
+    /* Section label */
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); background: var(--red-pale); border: 1px solid rgba(227,24,55,0.15); border-radius: 99px; padding: 3px 14px; display: inline-block; margin-bottom: 16px; }
+
+    /* Form */
+    .fg { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .fg label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); }
+    .fg label span { color: var(--red); }
+    .fg input { background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: var(--transition); }
+    .fg input:focus { border-color: var(--blue-mid); background: #fff; box-shadow: 0 0 0 3px rgba(0,48,135,0.08); }
+    .fg input.error { border-color: var(--red); }
+    .field-error { font-size: 12px; color: var(--red); font-weight: 500; display: none; }
+    .field-error.visible { display: block; }
+
+    /* Upload area */
+    .upload-zone { border: 2.5px dashed var(--border2); border-radius: var(--radius); padding: 40px 24px; text-align: center; cursor: pointer; transition: var(--transition); background: var(--bg); position: relative; }
+    .upload-zone:hover { border-color: var(--blue-mid); background: var(--blue-pale); transform: translateY(-2px); }
+    .upload-zone.dragging { border-color: var(--blue); background: var(--blue-pale); transform: scale(1.01); }
+    .upload-zone.has-file { border-color: var(--green); border-style: solid; background: var(--green-pale); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon { font-size: 40px; margin-bottom: 10px; }
+    .upload-text { font-size: 14px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+    .upload-hint { font-size: 12px; color: var(--text3); }
+    .upload-preview { max-width: 200px; max-height: 300px; border-radius: var(--radius-sm); margin-top: 12px; box-shadow: var(--shadow); }
+
+    /* Buttons */
+    .btn-primary { width: 100%; padding: 16px 32px; background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 50%, var(--red-dark) 100%); background-size: 200% 100%; color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; cursor: pointer; box-shadow: 0 6px 24px rgba(0,48,135,0.35); transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-primary:hover { background-position: right center; transform: translateY(-3px); box-shadow: 0 10px 36px rgba(0,48,135,0.45); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary { width: 100%; padding: 14px; background: var(--blue-pale); border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; color: var(--blue); cursor: pointer; transition: var(--transition); }
+    .btn-secondary:hover { background: #D6E4FF; transform: translateY(-2px); }
+    .btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+    /* Status message */
+    .status-msg { font-size: 13px; font-weight: 600; padding: 12px 16px; border-radius: var(--radius-sm); margin-top: 12px; display: none; }
+    .status-msg.visible { display: block; }
+    .status-msg.error { color: var(--red); background: var(--red-pale); border: 1px solid rgba(227,24,55,0.2); }
+    .status-msg.success { color: var(--green); background: var(--green-pale); border: 1px solid rgba(0,134,90,0.2); }
+
+    /* Success state */
+    .fullscreen-state { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); align-items: center; justify-content: center; padding: 32px; text-align: center; }
+    .fullscreen-state.visible { display: flex; }
+    .state-card { background: #fff; border: 1.5px solid var(--border); border-radius: 24px; padding: 48px 36px; max-width: 520px; width: 100%; box-shadow: var(--shadow-blue); animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .state-card::before { content: ''; display: block; height: 5px; background: linear-gradient(90deg, var(--green), var(--blue)); margin: -48px -36px 36px; border-radius: 24px 24px 0 0; }
+    .state-icon { font-size: 56px; margin-bottom: 16px; }
+    .state-title { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: var(--green); margin-bottom: 10px; }
+    .state-sub { font-size: 15px; color: var(--text2); line-height: 1.6; }
+
+    /* Lookup result */
+    .lookup-result { background: var(--blue-pale); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; }
+    .lookup-name { font-size: 16px; font-weight: 700; color: var(--blue); }
+    .lookup-detail { font-size: 13px; color: var(--text2); margin-top: 4px; line-height: 1.6; }
+
+    /* Animations */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    @media (max-width: 560px) {
+      .card { padding: 20px; }
+      .hero { padding: 32px 20px; }
+      .state-card { padding: 32px 20px; }
+      .state-card::before { margin: -32px -20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" class="nav-logo" />
+      <div class="nav-divider"></div>
+      <span>Bootup India</span>
+    </a>
+    <div class="nav-badge">📸 Story Upload</div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="walkin-story-hero">
+  <div class="hero-inner">
+    <div class="hero-icon">📸</div>
+    <h1 class="hero-title">Upload Your Story Screenshot</h1>
+    <p class="hero-sub">Submit your Instagram story screenshot tagging @reliancedigital & @vigorspace</p>
+  </div>
+</section>
+
+<!-- Main -->
+<main class="main" id="walkin-story-main">
+
+  <!-- Step 1: Email lookup -->
+  <div class="card" id="card-lookup">
+    <div class="section-label">📧 Step 1 — Find Your Registration</div>
+    <div class="fg">
+      <label for="lookup-email">Registered Email <span>*</span></label>
+      <input type="email" id="lookup-email" placeholder="Enter the email you registered with" />
+      <div class="field-error" id="err-lookup-email">Please enter a valid email.</div>
+    </div>
+    <button class="btn-secondary" id="lookup-btn" onclick="handleLookup()">🔍 Find My Registration</button>
+    <div class="status-msg" id="lookup-status"></div>
+    <div class="lookup-result" id="lookup-result" style="display:none">
+      <div class="lookup-name" id="lookup-name"></div>
+      <div class="lookup-detail" id="lookup-detail"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Upload screenshot (hidden until lookup succeeds) -->
+  <div class="card" id="card-upload" style="display:none">
+    <div class="section-label">📤 Step 2 — Upload Screenshot</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+      Upload a screenshot of your Instagram story where you tagged <strong>@reliancedigital</strong> and <strong>@vigorspace</strong>.
+    </p>
+    <div class="upload-zone" id="upload-zone">
+      <input type="file" id="screenshot-input" accept="image/*" onchange="handleFileSelect(event)" />
+      <div class="upload-icon">📷</div>
+      <div class="upload-text" id="upload-text">Drop your screenshot here or click to browse</div>
+      <div class="upload-hint">PNG, JPG, WEBP — max 10MB</div>
+      <img class="upload-preview" id="upload-preview" style="display:none" />
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn-primary" id="submit-btn" onclick="handleSubmit()" disabled>
+        📤 Submit Screenshot
+      </button>
+    </div>
+    <div class="status-msg" id="submit-status"></div>
+  </div>
+
+</main>
+
+<!-- Success screen -->
+<div class="fullscreen-state" id="success-screen">
+  <div class="state-card">
+    <div class="state-icon">✅</div>
+    <div class="state-title">Screenshot Submitted!</div>
+    <p class="state-sub">Your Instagram story screenshot has been received. Our team will verify it shortly. Thank you for participating in the Store Walk-in Experience!</p>
+  </div>
+</div>
+
+<script>
+/* ──────────────────────────────────────────
+   SUPABASE CLIENT
+────────────────────────────────────────── */
+const SUPABASE_URL      = 'https://aebkutavunwlwzswuhbc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmt1dGF2dW53bHd6c3d1aGJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTAyNDksImV4cCI6MjA5NjQ4NjI0OX0.-tnBG6MDWB_WjHDJeeWCpiEwvbMSk9H8e4UneAKDR78';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let registrationData = null;
+let selectedFile     = null;
+
+/* ──────────────────────────────────────────
+   AUTO-FILL FROM URL PARAM
+────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const emailParam = params.get('email');
+  if (emailParam) {
+    document.getElementById('lookup-email').value = emailParam;
+    handleLookup();
+  }
+
+  // Drag & drop
+  const zone = document.getElementById('upload-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragging'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragging'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragging');
+    if (e.dataTransfer.files?.[0]) {
+      document.getElementById('screenshot-input').files = e.dataTransfer.files;
+      handleFileSelect({ target: { files: e.dataTransfer.files } });
+    }
+  });
+});
+
+/* ──────────────────────────────────────────
+   LOOKUP REGISTRATION
+────────────────────────────────────────── */
+async function handleLookup() {
+  const emailInput = document.getElementById('lookup-email');
+  const email = emailInput.value.trim().toLowerCase();
+  const statusEl = document.getElementById('lookup-status');
+  const resultEl = document.getElementById('lookup-result');
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('err-lookup-email').classList.add('visible');
+    return;
+  }
+  document.getElementById('err-lookup-email').classList.remove('visible');
+
+  const btn = document.getElementById('lookup-btn');
+  btn.disabled = true;
+  btn.textContent = '🔍 Searching…';
+
+  try {
+    // Query walkin_registrations by email
+    const { data, error } = await db
+      .from('walkin_registrations')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error || !data) {
+      statusEl.className = 'status-msg visible error';
+      statusEl.textContent = '❌ No registration found with this email. Please check and try again.';
+      resultEl.style.display = 'none';
+      btn.disabled = false;
+      btn.textContent = '🔍 Find My Registration';
+      return;
+    }
+
+    if (data.story_screenshot_url) {
+      statusEl.className = 'status-msg visible success';
+      statusEl.textContent = '✅ You have already submitted your screenshot! No further action needed.';
+      resultEl.style.display = 'none';
+      btn.disabled = false;
+      btn.textContent = '🔍 Find My Registration';
+      return;
+    }
+
+    registrationData = data;
+    resultEl.style.display = 'block';
+    document.getElementById('lookup-name').textContent = `✅ ${data.full_name}`;
+    document.getElementById('lookup-detail').innerHTML = `🏬 ${data.preferred_store} · 📍 ${data.store_location}<br>📅 Visit date: ${data.visit_date}<br>🤝 POC: ${data.poc_name}`;
+
+    statusEl.className = 'status-msg visible success';
+    statusEl.textContent = 'Registration found! Now upload your screenshot below.';
+
+    // Show upload card
+    document.getElementById('card-upload').style.display = 'block';
+    document.getElementById('card-upload').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    btn.disabled = false;
+    btn.textContent = '🔍 Find My Registration';
+
+  } catch (err) {
+    statusEl.className = 'status-msg visible error';
+    statusEl.textContent = '❌ Something went wrong. Please try again.';
+    btn.disabled = false;
+    btn.textContent = '🔍 Find My Registration';
+  }
+}
+
+/* ──────────────────────────────────────────
+   FILE SELECTION
+────────────────────────────────────────── */
+function handleFileSelect(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File is too large. Maximum size is 10MB.');
+    return;
+  }
+
+  selectedFile = file;
+  const zone = document.getElementById('upload-zone');
+  zone.classList.add('has-file');
+  document.getElementById('upload-text').textContent = file.name;
+
+  // Preview
+  const preview = document.getElementById('upload-preview');
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    preview.src = ev.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  // Enable submit
+  document.getElementById('submit-btn').disabled = false;
+}
+
+/* ──────────────────────────────────────────
+   SUBMIT SCREENSHOT
+────────────────────────────────────────── */
+async function handleSubmit() {
+  if (!selectedFile || !registrationData) return;
+
+  const btn = document.getElementById('submit-btn');
+  const statusEl = document.getElementById('submit-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Uploading…';
+
+  try {
+    // 1. Upload to Cloudinary via /api/upload
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('folder', 'walkin-stories');
+
+    const uploadRes = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const uploadResult = await uploadRes.json();
+
+    if (!uploadRes.ok || !uploadResult.url) {
+      throw new Error(uploadResult.error || 'Upload failed');
+    }
+
+    // 2. Update walkin_registrations with screenshot URL
+    const { error: updateErr } = await db
+      .from('walkin_registrations')
+      .update({
+        story_screenshot_url: uploadResult.url,
+        story_submitted_at:   new Date().toISOString(),
+        story_status:         'submitted',
+      })
+      .eq('id', registrationData.id);
+
+    if (updateErr) throw new Error(updateErr.message);
+
+    // 3. Show success
+    document.getElementById('walkin-story-hero').style.display = 'none';
+    document.getElementById('walkin-story-main').style.display = 'none';
+    document.getElementById('success-screen').classList.add('visible');
+
+  } catch (err) {
+    statusEl.className = 'status-msg visible error';
+    statusEl.textContent = `❌ ${err.message || 'Upload failed. Please try again.'}`;
+    btn.disabled = false;
+    btn.innerHTML = '📤 Submit Screenshot';
+  }
+}
+</script>
+</body>
+</html>

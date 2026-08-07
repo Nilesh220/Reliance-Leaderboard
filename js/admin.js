@@ -1245,4 +1245,361 @@ const _origInit = initializeAdminDashboard;
 initializeAdminDashboard = async function () {
   await _origInit();
   initSheetButton();
-};
+  // Load walk-in data on dashboard init
+  loadWalkinData();
+};
+
+
+/* ═══════════════════════════════════════════════════════════
+   STORE WALK-IN DASHBOARD MODULE
+   ═══════════════════════════════════════════════════════════ */
+
+let walkinData          = [];
+let walkinFilteredData  = [];
+let walkinCityFilter    = 'All';
+
+/* ─────────────────────────────────────────────
+   LOAD WALK-IN DATA from Supabase
+   ───────────────────────────────────────────── */
+async function loadWalkinData() {
+  try {
+    const { data, error } = await window.supabaseClient
+      .from('walkin_registrations')
+      .select('*')
+      .order('registered_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading walkin data:', error);
+      return;
+    }
+
+    walkinData = data || [];
+    applyWalkinFilters();
+    renderWalkinKPIs();
+    renderWalkinPipeline();
+    renderWalkinTable();
+    renderWalkinPOCBreakdown();
+    updateWalkinNavBadge();
+  } catch (err) {
+    console.error('loadWalkinData error:', err);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   APPLY CITY FILTER
+   ───────────────────────────────────────────── */
+function applyWalkinFilters() {
+  if (walkinCityFilter === 'All') {
+    walkinFilteredData = [...walkinData];
+  } else {
+    // Determine city from store/POC — use college_city as proxy
+    walkinFilteredData = walkinData.filter(r => {
+      const pocId = r.poc_id || '';
+      if (walkinCityFilter === 'Mumbai') return pocId.startsWith('mum_') || pocId.startsWith('poc_');
+      if (walkinCityFilter === 'Pune') return pocId.startsWith('pun_');
+      if (walkinCityFilter === 'Aurangabad') return pocId.startsWith('aur_');
+      return true;
+    });
+  }
+}
+
+function filterWalkinCity(city) {
+  walkinCityFilter = city;
+  // Update filter button styles
+  document.querySelectorAll('#section-walkins .poc-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const btnId = `walkin-filter-${city.toLowerCase()}`;
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('active');
+
+  applyWalkinFilters();
+  renderWalkinKPIs();
+  renderWalkinPipeline();
+  renderWalkinTable();
+  renderWalkinPOCBreakdown();
+}
+window.filterWalkinCity = filterWalkinCity;
+
+/* ─────────────────────────────────────────────
+   RENDER KPI CARDS (with count-up animation)
+   ───────────────────────────────────────────── */
+function countUp(el, target, duration = 800) {
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  let startTime = null;
+  const step = (timestamp) => {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(start + (target - start) * ease);
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function renderWalkinKPIs() {
+  const d = walkinFilteredData;
+  const total     = d.length;
+  const stories   = d.filter(r => r.story_screenshot_url).length;
+  const pending   = total - stories;
+  const emails    = d.filter(r => r.confirmation_sent).length +
+                    d.filter(r => r.reminder_sent).length +
+                    d.filter(r => r.followup_sent).length +
+                    d.filter(r => r.poc_alert_sent).length;
+
+  countUp(document.getElementById('walkin-stat-total'), total);
+  countUp(document.getElementById('walkin-stat-stories'), stories);
+  countUp(document.getElementById('walkin-stat-pending'), pending);
+  countUp(document.getElementById('walkin-stat-emails'), emails);
+}
+
+/* ─────────────────────────────────────────────
+   RENDER EMAIL PIPELINE PROGRESS BARS
+   ───────────────────────────────────────────── */
+function renderWalkinPipeline() {
+  const d = walkinFilteredData;
+  const total = d.length || 1; // avoid division by zero
+
+  const confirmCount  = d.filter(r => r.confirmation_sent).length;
+  const reminderCount = d.filter(r => r.reminder_sent).length;
+  const followupCount = d.filter(r => r.followup_sent).length;
+  const alertCount    = d.filter(r => r.poc_alert_sent).length;
+
+  // Update progress bars
+  const setBar = (id, count) => {
+    const el = document.getElementById(id);
+    if (el) el.style.width = `${Math.round((count / total) * 100)}%`;
+  };
+  setBar('walkin-pipe-confirm', confirmCount);
+  setBar('walkin-pipe-reminder', reminderCount);
+  setBar('walkin-pipe-followup', followupCount);
+  setBar('walkin-pipe-alert', alertCount);
+
+  // Update counts
+  const setCount = (id, count) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = count;
+  };
+  setCount('walkin-pipe-confirm-count', confirmCount);
+  setCount('walkin-pipe-reminder-count', reminderCount);
+  setCount('walkin-pipe-followup-count', followupCount);
+  setCount('walkin-pipe-alert-count', alertCount);
+}
+
+/* ─────────────────────────────────────────────
+   RENDER REGISTRATION TABLE
+   ───────────────────────────────────────────── */
+function renderWalkinTable() {
+  const tbody = document.getElementById('walkin-table-body');
+  const countEl = document.getElementById('walkin-table-count');
+  if (!tbody) return;
+
+  // Apply search filter
+  const searchTerm = (document.getElementById('walkin-search')?.value || '').toLowerCase();
+  let data = walkinFilteredData;
+  if (searchTerm) {
+    data = data.filter(r =>
+      (r.full_name || '').toLowerCase().includes(searchTerm) ||
+      (r.email || '').toLowerCase().includes(searchTerm) ||
+      (r.preferred_store || '').toLowerCase().includes(searchTerm) ||
+      (r.poc_name || '').toLowerCase().includes(searchTerm) ||
+      (r.mobile || '').includes(searchTerm)
+    );
+  }
+
+  if (countEl) countEl.textContent = `${data.length} registration${data.length !== 1 ? 's' : ''}`;
+
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--text3)">No registrations found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map((r, i) => {
+    // Story status badge
+    let storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(224,124,0,0.1);color:var(--orange);border:1px solid rgba(224,124,0,0.2)">⏳ Pending</span>';
+    if (r.story_status === 'submitted') {
+      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(0,134,90,0.1);color:var(--green);border:1px solid rgba(0,134,90,0.2)">📸 Submitted</span>';
+    } else if (r.story_status === 'verified') {
+      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(0,134,90,0.15);color:var(--green);border:1px solid rgba(0,134,90,0.3)">✅ Verified</span>';
+    } else if (r.story_status === 'rejected') {
+      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:var(--red-pale);color:var(--red);border:1px solid rgba(227,24,55,0.2)">❌ Rejected</span>';
+    }
+
+    // Email status icons
+    const emailIcons = [
+      r.confirmation_sent ? '✅' : '⬜',
+      r.reminder_sent     ? '🔔' : '⬜',
+      r.followup_sent     ? '📸' : '⬜',
+      r.poc_alert_sent    ? '⚠️' : '⬜',
+    ].join('');
+
+    // Format visit date
+    const visitDate = r.visit_date ? new Date(r.visit_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
+
+    // Action buttons
+    let actions = '';
+    if (r.story_screenshot_url) {
+      actions += `<a href="${r.story_screenshot_url}" target="_blank" style="font-size:11px;color:var(--blue-light);font-weight:600;text-decoration:none">View 📷</a>`;
+    }
+    if (r.story_status === 'submitted') {
+      actions += ` <button onclick="updateWalkinStatus('${r.id}','verified')" style="font-size:10px;background:var(--green);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700">✓</button>`;
+      actions += ` <button onclick="updateWalkinStatus('${r.id}','rejected')" style="font-size:10px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700">✗</button>`;
+    }
+
+    return `<tr style="animation:fadeInUp 0.3s ${i * 0.02}s ease both">
+      <td style="font-size:12px;color:var(--text3)">${i + 1}</td>
+      <td style="font-weight:600;font-size:13px">${r.full_name || '—'}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.email || '—'}</td>
+      <td style="font-size:12px">${r.mobile || '—'}</td>
+      <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.college_name || '—'}</td>
+      <td style="font-size:12px;font-weight:600">${r.preferred_store || '—'}</td>
+      <td style="font-size:12px">${visitDate}</td>
+      <td style="font-size:12px">${r.poc_name || '—'}</td>
+      <td>${storyBadge}</td>
+      <td style="font-size:12px;letter-spacing:1px">${emailIcons}</td>
+      <td style="font-size:11px;white-space:nowrap">${actions || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterWalkinTable() {
+  renderWalkinTable();
+}
+window.filterWalkinTable = filterWalkinTable;
+
+/* ─────────────────────────────────────────────
+   UPDATE WALK-IN STORY STATUS (verify/reject)
+   ───────────────────────────────────────────── */
+async function updateWalkinStatus(id, status) {
+  try {
+    const { error } = await window.supabaseClient
+      .from('walkin_registrations')
+      .update({ story_status: status })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating walkin status:', error);
+      alert('Failed to update status: ' + error.message);
+      return;
+    }
+
+    // Refresh data
+    await loadWalkinData();
+  } catch (err) {
+    console.error('updateWalkinStatus error:', err);
+  }
+}
+window.updateWalkinStatus = updateWalkinStatus;
+
+/* ─────────────────────────────────────────────
+   RENDER PER-POC BREAKDOWN TABLE
+   ───────────────────────────────────────────── */
+function renderWalkinPOCBreakdown() {
+  const tbody = document.getElementById('walkin-poc-table-body');
+  if (!tbody) return;
+
+  // Group by POC
+  const byPoc = {};
+  for (const r of walkinFilteredData) {
+    const key = r.poc_id || 'unknown';
+    if (!byPoc[key]) {
+      byPoc[key] = {
+        poc_name: r.poc_name || '—',
+        store: r.preferred_store || '—',
+        city: key.startsWith('mum_') || key.startsWith('poc_') ? 'Mumbai' : key.startsWith('pun_') ? 'Pune' : 'Aurangabad',
+        total: 0,
+        stories: 0,
+      };
+    }
+    byPoc[key].total++;
+    if (r.story_screenshot_url) byPoc[key].stories++;
+  }
+
+  const rows = Object.entries(byPoc).sort((a, b) => b[1].total - a[1].total);
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">No data yet.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(([pocId, d]) => {
+    const pending = d.total - d.stories;
+    const conversion = d.total > 0 ? Math.round((d.stories / d.total) * 100) : 0;
+    const convColor = conversion >= 80 ? 'var(--green)' : conversion >= 40 ? 'var(--orange)' : 'var(--red)';
+
+    return `<tr>
+      <td style="font-weight:600;font-size:13px">${d.poc_name}</td>
+      <td><span class="city-tag">${d.city}</span></td>
+      <td style="font-size:12px">${d.store}</td>
+      <td style="font-weight:700;color:var(--blue)">${d.total}</td>
+      <td style="font-weight:700;color:var(--green)">${d.stories}</td>
+      <td style="font-weight:700;color:var(--orange)">${pending}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="flex:1;background:var(--border);border-radius:99px;height:6px;overflow:hidden;min-width:60px">
+            <div style="height:100%;background:${convColor};border-radius:99px;width:${conversion}%;transition:width 0.8s ease"></div>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:${convColor}">${conversion}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ─────────────────────────────────────────────
+   TRIGGER WALKIN EMAILS (manual)
+   ───────────────────────────────────────────── */
+async function triggerWalkinEmail(type) {
+  const statusEl = document.getElementById('walkin-trigger-status');
+  const labels = {
+    reminder:  '🔔 Sending day-of reminders…',
+    followup:  '📸 Sending follow-up reminders…',
+    poc_alert: '⚠️ Alerting POCs…',
+  };
+
+  statusEl.textContent = labels[type] || 'Sending…';
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--blue)';
+
+  try {
+    const res = await fetch('/api/send-walkin-emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, target: 'all' }),
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = `✅ ${result.sent || 0} email(s) sent successfully!`;
+      // Reload data to reflect updated flags
+      setTimeout(() => loadWalkinData(), 1000);
+    } else {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = `❌ ${result.error || 'Failed to send emails.'}`;
+    }
+  } catch (err) {
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = `❌ Error: ${err.message}`;
+  }
+
+  // Auto-hide after 5s
+  setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+}
+window.triggerWalkinEmail = triggerWalkinEmail;
+
+/* ─────────────────────────────────────────────
+   UPDATE NAV BADGE
+   ───────────────────────────────────────────── */
+function updateWalkinNavBadge() {
+  const badge = document.getElementById('nav-badge-walkins');
+  if (badge) badge.textContent = walkinData.length || '—';
+}
+
+/* ── Expose functions to window ── */
+window.loadWalkinData      = loadWalkinData;
+window.filterWalkinCity    = filterWalkinCity;
+window.filterWalkinTable   = filterWalkinTable;
+window.updateWalkinStatus  = updateWalkinStatus;
+window.triggerWalkinEmail  = triggerWalkinEmail;

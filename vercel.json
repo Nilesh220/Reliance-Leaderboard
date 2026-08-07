@@ -5,6 +5,8 @@
     { "source": "/dashboard",     "destination": "/dashboard.html"     },
     { "source": "/admin",         "destination": "/admin.html"         },
     { "source": "/story-submit",  "destination": "/story-submit.html"  },
-    { "source": "/viewer",         "destination": "/viewer.html"         }
+    { "source": "/viewer",           "destination": "/viewer.html"           },
+    { "source": "/walkin-register",  "destination": "/walkin-register.html"  },
+    { "source": "/walkin-story",     "destination": "/walkin-story.html"     }
   ]
 }

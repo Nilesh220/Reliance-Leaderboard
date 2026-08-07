@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store Walk-in Experience — Register | Bootup India × Reliance Digital</title>
+  <meta name="description" content="Register for the Reliance Digital Store Walk-in Experience. Visit a store, post a story tagging @reliancedigital & @vigorspace, and win rewards." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ──────────────────────────────────────────
+       ROOT DESIGN TOKENS
+    ────────────────────────────────────────── */
+    :root {
+      --blue:        #003087;
+      --blue-mid:    #0052CC;
+      --blue-light:  #1A73E8;
+      --blue-pale:   #EEF4FF;
+      --red:         #E31837;
+      --red-dark:    #B5142C;
+      --red-pale:    #FFF0F2;
+      --bg:          #F5F8FF;
+      --bg2:         #FFFFFF;
+      --border:      rgba(0,48,135,0.10);
+      --border2:     rgba(0,48,135,0.22);
+      --text:        #1A1F36;
+      --text2:       #374878;
+      --text3:       #7A8BA8;
+      --green:       #00865A;
+      --green-pale:  #E6F6F1;
+      --orange:      #E07C00;
+      --orange-pale: #FFF4E5;
+      --shadow:      0 4px 20px rgba(0,48,135,0.08);
+      --shadow-blue: 0 8px 32px rgba(0,48,135,0.18);
+      --shadow-red:  0 8px 32px rgba(227,24,55,0.18);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --radius-lg:   24px;
+      --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background ambient blobs ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 800px 600px at -10% -10%, rgba(0,48,135,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 110% 110%, rgba(227,24,55,0.05) 0%, transparent 70%);
+    }
+
+    /* ──────────────────────────────────────────
+       HEADER / NAV
+    ────────────────────────────────────────── */
+    #reg-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border);
+      padding: 0 24px;
+    }
+    .reg-nav-inner {
+      max-width: 680px; margin: 0 auto;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .reg-nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--blue);
+      text-decoration: none;
+    }
+    .reg-nav-logo { height: 24px; width: auto; object-fit: contain; }
+    .reg-nav-divider { width: 1.5px; height: 20px; background: var(--border); border-radius: 99px; }
+    .reg-nav-badge {
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+      padding: 3px 10px; border-radius: 99px;
+    }
+
+    /* ──────────────────────────────────────────
+       HERO SECTION — STORE WALK-IN
+    ────────────────────────────────────────── */
+    .reg-hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #001A4D 35%, #1A0A28 60%, var(--red-dark) 85%, var(--red) 100%);
+      padding: 52px 24px 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated diagonal stripes */
+    .reg-hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px,
+          transparent 1px, transparent 48px
+        );
+      animation: stripeSlide 20s linear infinite;
+    }
+
+    @keyframes stripeSlide {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(48px); }
+    }
+
+    /* Gradient bottom glow line */
+    .reg-hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.5) 50%, transparent 95%);
+    }
+
+    /* Floating ambient particles canvas */
+    #hero-particles {
+      position: absolute; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    .reg-hero-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
+    .reg-hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 99px; padding: 5px 16px;
+      margin-bottom: 20px;
+      animation: fadeInDown 0.5s ease both;
+    }
+    .reg-hero-eyebrow .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #00E676;
+      animation: pulseGlow 2s infinite;
+    }
+
+    .reg-hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(30px, 7vw, 52px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.08;
+      margin-bottom: 14px;
+      animation: fadeInDown 0.5s 0.1s ease both;
+    }
+    .reg-hero-title .gradient-text {
+      background: linear-gradient(90deg, #FFD700 0%, #FF8C00 40%, #FF4500 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .reg-hero-sub {
+      font-size: 15px; color: rgba(255,255,255,0.70);
+      max-width: 480px; margin: 0 auto 20px;
+      line-height: 1.6;
+      animation: fadeInDown 0.5s 0.2s ease both;
+    }
+
+    /* Date range badge in hero */
+    .date-range-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,215,0,0.12);
+      border: 1.5px solid rgba(255,215,0,0.35);
+      border-radius: 99px; padding: 6px 18px;
+      font-size: 13px; font-weight: 700; color: #FFD700;
+      letter-spacing: 0.5px;
+      margin-bottom: 22px;
+      animation: fadeInDown 0.5s 0.25s ease both;
+    }
+
+    /* POC banner in hero */
+    .poc-banner {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.10);
+      border: 1.5px solid rgba(255,255,255,0.22);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      animation: fadeInDown 0.5s 0.3s ease both;
+      backdrop-filter: blur(8px);
+    }
+    .poc-banner-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #FFD700, #FF6B35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800; color: #1A1F36;
+      flex-shrink: 0;
+    }
+    .poc-banner-info { text-align: left; }
+    .poc-banner-label { font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 1px; text-transform: uppercase; }
+    .poc-banner-name  { font-size: 15px; font-weight: 700; color: #fff; }
+
+    /* ──────────────────────────────────────────
+       MAIN FORM CONTAINER
+    ────────────────────────────────────────── */
+    .reg-body {
+      max-width: 680px; margin: 0 auto;
+      padding: 36px 24px 80px;
+      position: relative; z-index: 1;
+    }
+
+    /* Section labels */
+    .reg-section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--red);
+      background: var(--red-pale);
+      border: 1px solid rgba(227,24,55,0.15);
+      border-radius: 99px; padding: 3px 14px;
+      display: inline-block; margin-bottom: 16px;
+    }
+
+    /* Card wrapper */
+    .reg-card {
+      background: rgba(255,255,255,0.88);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.5s ease both;
+      transition: var(--transition);
+    }
+    .reg-card:hover {
+      border-color: var(--border2);
+      box-shadow: var(--shadow-blue);
+    }
+    .reg-card:nth-child(2) { animation-delay: 0.05s; }
+    .reg-card:nth-child(3) { animation-delay: 0.10s; }
+    .reg-card:nth-child(4) { animation-delay: 0.15s; }
+    .reg-card:nth-child(5) { animation-delay: 0.20s; }
+    .reg-card:nth-child(6) { animation-delay: 0.25s; }
+
+    /* Form grid */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid .span2 { grid-column: 1 / -1; }
+
+    /* Form group */
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+    .fg label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text3);
+    }
+    .fg label span { color: var(--red); }
+
+    .fg input, .fg select {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none;
+      transition: var(--transition);
+      width: 100%;
+    }
+    .fg input::placeholder { color: var(--text3); }
+    .fg input:focus, .fg select:focus {
+      border-color: var(--blue-mid);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.08);
+    }
+    .fg input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(227,24,55,0.08); }
+    .fg .field-error { font-size: 12px; color: var(--red); font-weight: 500; display: none; }
+    .fg .field-error.visible { display: block; }
+
+    /* ──────────────────────────────────────────
+       DATE PICKER CARDS
+    ────────────────────────────────────────── */
+    .date-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .date-card {
+      position: relative;
+      cursor: pointer;
+    }
+    .date-card input[type="radio"] {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+    .date-card-inner {
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 8px;
+      text-align: center;
+      transition: var(--transition);
+      background: #fff;
+      display: flex; flex-direction: column; gap: 4px; align-items: center;
+    }
+    .date-card:hover .date-card-inner {
+      border-color: var(--blue-mid);
+      background: var(--blue-pale);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-blue);
+    }
+    .date-card input:checked ~ .date-card-inner {
+      border-color: var(--blue);
+      background: linear-gradient(145deg, var(--blue-pale), #D6E4FF);
+      box-shadow: 0 0 0 3px rgba(0,48,135,0.12), var(--shadow-blue);
+    }
+    .date-day {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text3);
+    }
+    .date-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .date-card input:checked ~ .date-card-inner .date-num {
+      color: var(--blue);
+    }
+    .date-month {
+      font-size: 10px; font-weight: 600;
+      color: var(--text3);
+      letter-spacing: 0.5px;
+    }
+    .date-check {
+      position: absolute; top: 6px; right: 6px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.5);
+      transition: var(--transition);
+      color: #fff; font-size: 10px; font-weight: 700;
+    }
+    .date-card input:checked ~ .date-card-inner .date-check {
+      opacity: 1; transform: scale(1);
+    }
+
+    /* ──────────────────────────────────────────
+       STORE INFO CARD (Read-only)
+    ────────────────────────────────────────── */
+    .store-info-card {
+      background: linear-gradient(135deg, var(--blue-pale), #D6E4FF);
+      border: 2px solid rgba(0,48,135,0.15);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex; align-items: center; gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .store-info-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-light));
+    }
+    .store-info-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,48,135,0.25);
+    }
+    .store-info-details { flex: 1; }
+    .store-info-name {
+      font-size: 16px; font-weight: 700; color: var(--blue);
+      margin-bottom: 2px;
+    }
+    .store-info-location {
+      font-size: 13px; color: var(--text2);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .store-info-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(0,134,90,0.1);
+      border: 1px solid rgba(0,134,90,0.2);
+      border-radius: 99px; padding: 2px 10px;
+      font-size: 10px; font-weight: 700; color: var(--green);
+      letter-spacing: 0.5px; text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ──────────────────────────────────────────
+       HOW IT WORKS STEPS
+    ────────────────────────────────────────── */
+    .steps-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+    }
+    .step-item {
+      text-align: center;
+      padding: 16px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .step-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .step-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+      color: #fff; font-size: 11px; font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .step-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .step-desc {
+      font-size: 11px; color: var(--text3); line-height: 1.5;
+    }
+
+    /* ──────────────────────────────────────────
+       SUPPORT CARD
+    ────────────────────────────────────────── */
+    .support-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .support-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex; align-items: center; gap: 10px;
+      transition: var(--transition);
+    }
+    .support-item:hover {
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .support-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .support-icon.email-icon { background: rgba(227,24,55,0.08); }
+    .support-icon.poc-icon { background: rgba(0,48,135,0.08); }
+    .support-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .support-value { font-size: 13px; font-weight: 700; color: var(--text); word-break: break-all; }
+
+    /* ──────────────────────────────────────────
+       SUBMIT BUTTON
+    ────────────────────────────────────────── */
+    .reg-submit-btn {
+      width: 100%;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 50%, var(--red-dark) 100%);
+      background-size: 200% 100%;
+      color: #fff; border: none;
+      border-radius: var(--radius);
+      font-size: 16px; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0,48,135,0.35);
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .reg-submit-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    .reg-submit-btn:hover::before {
+      transform: translateX(100%);
+    }
+    .reg-submit-btn:hover {
+      background-position: right center;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(0,48,135,0.45);
+    }
+    .reg-submit-btn:active { transform: translateY(-1px); }
+    .reg-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* Error message */
+    #submit-error {
+      font-size: 13px; font-weight: 600; color: var(--red);
+      background: var(--red-pale); border: 1px solid rgba(227,24,55,0.2);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      display: none; margin-top: 12px;
+    }
+    #submit-error.visible { display: block; }
+
+    /* ──────────────────────────────────────────
+       SUCCESS & ERROR SCREENS
+    ────────────────────────────────────────── */
+    .fullscreen-state {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--bg);
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+    }
+    .fullscreen-state.visible { display: flex; }
+
+    #success-confetti {
+      position: fixed; inset: 0; z-index: 501;
+      pointer-events: none;
+    }
+
+    .state-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 36px;
+      max-width: 540px; width: 100%;
+      box-shadow: var(--shadow-blue);
+      animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+      position: relative;
+      z-index: 502;
+    }
+    .state-card::before {
+      content: '';
+      display: block; height: 5px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      margin: -48px -36px 36px;
+      border-radius: 24px 24px 0 0;
+    }
+    .state-icon { font-size: 56px; margin-bottom: 16px; }
+    .state-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 800; color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .state-sub { font-size: 15px; color: var(--text2); line-height: 1.6; margin-bottom: 24px; }
+    .state-detail {
+      background: var(--blue-pale); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+      font-size: 13px; color: var(--text2); line-height: 1.8;
+      text-align: left;
+    }
+    .state-detail strong { color: var(--blue); }
+
+    .state-card.error-state::before { background: var(--red); }
+    .state-card.error-state .state-title { color: var(--red); }
+
+    /* Success email notice */
+    .email-notice {
+      margin-top: 16px;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--green-pale);
+      border: 1px solid rgba(0,134,90,0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 12px; font-weight: 600; color: var(--green);
+    }
+
+    /* ──────────────────────────────────────────
+       ANIMATIONS
+    ────────────────────────────────────────── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,230,118,0.5); }
+      50%       { box-shadow: 0 0 0 6px rgba(0,230,118,0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    /* ──────────────────────────────────────────
+       RESPONSIVE
+    ────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .span2 { grid-column: auto; }
+      .reg-card { padding: 20px; }
+      .reg-hero { padding: 36px 20px 32px; }
+      .date-grid { grid-template-columns: repeat(3, 1fr); }
+      .steps-row { grid-template-columns: 1fr; }
+      .support-row { grid-template-columns: 1fr; }
+      .state-card { padding: 32px 20px; }
+      .state-card::before { margin: -32px -20px 24px; }
+    }
+    @media (max-width: 400px) {
+      .date-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav id="reg-nav">
+  <div class="reg-nav-inner">
+    <a href="/" class="reg-nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png"
+           alt="Reliance Digital" class="reg-nav-logo" />
+      <div class="reg-nav-divider"></div>
+      <span>Bootup India</span>
+    </a>
+    <div class="reg-nav-badge">🏪 Store Walk-in</div>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="reg-hero" id="reg-hero">
+  <canvas id="hero-particles"></canvas>
+  <div class="reg-hero-inner">
+    <div class="reg-hero-eyebrow"><span class="live-dot"></span> Store Walk-in Experience · 2026</div>
+    <h1 class="reg-hero-title">Visit a <span class="gradient-text">Reliance Digital</span><br>Store Near You</h1>
+    <p class="reg-hero-sub">Walk in, experience the store, post a story tagging @reliancedigital & @vigorspace, and win amazing rewards!</p>
+    <div class="date-range-badge" id="hero-date-badge">📅 August 10 — 14, 2026</div>
+    <br>
+    <div class="poc-banner" id="poc-banner">
+      <div class="poc-banner-avatar" id="poc-avatar">—</div>
+      <div class="poc-banner-info">
+        <div class="poc-banner-label">Invited by</div>
+        <div class="poc-banner-name" id="poc-banner-name">Loading…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FORM BODY ══════════════ -->
+<main class="reg-body" id="reg-form-body">
+
+  <!-- ── Section 1: Personal Info ── -->
+  <div class="reg-card" id="card-personal">
+    <div class="reg-section-label">👤 Personal Information</div>
+    <div class="form-grid">
+      <div class="fg span2">
+        <label for="reg-fullname">Full Name <span>*</span></label>
+        <input type="text" id="reg-fullname" placeholder="e.g. Rahul Sharma" autocomplete="name" />
+        <div class="field-error" id="err-fullname">Please enter your full name.</div>
+      </div>
+      <div class="fg">
+        <label for="reg-mobile">Mobile Number <span>*</span></label>
+        <input type="tel" id="reg-mobile" placeholder="10-digit mobile" maxlength="10" autocomplete="tel" />
+        <div class="field-error" id="err-mobile">Enter a valid 10-digit number.</div>
+      </div>
+      <div class="fg">
+        <label for="reg-email">Email ID <span>*</span></label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" />
+        <div class="field-error" id="err-email">Enter a valid email address.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 2: College Info ── -->
+  <div class="reg-card" id="card-college">
+    <div class="reg-section-label">🎓 College Information</div>
+    <div class="form-grid">
+      <div class="fg span2">
+        <label for="reg-college-name">College Name <span>*</span></label>
+        <input type="text" id="reg-college-name" placeholder="e.g. MIT WPU, Pune" autocomplete="organization" />
+        <div class="field-error" id="err-college-name">Please enter your college name.</div>
+      </div>
+      <div class="fg span2">
+        <label for="reg-college-city">College City <span>*</span></label>
+        <input type="text" id="reg-college-city" placeholder="e.g. Pune" autocomplete="address-level2" />
+        <div class="field-error" id="err-college-city">Please enter your college city.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 3: Visit Date Picker ── -->
+  <div class="reg-card" id="card-date">
+    <div class="reg-section-label">📅 Choose Your Visit Date</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6">
+      Pick the date you'd like to visit the store. You'll get a reminder on the morning of your visit.
+    </p>
+    <div class="date-grid" id="date-grid">
+      <label class="date-card" id="date-card-10">
+        <input type="radio" name="visit-date" value="2026-08-10" id="date-radio-10" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Mon</div>
+          <div class="date-num">10</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+      <label class="date-card" id="date-card-11">
+        <input type="radio" name="visit-date" value="2026-08-11" id="date-radio-11" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Tue</div>
+          <div class="date-num">11</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+      <label class="date-card" id="date-card-12">
+        <input type="radio" name="visit-date" value="2026-08-12" id="date-radio-12" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Wed</div>
+          <div class="date-num">12</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+      <label class="date-card" id="date-card-13">
+        <input type="radio" name="visit-date" value="2026-08-13" id="date-radio-13" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Thu</div>
+          <div class="date-num">13</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+      <label class="date-card" id="date-card-14">
+        <input type="radio" name="visit-date" value="2026-08-14" id="date-radio-14" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Fri</div>
+          <div class="date-num">14</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+    </div>
+    <div class="field-error" id="err-date" style="margin-top:10px">Please select your visit date.</div>
+  </div>
+
+  <!-- ── Section 4: Assigned Store ── -->
+  <div class="reg-card" id="card-store">
+    <div class="reg-section-label">🏪 Your Assigned Store</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6">
+      Your store has been pre-assigned. Visit the Reliance Digital store below on your chosen date.
+    </p>
+    <div class="store-info-card" id="store-info-card">
+      <div class="store-info-icon">🏬</div>
+      <div class="store-info-details">
+        <div class="store-info-name" id="store-name">Loading…</div>
+        <div class="store-info-location" id="store-location">📍 Loading…</div>
+        <div class="store-info-badge"><span class="live-dot" style="width:5px;height:5px;background:var(--green);border-radius:50%;animation:pulseGlow 2s infinite"></span> Pre-assigned</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 5: How It Works ── -->
+  <div class="reg-card" id="card-howto">
+    <div class="reg-section-label">✨ How It Works</div>
+    <div class="steps-row">
+      <div class="step-item">
+        <div class="step-icon" style="animation:float 3s ease-in-out infinite">🏬</div>
+        <div class="step-num">1</div>
+        <div class="step-title">Visit Store</div>
+        <div class="step-desc">Walk in to your assigned Reliance Digital store</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="animation:float 3s ease-in-out 0.5s infinite">📸</div>
+        <div class="step-num">2</div>
+        <div class="step-title">Post Story</div>
+        <div class="step-desc">Tag <strong>@reliancedigital</strong> & <strong>@vigorspace</strong> on Instagram</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="animation:float 3s ease-in-out 1s infinite">🏆</div>
+        <div class="step-num">3</div>
+        <div class="step-title">Win Rewards</div>
+        <div class="step-desc">Upload screenshot & earn exciting rewards</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 6: Support ── -->
+  <div class="reg-card" id="card-support">
+    <div class="reg-section-label">💬 Need Help?</div>
+    <div class="support-row">
+      <div class="support-item" id="support-email-item">
+        <div class="support-icon email-icon">📧</div>
+        <div>
+          <div class="support-label">For Issues</div>
+          <div class="support-value">nilesh@vigorlaunchpad.com</div>
+        </div>
+      </div>
+      <div class="support-item" id="support-poc-item">
+        <div class="support-icon poc-icon">👤</div>
+        <div>
+          <div class="support-label">Your POC</div>
+          <div class="support-value" id="support-poc-info">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Submit ── -->
+  <button class="reg-submit-btn" id="reg-submit-btn" onclick="handleRegister()">
+    🏪 Register for Store Walk-in
+  </button>
+  <div id="submit-error" role="alert"></div>
+
+</main>
+
+<!-- ══════════════ SUCCESS SCREEN ══════════════ -->
+<div class="fullscreen-state" id="success-screen">
+  <canvas id="success-confetti"></canvas>
+  <div class="state-card">
+    <div class="state-icon">🎉</div>
+    <div class="state-title">You're Registered!</div>
+    <p class="state-sub">Your spot for the Store Walk-in Experience has been confirmed. Check your email for details!</p>
+    <div class="state-detail" id="success-detail">
+      <!-- filled by JS -->
+    </div>
+    <div class="email-notice">
+      ✅ A confirmation email has been sent to your inbox with all the details.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ERROR SCREEN (invalid link) ══════════════ -->
+<div class="fullscreen-state" id="invalid-screen">
+  <div class="state-card error-state">
+    <div class="state-icon">🔗</div>
+    <div class="state-title">Invalid Link</div>
+    <p class="state-sub">This registration link is missing a valid POC code. Please ask your POC to share the correct link with you.</p>
+  </div>
+</div>
+
+<!-- ══════════════ SCRIPTS ══════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ──────────────────────────────────────────
+   SUPABASE CLIENT
+────────────────────────────────────────── */
+const SUPABASE_URL      = 'https://aebkutavunwlwzswuhbc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmt1dGF2dW53bHd6c3d1aGJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTAyNDksImV4cCI6MjA5NjQ4NjI0OX0.-tnBG6MDWB_WjHDJeeWCpiEwvbMSk9H8e4UneAKDR78';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ──────────────────────────────────────────
+   ALL 40 WALK-IN POC DATA
+   Each POC has a fixed assigned store.
+────────────────────────────────────────── */
+const WALKIN_POCS = {
+  // ── MUMBAI (22) ──
+  'mum_27':  { name: 'Abhishek A. Dhanpawde', email: 'abhid12682@gmail.com', phone: '8928320198', college: 'KC College of Engineering & Management Studies & Research', city: 'Mumbai', store: 'Orion Park Mumbai', location: 'Thane' },
+  'poc_aishwarya_tiwari_1781515693': { name: 'Aishwariya Tiwari', email: 'aish171105@gmail.com', phone: '8149941711', college: 'Chhatrapati Shivaji Maharaj University', city: 'Mumbai', store: 'Hitech Orchid Kharghar', location: 'Kharghar' },
+  'mum_01':  { name: 'Alshifa Shaikh', email: 'shaikhalshifa220@gmail.com', phone: '9833200243', college: 'RD & SH National College', city: 'Mumbai', store: 'Fortune', location: 'Andheri-W' },
+  'mum_17':  { name: 'Archit Santosh Vishwakarma', email: 'architvishwakarma72@gmail.com', phone: '9702377355', college: 'Western College of Commerce & Business Management', city: 'Mumbai', store: 'Maithili Mumbai', location: 'Vashi' },
+  'mum_13':  { name: 'Archita Dakua', email: 'arch25014@gmail.com', phone: '8779672731', college: 'AC Patil College of Engineering', city: 'Mumbai', store: 'Times Square', location: 'Belapur' },
+  'mum_05':  { name: 'Dakshita Sandip Chawla', email: 'dakshitachawla148@gmail.com', phone: '9819696572', college: 'SIES', city: 'Mumbai', store: 'R City Mumbai', location: 'Ghatkopar' },
+  'mum_03':  { name: 'Harsh Gupta', email: 'harshgupta5217@gmail.com', phone: '8689835180', college: 'Lala Lajpat Rai College', city: 'Mumbai', store: 'Sea Breeze Mumbai', location: 'Prabhadevi' },
+  'mum_20':  { name: 'Janvi Gaikwad', email: 'gaikwad.janvi1005@gmail.com', phone: '8591289049', college: 'Guru Nanak Khalsa College of Arts Science and Commerce', city: 'Mumbai', store: 'Phoenix Kurla Mumbai', location: 'Kurla' },
+  'poc_melanie_fernandes_1781100673': { name: 'Melanie Fernandes', email: 'melaniefernandes27088@gmail.com', phone: '9987383033', college: "St. Xavier's College", city: 'Mumbai', store: 'Seth House', location: 'Charni Road' },
+  'poc_nagesh_gowda_1781514794': { name: 'Nagesh Gowda', email: 'nagesh2005gowda@gmail.com', phone: '9082498367', college: 'M.L. Dahanukar', city: 'Mumbai', store: 'Palai Tower', location: 'Goregaon' },
+  'poc_nikhil_sharma_1781100670': { name: 'Nikhil Devendra Sharma', email: 'nikhilsharma27062007@gmail.com', phone: '8080967253', college: 'A.P. Shah Institute of Technology', city: 'Mumbai', store: 'Viviana Mall Mumbai', location: 'Thane' },
+  'poc_palak_hemani_1781514794': { name: 'Palak Hemani', email: 'hemani.palak@gmail.com', phone: '8828344424', college: 'Mithibai', city: 'Mumbai', store: 'IPCL JVPD Mumbai', location: 'Juhu' },
+  'mum_10':  { name: 'Piyush Rajesh Gupta', email: '2015piyushgu@gmail.com', phone: '9702045886', college: 'Vidyalankar Institute Of Technology', city: 'Mumbai', store: 'Helix Tower', location: 'Ghatkopar' },
+  'mum_29':  { name: 'Pradyum Rane', email: 'ranepradyum@gmail.com', phone: '9372377724', college: 'Datta Meghe College of Engineering', city: 'Mumbai', store: 'Sec 8 Ghansoli Mumbai', location: 'Ghansoli' },
+  'mum_30':  { name: 'Sahil Memon', email: 'sahilmemon9124@gmail.com', phone: '8591421262', college: 'LS Raheja College', city: 'Mumbai', store: 'Acme Mall Mumbai', location: 'Santacruz' },
+  'mum_04':  { name: 'Sakshi Bhoite', email: 'sakshibhoite71@gmail.com', phone: '9769299197', college: 'Vivekanand Education Society College of Arts, Science, and Commerce', city: 'Mumbai', store: 'Parc Chambur', location: 'Chembur' },
+  'mum_28':  { name: 'Saloni Yadav', email: 'saloniy222@gmail.com', phone: '8856977406', college: 'BK Birla Kalyan', city: 'Mumbai', store: 'Sai World Legend', location: 'Ulhasnagar' },
+  'mum_22':  { name: 'Satvik Singh', email: 'satviksingh8080@gmail.com', phone: '8080227873', college: 'Bharati Vidyapeeth Deemed University', city: 'Mumbai', store: 'Grand Central Mall Seawoods', location: 'Seawoods' },
+  'mum_23':  { name: 'Shriraj Patel', email: 'shrirajpatel280604@gmail.com', phone: '9323295059', college: 'Bharati Vidyapeeth Deemed University', city: 'Mumbai', store: 'Sawan Kharghar Mum', location: 'Kharghar' },
+  'mum_02':  { name: 'Siddhant Rangole', email: 'rangolesiddhant@student.sfit.ac.in', phone: '9320056733', college: 'St. Francis Institute of Technology', city: 'Mumbai', store: 'Chandravarkar Road', location: 'Borivali' },
+  'mum_14':  { name: 'Tarun Khatri', email: 'tarunkhatri468@gmail.com', phone: '8451015565', college: 'Pillai College of Arts Commerce Science', city: 'Mumbai', store: 'Orion Mall Mumbai', location: 'Panvel' },
+  'mum_31':  { name: 'Aditi Ganesh Salunke', email: 'aditisalunke0014@gmail.com', phone: '9930190365', college: 'Somaiya College', city: 'Mumbai', store: 'Korum Mall Mumbai', location: 'Thane' },
+
+  // ── PUNE (15) ──
+  'pun_31':  { name: 'Arpan Mondal', email: 'arpanaronal07@gmail.com', phone: '9021775922', college: 'Ajeenkya DY Patil University', city: 'Pune', store: 'Moshi Pune', location: 'Moshi' },
+  'pun_32':  { name: 'Atharv Pednekar', email: 'atharv.pednekar358@gmail.com', phone: '9130912373', college: 'AISSMS IOIT', city: 'Pune', store: 'Market City Pune', location: 'Market City' },
+  'pun_19':  { name: 'Dhruv Nile', email: 'dhruv.nile07@gmail.com', phone: '7498273208', college: "JSPM's RSCOE Ashok Nagar, Tathawade", city: 'Pune', store: 'RRL CDIT Wakad Pune', location: 'Wakad' },
+  'pun_10':  { name: 'Krishna Kadu', email: 'krishnakadu2004@gmail.com', phone: '7559266894', college: 'D.Y. Patil Dnyaan Prasad Global University', city: 'Pune', store: 'Chinchwad Pune', location: 'Chinchwad' },
+  'pun_02':  { name: 'Nikita', email: 'nikitakatolkar2006@gmail.com', phone: '9503195473', college: "PCET's Nutan Maharashtra Institute of Engineering and Technology", city: 'Pune', store: 'Talegaon Pune', location: 'Talegaon' },
+  'pun_20':  { name: 'Prajwal Ghagre', email: 'prajwalghagre04@gmail.com', phone: '7744041559', college: 'Sri Balaji University, Pune', city: 'Pune', store: 'Sparsh Plaza Pune', location: 'Sparsh Plaza' },
+  'pun_29':  { name: 'Pranita Pradeep Jadhav', email: 'pranitajadhav2277@gmail.com', phone: '8975905974', college: 'Sinhgad College Of Engineering', city: 'Pune', store: 'RRL CDIT Satature Dh', location: 'Satature' },
+  'pun_33':  { name: 'Shree Kulkarni', email: 'korog777s@gmail.com', phone: '9325461550', college: 'Nutan Maharashtra Institute of Engineering and Technology', city: 'Pune', store: 'PMC Wakad', location: 'Wakad' },
+  'pun_16':  { name: 'Shweta Show', email: 'showshweta01@gmail.com', phone: '9766611955', college: 'Ness Wadia College of Commerce', city: 'Pune', store: 'Boulevard Tower', location: 'Boulevard' },
+  'pun_13':  { name: 'Siddhi Avinash Shelke', email: 'shelkesid309@gmail.com', phone: '9850110564', college: 'MIT ADT University', city: 'Pune', store: 'Amanora Mall Pune', location: 'Amanora' },
+  'pun_28':  { name: 'Vaibhav Gangadhar Mantge', email: 'mantgevaibhav0@gmail.com', phone: '8180004761', college: 'NBN Sinhgad School Of Engineering', city: 'Pune', store: 'RRL CDIT Satature Dh', location: 'Satature' },
+  'pun_23':  { name: 'Ved Yogesh Batra', email: 'vedbatra05@gmail.com', phone: '7057949749', college: 'Vishwakarma Institute of Technology', city: 'Pune', store: 'Bhagirathi Square', location: 'Bhagirathi' },
+  'pun_04':  { name: 'Veer Batra', email: 'veerbatra1022@gmail.com', phone: '7219050499', college: 'MIT WPU', city: 'Pune', store: 'Geetai Sankul Pune', location: 'Geetai Sankul' },
+  'pun_34':  { name: 'Viraj Swapnil Patil', email: 'patilviru1007@gmail.com', phone: '9226717711', college: 'COEP Technological University', city: 'Pune', store: 'ABZ Baner Pune', location: 'Baner' },
+  'pun_11':  { name: 'Yashjeet K Makhija', email: 'yashjeetmakhija31@gmail.com', phone: '7276241519', college: 'Symbiosis Skills and Professional University', city: 'Pune', store: 'Elpro Chinchwad Pune', location: 'Chinchwad' },
+
+  // ── AURANGABAD (3) ──
+  'aur_04':  { name: 'Diksha Sanjay Bhagat', email: 'dikshabhagat2905@gmail.com', phone: '8263819131', college: 'PES College of Engineering', city: 'Aurangabad', store: 'Garkheda Aurangabad', location: 'Garkheda' },
+  'aur_02':  { name: 'Jayraj Huse', email: 'jairajhuse28@gmail.com', phone: '8208250287', college: 'Government College of Engineering', city: 'Aurangabad', store: 'Akashwani Aurangabad', location: 'Akashwani' },
+  'aur_08':  { name: 'Rahul Pawar', email: 'pawarrahul9550@gmail.com', phone: '9767900458', college: 'Shreyash College of Engineering and Technology', city: 'Aurangabad', store: 'Prozone Aurangabad', location: 'Prozone' },
+};
+
+
+/* ──────────────────────────────────────────
+   STATE
+────────────────────────────────────────── */
+let pocData = null;
+let pocId   = null;
+
+/* ──────────────────────────────────────────
+   HERO PARTICLES ANIMATION
+────────────────────────────────────────── */
+function initParticles() {
+  const canvas = document.getElementById('hero-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    const hero = document.getElementById('reg-hero');
+    canvas.width  = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const particles = [];
+  const PARTICLE_COUNT = 40;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 0.5,
+      dx: (Math.random() - 0.5) * 0.4,
+      dy: (Math.random() - 0.5) * 0.4,
+      alpha: Math.random() * 0.4 + 0.1,
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ──────────────────────────────────────────
+   CONFETTI ANIMATION (success screen)
+────────────────────────────────────────── */
+function launchConfetti() {
+  const canvas = document.getElementById('success-confetti');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#003087', '#E31837', '#FFD700', '#00865A', '#1A73E8', '#FF6B35'];
+  const pieces = [];
+  for (let i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vy: Math.random() * 3 + 2,
+      vx: (Math.random() - 0.5) * 2,
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 10,
+      alpha: 1,
+    });
+  }
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+    for (const p of pieces) {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rot += p.rotSpeed;
+      if (frame > 120) p.alpha -= 0.01;
+      if (p.alpha <= 0) continue;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (frame < 240) requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ──────────────────────────────────────────
+   INIT — Look up POC from URL
+────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+
+  const params = new URLSearchParams(window.location.search);
+  pocId = params.get('poc');
+
+  if (!pocId) {
+    showInvalidScreen();
+    return;
+  }
+
+  // Look up POC in our hardcoded data
+  const poc = WALKIN_POCS[pocId];
+
+  if (!poc) {
+    showInvalidScreen();
+    return;
+  }
+
+  pocData = { id: pocId, ...poc };
+  renderPOCBanner(pocData);
+  renderStoreInfo(pocData);
+  renderSupportInfo(pocData);
+});
+
+
+/* ──────────────────────────────────────────
+   RENDER POC BANNER
+────────────────────────────────────────── */
+function renderPOCBanner(poc) {
+  const initials = poc.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('poc-avatar').textContent = initials;
+  document.getElementById('poc-banner-name').textContent = poc.name;
+}
+
+/* ──────────────────────────────────────────
+   RENDER STORE INFO
+────────────────────────────────────────── */
+function renderStoreInfo(poc) {
+  document.getElementById('store-name').textContent = `Reliance Digital — ${poc.store}`;
+  document.getElementById('store-location').innerHTML = `📍 ${poc.location}, ${poc.city}`;
+}
+
+/* ──────────────────────────────────────────
+   RENDER SUPPORT INFO
+────────────────────────────────────────── */
+function renderSupportInfo(poc) {
+  document.getElementById('support-poc-info').innerHTML = `${poc.name}<br><span style="font-weight:500;color:var(--text3);font-size:12px">📞 ${poc.phone}</span>`;
+}
+
+/* ──────────────────────────────────────────
+   SHOW INVALID SCREEN
+────────────────────────────────────────── */
+function showInvalidScreen() {
+  document.getElementById('reg-hero').style.display      = 'none';
+  document.getElementById('reg-form-body').style.display = 'none';
+  document.getElementById('invalid-screen').classList.add('visible');
+}
+
+/* ──────────────────────────────────────────
+   FIELD VALIDATION HELPERS
+────────────────────────────────────────── */
+function getVal(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function showErr(id, show) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible', show);
+}
+function setFieldError(inputId, errId, hasError) {
+  const input = document.getElementById(inputId);
+  if (input) input.classList.toggle('error', hasError);
+  showErr(errId, hasError);
+}
+
+function validateForm() {
+  let valid = true;
+
+  // Full name
+  const name = getVal('reg-fullname');
+  setFieldError('reg-fullname', 'err-fullname', !name);
+  if (!name) valid = false;
+
+  // Mobile — 10 digits
+  const mobile = getVal('reg-mobile');
+  const mobileOk = /^\d{10}$/.test(mobile);
+  setFieldError('reg-mobile', 'err-mobile', !mobileOk);
+  if (!mobileOk) valid = false;
+
+  // Email
+  const email = getVal('reg-email');
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  setFieldError('reg-email', 'err-email', !emailOk);
+  if (!emailOk) valid = false;
+
+  // College name
+  const college = getVal('reg-college-name');
+  setFieldError('reg-college-name', 'err-college-name', !college);
+  if (!college) valid = false;
+
+  // College city
+  const city = getVal('reg-college-city');
+  setFieldError('reg-college-city', 'err-college-city', !city);
+  if (!city) valid = false;
+
+  // Visit date
+  const dateChecked = document.querySelector('input[name="visit-date"]:checked');
+  showErr('err-date', !dateChecked);
+  if (!dateChecked) valid = false;
+
+  return valid;
+}
+
+/* ──────────────────────────────────────────
+   HANDLE REGISTER SUBMIT
+────────────────────────────────────────── */
+async function handleRegister() {
+  const errBox = document.getElementById('submit-error');
+  errBox.classList.remove('visible');
+
+  if (!validateForm()) {
+    errBox.textContent = 'Please fill in all required fields correctly before submitting.';
+    errBox.classList.add('visible');
+    const firstErr = document.querySelector('.field-error.visible');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('reg-submit-btn');
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spinner"></span> Registering…';
+
+  const fullName    = getVal('reg-fullname');
+  const mobile      = getVal('reg-mobile');
+  const email       = getVal('reg-email');
+  const collegeName = getVal('reg-college-name');
+  const collegeCity = getVal('reg-college-city');
+  const visitDate   = document.querySelector('input[name="visit-date"]:checked')?.value;
+
+  try {
+    // Call our serverless API which handles insert + confirmation email
+    const res = await fetch('/api/walkin-submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        poc_id:          pocData.id,
+        poc_name:        pocData.name,
+        poc_email:       pocData.email,
+        poc_phone:       pocData.phone,
+        full_name:       fullName,
+        mobile,
+        email,
+        college_name:    collegeName,
+        college_city:    collegeCity,
+        preferred_store: pocData.store,
+        store_location:  pocData.location,
+        visit_date:      visitDate,
+      }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      errBox.textContent = result.error || '❌ Registration failed. Please try again.';
+      errBox.classList.add('visible');
+      btn.disabled  = false;
+      btn.innerHTML = '🏪 Register for Store Walk-in';
+      return;
+    }
+
+    // ── Success ──
+    showSuccessScreen({ fullName, email, visitDate, store: pocData.store, location: pocData.location });
+
+  } catch (err) {
+    errBox.textContent = '❌ Something went wrong. Please try again.';
+    errBox.classList.add('visible');
+    btn.disabled  = false;
+    btn.innerHTML = '🏪 Register for Store Walk-in';
+  }
+}
+
+/* ──────────────────────────────────────────
+   FORMAT DATE
+────────────────────────────────────────── */
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/* ──────────────────────────────────────────
+   SHOW SUCCESS SCREEN
+────────────────────────────────────────── */
+function showSuccessScreen({ fullName, email, visitDate, store, location }) {
+  document.getElementById('success-detail').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div><strong>👤 Name:</strong> ${fullName}</div>
+      <div><strong>📧 Email:</strong> ${email}</div>
+      <div><strong>📅 Visit Date:</strong> ${formatDate(visitDate)}</div>
+      <div><strong>🏬 Store:</strong> Reliance Digital — ${store}</div>
+      <div><strong>📍 Location:</strong> ${location}</div>
+      <div><strong>🤝 POC:</strong> ${pocData.name}</div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <strong style="color:var(--red)">📸 Remember:</strong> Post a story tagging <strong>@reliancedigital</strong> & <strong>@vigorspace</strong>
+      </div>
+    </div>
+  `;
+  document.getElementById('reg-hero').style.display      = 'none';
+  document.getElementById('reg-form-body').style.display = 'none';
+  document.getElementById('success-screen').classList.add('visible');
+
+  // Launch confetti 🎉
+  setTimeout(launchConfetti, 200);
+}
+</script>
+
+</body>
+</html>
