@@ -708,11 +708,11 @@
       </div>
 
       <!-- CITY FILTERS -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="poc-filter-btn active" onclick="filterWalkinCity('All')" id="walkin-filter-all">All Cities</button>
-        <button class="poc-filter-btn" onclick="filterWalkinCity('Mumbai')" id="walkin-filter-mumbai">Mumbai</button>
-        <button class="poc-filter-btn" onclick="filterWalkinCity('Pune')" id="walkin-filter-pune">Pune</button>
-        <button class="poc-filter-btn" onclick="filterWalkinCity('Aurangabad')" id="walkin-filter-aurangabad">Aurangabad</button>
+      <div class="filter-row" style="margin-bottom:16px;">
+        <button class="filter-tab active poc-filter-btn" onclick="filterWalkinCity('All')" id="walkin-filter-all">All Cities</button>
+        <button class="filter-tab poc-filter-btn" onclick="filterWalkinCity('Mumbai')" id="walkin-filter-mumbai">🏙️ Mumbai</button>
+        <button class="filter-tab poc-filter-btn" onclick="filterWalkinCity('Pune')" id="walkin-filter-pune">🌸 Pune</button>
+        <button class="filter-tab poc-filter-btn" onclick="filterWalkinCity('Aurangabad')" id="walkin-filter-aurangabad">🕌 Aurangabad</button>
       </div>
 
       <!-- REGISTRATIONS TABLE -->
@@ -771,6 +771,7 @@
                 <th>Stories ✅</th>
                 <th>Pending ⏳</th>
                 <th>Conversion</th>
+                <th style="width:80px">Link</th>
               </tr>
             </thead>
             <tbody id="walkin-poc-table-body">

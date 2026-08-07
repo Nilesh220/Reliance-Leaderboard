@@ -1519,7 +1519,7 @@ function renderWalkinPOCBreakdown() {
   const rows = Object.entries(byPoc).sort((a, b) => b[1].total - a[1].total);
 
   if (rows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">No data yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text3)">No data yet.</td></tr>';
     return;
   }
 
@@ -1527,6 +1527,8 @@ function renderWalkinPOCBreakdown() {
     const pending = d.total - d.stories;
     const conversion = d.total > 0 ? Math.round((d.stories / d.total) * 100) : 0;
     const convColor = conversion >= 80 ? 'var(--green)' : conversion >= 40 ? 'var(--orange)' : 'var(--red)';
+
+    const regLink = `https://reliancedigital.vigorspace.co/walkin-register?poc=${pocId}`;
 
     return `<tr>
       <td style="font-weight:600;font-size:13px">${d.poc_name}</td>
@@ -1542,6 +1544,9 @@ function renderWalkinPOCBreakdown() {
           </div>
           <span style="font-size:12px;font-weight:700;color:${convColor}">${conversion}%</span>
         </div>
+      </td>
+      <td>
+        <button onclick="openPOCLinkModal('${pocId}', '${encodeURIComponent(d.poc_name)}', '${regLink}')" class="btn btn-ghost" style="padding:4px 8px;font-size:11px;font-weight:700;border-color:var(--border)">🔗 Link</button>
       </td>
     </tr>`;
   }).join('');
