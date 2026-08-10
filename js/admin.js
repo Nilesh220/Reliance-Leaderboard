@@ -1413,7 +1413,7 @@ function renderWalkinTable() {
   if (countEl) countEl.textContent = `${data.length} registration${data.length !== 1 ? 's' : ''}`;
 
   if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:32px;color:var(--text3)">No registrations found.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:32px;color:var(--text3)">No registrations found.</td></tr>';
     return;
   }
 
@@ -1441,19 +1441,25 @@ function renderWalkinTable() {
     // Format visit date
     const visitDate = r.visit_date ? new Date(r.visit_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
 
-    // Action buttons
+    // Formatted thumbnails
+    const storyThumb = r.story_screenshot_url
+      ? `<button onclick="previewImage('${r.story_screenshot_url}','Story Screenshot')" style="background:none;border:none;cursor:pointer;padding:0;" title="View story"><img src="${r.story_screenshot_url}" alt="Story" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);transition:var(--transition);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" /></button>`
+      : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+
+    const viewsThumb = r.views_screenshot_url
+      ? `<button onclick="previewImage('${r.views_screenshot_url}','Views Screenshot')" style="background:none;border:none;cursor:pointer;padding:0;" title="View screenshot"><img src="${r.views_screenshot_url}" alt="Views" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1.5px solid var(--border);transition:var(--transition);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''" /></button>`
+      : `<span style="font-size:11px;color:var(--text3);">—</span>`;
+
+    const viewsCount = r.views_count != null ? `<div style="font-size:11px;font-weight:700;color:var(--text);margin-top:4px">👁️ ${r.views_count.toLocaleString()}</div>` : '';
+
+    // Action buttons (Verify / Reject)
     let actions = '<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">';
-    if (r.story_screenshot_url) {
-      actions += `<a href="${r.story_screenshot_url}" target="_blank" style="font-size:11px;color:var(--blue-light);font-weight:600;text-decoration:none">📷 Story</a>`;
-    }
-    if (r.views_screenshot_url) {
-      actions += `<a href="${r.views_screenshot_url}" target="_blank" style="font-size:11px;color:var(--green);font-weight:600;text-decoration:none">👁️ Views (${r.views_count || '?'})</a>`;
-    }
     if (r.story_status === 'views_submitted') {
       actions += ` <button onclick="updateWalkinStatus('${r.id}','verified')" style="font-size:10px;background:var(--green);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700" title="Verify">✓</button>`;
       actions += ` <button onclick="updateWalkinStatus('${r.id}','rejected')" style="font-size:10px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700" title="Reject">✗</button>`;
     }
-    actions += '</div>';
+    if (actions === '<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">') actions = '—';
+    else actions += '</div>';
 
     return `<tr style="animation:fadeInUp 0.3s ${i * 0.02}s ease both">
       <td style="font-size:12px;color:var(--text3)">${i + 1}</td>
@@ -1465,8 +1471,10 @@ function renderWalkinTable() {
       <td style="font-size:12px">${visitDate}</td>
       <td style="font-size:12px">${r.poc_name || '—'}</td>
       <td>${storyBadge}</td>
+      <td>${storyThumb}</td>
+      <td><div style="display:flex;flex-direction:column;align-items:flex-start">${viewsThumb}${viewsCount}</div></td>
       <td style="font-size:12px;letter-spacing:1px">${emailIcons}</td>
-      <td style="font-size:11px;white-space:nowrap">${actions || '—'}</td>
+      <td style="font-size:11px;white-space:nowrap">${actions}</td>
     </tr>`;
   }).join('');
 }
