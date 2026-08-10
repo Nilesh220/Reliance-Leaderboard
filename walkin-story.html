@@ -697,9 +697,9 @@
 <!-- ══════════════ HERO ══════════════ -->
 <section class="ss-hero" id="ss-hero">
   <div class="ss-hero-inner">
-    <div class="ss-hero-eyebrow">🎮 Valorant Store Challenge</div>
-    <h1 class="hero-title">Store Walk-in Experience</h1>
-    <p class="hero-sub">Submit your Instagram story screenshot tagging @reliancedigital & @vigorspace</p>
+    <div class="ss-hero-eyebrow">🏢 Store Walk-in</div>
+    <h1 class="ss-hero-title">Store Walk-in Experience</h1>
+    <p class="ss-hero-sub">Submit your Instagram story screenshot tagging @reliancedigital & @vigorspace</p>
     <div class="ss-hero-brands">
       <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" />
       <div class="ss-hero-brand-div"></div>
@@ -1001,7 +1001,6 @@ async function lookupEmail() {
       referralPocName  = data.poc_name   || referralPocName;
 
       showIdentityCard(currentFullName, email, referralPocName);
-      document.getElementById('manual-fields').style.display = 'none';
     } else {
       // Unknown user — show error since walk-ins must register first
       showAlert('identify-error', '❌ No walk-in registration found for this email. Please register first.');
