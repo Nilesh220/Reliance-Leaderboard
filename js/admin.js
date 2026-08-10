@@ -1420,8 +1420,10 @@ function renderWalkinTable() {
   tbody.innerHTML = data.map((r, i) => {
     // Story status badge
     let storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(224,124,0,0.1);color:var(--orange);border:1px solid rgba(224,124,0,0.2)">⏳ Pending</span>';
-    if (r.story_status === 'submitted') {
-      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(0,134,90,0.1);color:var(--green);border:1px solid rgba(0,134,90,0.2)">📸 Submitted</span>';
+    if (r.story_status === 'story_submitted') {
+      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(26,115,232,0.1);color:var(--blue-light);border:1px solid rgba(26,115,232,0.2)">📸 Story Only</span>';
+    } else if (r.story_status === 'views_submitted') {
+      storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(0,134,90,0.1);color:var(--green);border:1px solid rgba(0,134,90,0.2)">👁️ Views Done</span>';
     } else if (r.story_status === 'verified') {
       storyBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;background:rgba(0,134,90,0.15);color:var(--green);border:1px solid rgba(0,134,90,0.3)">✅ Verified</span>';
     } else if (r.story_status === 'rejected') {
@@ -1440,14 +1442,18 @@ function renderWalkinTable() {
     const visitDate = r.visit_date ? new Date(r.visit_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
 
     // Action buttons
-    let actions = '';
+    let actions = '<div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;">';
     if (r.story_screenshot_url) {
-      actions += `<a href="${r.story_screenshot_url}" target="_blank" style="font-size:11px;color:var(--blue-light);font-weight:600;text-decoration:none">View 📷</a>`;
+      actions += `<a href="${r.story_screenshot_url}" target="_blank" style="font-size:11px;color:var(--blue-light);font-weight:600;text-decoration:none">📷 Story</a>`;
     }
-    if (r.story_status === 'submitted') {
-      actions += ` <button onclick="updateWalkinStatus('${r.id}','verified')" style="font-size:10px;background:var(--green);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700">✓</button>`;
-      actions += ` <button onclick="updateWalkinStatus('${r.id}','rejected')" style="font-size:10px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700">✗</button>`;
+    if (r.views_screenshot_url) {
+      actions += `<a href="${r.views_screenshot_url}" target="_blank" style="font-size:11px;color:var(--green);font-weight:600;text-decoration:none">👁️ Views (${r.views_count || '?'})</a>`;
     }
+    if (r.story_status === 'views_submitted') {
+      actions += ` <button onclick="updateWalkinStatus('${r.id}','verified')" style="font-size:10px;background:var(--green);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700" title="Verify">✓</button>`;
+      actions += ` <button onclick="updateWalkinStatus('${r.id}','rejected')" style="font-size:10px;background:var(--red);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-weight:700" title="Reject">✗</button>`;
+    }
+    actions += '</div>';
 
     return `<tr style="animation:fadeInUp 0.3s ${i * 0.02}s ease both">
       <td style="font-size:12px;color:var(--text3)">${i + 1}</td>

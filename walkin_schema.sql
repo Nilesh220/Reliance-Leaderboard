@@ -33,10 +33,17 @@ CREATE TABLE IF NOT EXISTS walkin_registrations (
   -- Story screenshot tracking
   story_screenshot_url  TEXT,
   story_submitted_at    TIMESTAMPTZ,
+
+  -- Views tracking
+  views_screenshot_url  TEXT,
+  views_count           INTEGER,
+  views_submitted_at    TIMESTAMPTZ,
+
   story_status          TEXT NOT NULL DEFAULT 'pending'
                         CHECK (story_status IN (
                           'pending',
-                          'submitted',
+                          'story_submitted',
+                          'views_submitted',
                           'verified',
                           'rejected'
                         )),
