@@ -81,4 +81,5 @@ CREATE POLICY "Allow all on walkin_registrations"
   WITH CHECK (true);
 
 -- 6. Enable Realtime (live admin view)
-ALTER PUBLICATION supabase_realtime ADD TABLE walkin_registrations;
+-- Note: If you get an error saying it's already a member, just leave this commented out!
+-- ALTER PUBLICATION supabase_realtime ADD TABLE walkin_registrations;

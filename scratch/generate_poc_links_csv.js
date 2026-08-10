@@ -5,7 +5,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // We'll use a placeholder domain (e.g., https://reliance-leaderboard.vercel.app)
 // The user can replace this with their actual deployed domain.
-const DOMAIN = 'https://reliance-leaderboard.vercel.app';
+const DOMAIN = 'https://reliancedigital.vigorspace.co';
 
 async function generateCSV() {
   try {

@@ -610,7 +610,9 @@ html {
   border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  overflow-x: auto;
   box-shadow: var(--shadow);
+  -webkit-overflow-scrolling: touch;
 }
 
 .rankings-header {
@@ -1285,4 +1287,56 @@ button.poc-filter-btn { position: relative; overflow: hidden; }
 @media (max-width: 600px) {
   .points-strip-wrap { padding: 16px; }
   .ps-name { max-width: 120px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   MOBILE RESPONSIVE — LEADERBOARD
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .main-content { padding: 32px 16px; }
+
+  /* Rankings table — collapse City & Tasks columns */
+  .rankings-header,
+  .ranking-row {
+    grid-template-columns: 44px 1fr 80px;
+  }
+  .col-city,
+  .col-tasks,
+  .poc-city,
+  .poc-tasks { display: none; }
+
+  .poc-points { font-size: 16px; }
+  .poc-name   { font-size: 13px; }
+  .poc-college{ font-size: 11px; }
+
+  /* Podium */
+  .podium { flex-direction: column; align-items: center; gap: 16px; }
+  .podium-card { width: 100% !important; max-width: 320px; }
+
+  /* Hero stats */
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .hero-stat-value { font-size: 28px; }
+
+  /* Countdown strip */
+  .countdown-strip { flex-wrap: wrap; justify-content: center; gap: 6px; padding: 10px 16px; }
+
+  /* City tabs */
+  .city-tabs { overflow-x: auto; flex-wrap: nowrap !important; padding-bottom: 8px; }
+  .city-tab   { white-space: nowrap; flex-shrink: 0; }
+
+  /* Section header */
+  .section-header { flex-direction: column; text-align: center; gap: 8px; }
+
+  /* College grid */
+  .college-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .hero-stat-value { font-size: 24px; }
+  .rankings-header,
+  .ranking-row { grid-template-columns: 36px 1fr 70px; padding: 12px 14px; }
+  .ranking-row { padding: 12px 14px; }
+  .auth-nav-links { display: none; }
+  .auth-nav-inner { padding: 10px 16px; }
 }
