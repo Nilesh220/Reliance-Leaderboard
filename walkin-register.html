@@ -642,7 +642,7 @@
     <div class="reg-hero-eyebrow"><span class="live-dot"></span> Store Walk-in Experience · 2026</div>
     <h1 class="reg-hero-title">Visit a <span class="gradient-text">Reliance Digital</span><br>Store Near You</h1>
     <p class="reg-hero-sub">Walk in, experience the store, post a story tagging @reliancedigital & @vigorspace, and win amazing rewards!</p>
-    <div class="date-range-badge" id="hero-date-badge">📅 August 10 — 14, 2026</div>
+    <div class="date-range-badge" id="hero-date-badge">📅 August 10 — 15, 2026</div>
     <br>
     <div class="poc-banner" id="poc-banner">
       <div class="poc-banner-avatar" id="poc-avatar">—</div>
@@ -745,6 +745,15 @@
           <div class="date-check">✓</div>
           <div class="date-day">Fri</div>
           <div class="date-num">14</div>
+          <div class="date-month">Aug</div>
+        </div>
+      </label>
+      <label class="date-card" id="date-card-15">
+        <input type="radio" name="visit-date" value="2026-08-15" id="date-radio-15" />
+        <div class="date-card-inner">
+          <div class="date-check">✓</div>
+          <div class="date-day">Sat</div>
+          <div class="date-num">15</div>
           <div class="date-month">Aug</div>
         </div>
       </label>
@@ -1245,6 +1254,13 @@ function showSuccessScreen({ fullName, email, visitDate, store, location }) {
       </div>
     </div>
   `;
+
+  // Pre-fill email in the story upload link
+  const storyLink = document.getElementById('upload-story-link');
+  if (storyLink && email) {
+    storyLink.href = `/walkin-story?email=${encodeURIComponent(email)}`;
+  }
+
   document.getElementById('reg-hero').style.display      = 'none';
   document.getElementById('reg-form-body').style.display = 'none';
   document.getElementById('success-screen').classList.add('visible');

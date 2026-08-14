@@ -742,6 +742,9 @@
     <div class="ss-success-title">All <span>Done!</span></div>
     <p class="ss-success-sub">Both your story and views screenshots have been submitted. Our team will verify them shortly!</p>
     <div class="ss-success-badge">✅ Submission Complete</div>
+    <div style="margin-top:24px;padding:16px 20px;background:var(--blue-pale);border-radius:var(--radius-sm);border:1.5px solid var(--border);font-size:13px;color:var(--text2);line-height:1.6">
+      📧 Check your email for confirmation. Share your result with your POC!
+    </div>
   </div>
 
   <!-- ── CARD 1: Identify ── -->
@@ -959,7 +962,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       referralPocName = found.name;
     }
   }
+
+  // If ?email= param present, auto-fill the email and trigger lookup
+  const urlEmail = params.get('email');
+  if (urlEmail) {
+    const emailEl = document.getElementById('ss-email');
+    if (emailEl) {
+      emailEl.value = urlEmail;
+      // Small delay so the page renders first, then auto-lookup
+      setTimeout(() => lookupEmail(), 400);
+    }
+  }
 });
+
 
 /* ─────────────────────────────────────────────────────────
    STEP 1 — EMAIL LOOKUP
