@@ -690,16 +690,16 @@
       <div class="ss-nav-divider"></div>
       <span>Bootup India</span>
     </a>
-    <span class="ss-nav-badge">📸 Story Upload</span>
+    <span class="ss-nav-badge" id="ss-nav-badge">📸 Story Upload</span>
   </div>
 </nav>
 
 <!-- ══════════════ HERO ══════════════ -->
 <section class="ss-hero" id="ss-hero">
   <div class="ss-hero-inner">
-    <div class="ss-hero-eyebrow">🏢 Store Walk-in</div>
-    <h1 class="ss-hero-title">Store Walk-in Experience</h1>
-    <p class="ss-hero-sub">Submit your Instagram story screenshot tagging @reliancedigital & @vigorspace</p>
+    <div class="ss-hero-eyebrow" id="ss-hero-eyebrow">🏢 Store Walk-in</div>
+    <h1 class="ss-hero-title" id="ss-hero-title">Store Walk-in Experience</h1>
+    <p class="ss-hero-sub" id="ss-hero-sub">Submit your Instagram story screenshot tagging @reliancedigital &amp; @vigorspace</p>
     <div class="ss-hero-brands">
       <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" />
       <div class="ss-hero-brand-div"></div>
@@ -798,7 +798,7 @@
       <div class="ss-card-icon ss-card-icon-red">📸</div>
       <div>
         <div class="ss-card-title">Upload Your Story</div>
-        <div class="ss-card-subtitle">Screenshot of your Instagram story (today)</div>
+        <div class="ss-card-subtitle" id="card-story-subtitle">Screenshot of your Instagram story (today)</div>
       </div>
       <span class="ss-card-step-badge step-badge-blue">Step 2</span>
     </div>
@@ -945,6 +945,23 @@ let allPocs          = [];
 
 const params = new URLSearchParams(window.location.search);
 const urlPocId = params.get('poc');
+const isCreatorMode = params.get('type') === 'creator';
+
+// Apply creator-mode copy overrides immediately
+if (isCreatorMode) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const navBadge = document.getElementById('ss-nav-badge');
+    const eyebrow  = document.getElementById('ss-hero-eyebrow');
+    const title    = document.getElementById('ss-hero-title');
+    const sub      = document.getElementById('ss-hero-sub');
+    const cardSub  = document.getElementById('card-story-subtitle');
+    if (navBadge) navBadge.textContent = '🌟 Creator Story Upload';
+    if (eyebrow)  eyebrow.textContent  = '🌟 Creator Portal';
+    if (title)    title.textContent    = 'Creator Story Submission';
+    if (sub)      sub.textContent      = 'Submit your Instagram story screenshot — any day you visited the store';
+    if (cardSub)  cardSub.textContent  = 'Screenshot of your Instagram story (any visit date)';
+  });
+}
 
 /* ─────────────────────────────────────────────────────────
    INIT

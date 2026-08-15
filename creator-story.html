@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creator Story Upload — Bootup India × Reliance Digital</title>
+  <meta name="description" content="Submit your Instagram story screenshot as a creator for the Reliance Digital store visit campaign." />
+  <!-- Redirect immediately to walkin-story with creator flag, preserving ?email= if present -->
+  <script>
+    const p = new URLSearchParams(window.location.search);
+    p.set('type', 'creator');
+    window.location.replace('/walkin-story?' + p.toString());
+  </script>
+</head>
+<body>
+  <p style="font-family:sans-serif;text-align:center;margin-top:60px;color:#003087;">
+    Redirecting to story upload...
+  </p>
+</body>
+</html>
