@@ -673,6 +673,11 @@ async function handleRegister() {
     const data = await res.json();
 
     if (!res.ok) {
+      if (res.status === 409) {
+        // Already registered -> seamlessly redirect to upload page
+        window.location.href = `/creator-story?email=${encodeURIComponent(payload.email)}`;
+        return;
+      }
       errEl.textContent = data.error || 'Something went wrong. Please try again.';
       errEl.style.display = 'block';
       btn.classList.remove('loading');
