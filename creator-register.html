@@ -385,7 +385,7 @@
     <div class="hero-eyebrow"><span class="creator-star">✦</span> Creator Store Visit 2026</div>
     <h1 class="hero-title">You're a <span class="accent">Creator</span>.<br>Now Own the Store.</h1>
     <p class="hero-sub">Walk into a Reliance Digital store, experience it, post your story tagging @reliancedigital & @vigorspace — and collect your reward.</p>
-    <div class="creator-badge">🎥 Creator Registration</div>
+    <div class="date-range-badge" style="margin-top:16px; display:inline-block; font-size:12px; font-weight:700; color:var(--blue); background:var(--blue-pale); border-radius:999px; padding:4px 12px;">📅 August 10 - 16, 2026</div>
   </div>
 </section>
 
@@ -547,6 +547,7 @@ const DATES = [
   { value: '2026-08-13', day: 'Wed', num: '13' },
   { value: '2026-08-14', day: 'Thu', num: '14' },
   { value: '2026-08-15', day: 'Sat', num: '15' },
+  { value: '2026-08-16', day: 'Sun', num: '16' },
 ];
 
 // State
@@ -595,23 +596,16 @@ window.selectStore = selectStore;
 
 /* ── DATE PICKER ─────────────────────────────────── */
 function buildDatePicker() {
-  const today  = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
   const grid = document.getElementById('date-grid');
 
   grid.innerHTML = DATES.map(d => {
-    const isPast = d.value < todayStr;
     return `
-      <label class="date-card ${isPast ? 'past' : ''}" id="dc-${d.num}" onclick="${isPast ? '' : `pickDate('${d.value}', '${d.num}')`}">
+      <label class="date-card" id="dc-${d.num}" onclick="pickDate('${d.value}', '${d.num}')">
         <div class="date-day">${d.day}</div>
         <div class="date-num">${d.num}</div>
         <div class="date-month">Aug</div>
       </label>`;
   }).join('');
-
-  // Auto-select today if in range
-  const todayCard = DATES.find(d => d.value === todayStr);
-  if (todayCard) pickDate(todayCard.value, todayCard.num);
 }
 
 function pickDate(val, num) {
