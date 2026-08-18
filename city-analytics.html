@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City-Wise Walk-in Analytics — Bootup India · Reliance Digital</title>
+  <meta name="description" content="City-wise store visits, POC participation, story screenshots, pending views, and total registrations analytics with separated creator metrics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── DESIGN TOKENS ──────────────────────────────── */
+    :root {
+      --blue:        #003087;
+      --blue-mid:    #0052CC;
+      --blue-light:  #1A73E8;
+      --blue-pale:   #EEF4FF;
+      --red:         #E31837;
+      --red-dark:    #B5142C;
+      --red-pale:    #FFF0F2;
+      --green:       #00865A;
+      --green-pale:  #E8FBF4;
+      --orange:      #E07C00;
+      --orange-pale: #FFF6E8;
+      --gold:        #D4A800;
+      --gold-bg:     rgba(212,168,0,0.10);
+      --purple:      #7C3AED;
+      --purple-pale: #F5F3FF;
+      --purple-border: rgba(124, 58, 237, 0.2);
+      --text:        #1A1F36;
+      --text2:       #374878;
+      --text3:       #7A8BA8;
+      --bg:          #FFFFFF;
+      --bg2:         #F5F8FF;
+      --bg3:         #EDF2FF;
+      --border:      rgba(0,48,135,0.10);
+      --border2:     rgba(0,48,135,0.22);
+      --shadow:      0 2px 16px rgba(0,48,135,0.08);
+      --shadow-blue: 0 8px 32px rgba(0,48,135,0.16);
+      --shadow-purple: 0 8px 32px rgba(124,58,237,0.16);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --radius-lg:   24px;
+      --transition:  all 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ── RESET ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 60% at 0% 0%,   rgba(0,48,135,0.06) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(227,24,55,0.05) 0%, transparent 65%);
+    }
+
+    /* ── ANIMATIONS ─────────────────────────────────── */
+    @keyframes fadeInUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeInDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn     { from { opacity:0; } to { opacity:1; } }
+    @keyframes shimmer    { 0% { background-position:-600px 0; } 100% { background-position:600px 0; } }
+    @keyframes pulseGlow  { 0%,100% { box-shadow:0 0 0 0 rgba(0,134,90,0.4); } 50% { box-shadow:0 0 0 8px rgba(0,134,90,0); } }
+    @keyframes spin       { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+
+    /* ── BRAND BAR ──────────────────────────────────── */
+    .brand-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--red) 100%);
+    }
+
+    /* ── NAV ────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 900;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1.5px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .nav-inner {
+      max-width: 1180px; margin: 0 auto;
+      padding: 0 24px; height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-brand img { height: 28px; object-fit: contain; }
+    .nav-divider { width: 1.5px; height: 22px; background: var(--border); border-radius: 99px; }
+    .nav-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--text);
+    }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--blue-pale); border: 1.5px solid var(--border);
+      color: var(--blue); font-size: 12px; font-weight: 700;
+      padding: 7px 14px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: var(--transition); text-decoration: none;
+    }
+    .nav-btn:hover { background: var(--bg3); transform: translateY(-1px); }
+    .nav-btn.spinning svg { animation: spin 1s linear infinite; }
+    .nav-live-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--green-pale);
+      border: 1.5px solid rgba(0,134,90,0.2);
+      color: var(--green); font-size: 11px; font-weight: 800;
+      padding: 5px 12px; border-radius: 999px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); animation: pulseGlow 2s infinite;
+    }
+
+    /* ── HERO ───────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 60%, #1a40c0 100%);
+      padding: 48px 24px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 80% 60% at 50% 120%, rgba(227,24,55,0.25) 0%, transparent 65%);
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      padding: 5px 16px; border-radius: 999px; margin-bottom: 14px;
+      animation: fadeInDown 0.5s ease both;
+    }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(26px, 4.5vw, 48px); font-weight: 800;
+      color: #fff; line-height: 1.15;
+      margin-bottom: 8px;
+      animation: fadeInDown 0.5s 0.05s ease both;
+    }
+    .hero-sub {
+      font-size: 14px; color: rgba(255,255,255,0.75); font-weight: 500;
+      animation: fadeInDown 0.5s 0.1s ease both;
+    }
+    .hero-logos {
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      margin-bottom: 14px;
+      animation: fadeIn 0.5s ease both;
+    }
+    .hero-logos img { height: 26px; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.9; }
+    .hero-logo-sep { width: 1.5px; height: 22px; background: rgba(255,255,255,0.3); border-radius: 999px; }
+
+    /* ── SEGMENT SWITCHER TABS ──────────────────────── */
+    .segment-wrap {
+      display: flex; justify-content: center; gap: 10px; margin-top: 24px;
+    }
+    .segment-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.28);
+      color: #fff; padding: 8px 18px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: var(--transition);
+    }
+    .segment-btn:hover { background: rgba(255,255,255,0.3); }
+    .segment-btn.active {
+      background: #fff; color: var(--blue); border-color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .segment-badge {
+      background: rgba(0,0,0,0.12); padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    }
+    .segment-btn.active .segment-badge { background: var(--blue-pale); color: var(--blue); }
+
+    /* ── GLOBAL KPI STRIP ───────────────────────────── */
+    .global-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      max-width: 1180px; margin: -28px auto 0;
+      padding: 0 24px; position: relative; z-index: 10;
+    }
+    .global-kpi-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-blue);
+      transition: var(--transition);
+      position: relative; overflow: hidden;
+      animation: fadeInUp 0.6s ease both;
+    }
+    .global-kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+    }
+    .global-kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,48,135,0.18); }
+    .gkpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .gkpi-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .gkpi-icon.blue   { background: var(--blue-pale); }
+    .gkpi-icon.green  { background: var(--green-pale); }
+    .gkpi-icon.orange { background: var(--orange-pale); }
+    .gkpi-icon.purple { background: var(--purple-pale); }
+    .gkpi-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(24px, 2.5vw, 32px); font-weight: 800;
+      line-height: 1; display: block;
+    }
+    .gkpi-value.blue   { color: var(--blue); }
+    .gkpi-value.green  { color: var(--green); }
+    .gkpi-value.orange { color: var(--orange); }
+    .gkpi-value.purple { color: var(--purple); }
+    .gkpi-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--text3); margin-top: 4px;
+    }
+
+    /* ── MAIN ───────────────────────────────────────── */
+    .main-wrap {
+      max-width: 1180px; margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    /* ── SECTION HEADER ─────────────────────────────── */
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 14px;
+    }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--red);
+      background: var(--red-pale); border: 1px solid rgba(227,24,55,0.15);
+      border-radius: 999px; padding: 4px 14px;
+      display: inline-block; margin-bottom: 6px;
+    }
+    .section-eyebrow.purple {
+      color: var(--purple); background: var(--purple-pale); border-color: var(--purple-border);
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(22px, 3vw, 30px); font-weight: 800; color: var(--text);
+    }
+    .section-accent-bar {
+      width: 52px; height: 4px;
+      background: linear-gradient(90deg, var(--blue), var(--red));
+      border-radius: 2px; margin-top: 8px;
+    }
+    .section-accent-bar.purple {
+      background: linear-gradient(90deg, var(--purple), #EC4899);
+    }
+
+    /* ── MAIN TABLES ────────────────────────────────── */
+    .table-container {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease both;
+    }
+    .table-container.creators-theme {
+      border-color: var(--purple-border);
+      box-shadow: var(--shadow-purple);
+    }
+    .stats-table {
+      width: 100%; border-collapse: collapse; text-align: left;
+    }
+    .stats-table thead th {
+      background: var(--bg2);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--text2);
+      padding: 14px 18px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .stats-table.creators-table thead th {
+      background: #FAF8FF; color: var(--purple); border-bottom-color: var(--purple-border);
+    }
+    .stats-table tbody tr {
+      border-bottom: 1.5px solid var(--border);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .stats-table tbody tr:last-child { border-bottom: none; }
+    .stats-table tbody tr:hover { background: var(--bg2); }
+    .stats-table tbody td {
+      padding: 16px 18px; font-size: 14px; color: var(--text);
+      vertical-align: middle;
+    }
+    .city-cell {
+      display: flex; align-items: center; gap: 10px; font-weight: 700;
+    }
+    .city-cell-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .city-cell-icon.mumbai     { background: var(--blue-pale); }
+    .city-cell-icon.pune       { background: var(--green-pale); }
+    .city-cell-icon.aurangabad { background: var(--orange-pale); }
+    .city-cell-icon.creator    { background: var(--purple-pale); }
+
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800;
+    }
+    .pill-blue   { background: var(--blue-pale);   color: var(--blue); }
+    .pill-green  { background: var(--green-pale);  color: var(--green); }
+    .pill-orange { background: var(--orange-pale); color: var(--orange); }
+    .pill-purple { background: var(--purple-pale); color: var(--purple); border: 1px solid var(--purple-border); }
+    .pill-gray   { background: #F1F3F5; color: var(--text2); }
+
+    .table-total-row {
+      background: #F8FAFF !important;
+      font-weight: 800 !important;
+      border-top: 2px solid var(--border2) !important;
+    }
+    .table-total-row.creator-total {
+      background: #FAF8FF !important;
+    }
+    .table-total-row td {
+      font-size: 15px !important; color: var(--blue) !important;
+    }
+    .table-total-row.creator-total td {
+      color: var(--purple) !important;
+    }
+
+    /* ── EXPANDABLE POC DRILLDOWN ───────────────────── */
+    .drilldown-row {
+      background: #FAFCFF; display: none;
+    }
+    .drilldown-row.active { display: table-row; }
+    .drilldown-content {
+      padding: 16px 20px 24px;
+    }
+    .poc-subgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px; margin-top: 10px;
+    }
+    .poc-subcard {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      box-shadow: 0 1px 4px rgba(0,48,135,0.04);
+      display: flex; flex-direction: column; gap: 6px;
+      transition: var(--transition);
+    }
+    .poc-subcard:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .poc-subcard-top { display: flex; justify-content: space-between; align-items: center; }
+    .poc-subcard-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .poc-subcard-store { font-size: 11px; color: var(--text3); }
+    .poc-subcard-stats {
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px;
+    }
+
+    /* ── UPDATED STRIP ──────────────────────────────── */
+    .update-strip {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-mid));
+      color: #fff; padding: 10px 24px; font-size: 12px; font-weight: 700;
+    }
+    .update-strip .live-dot { background: #4ade80; }
+
+    /* ── FOOTER ─────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 28px 24px 40px;
+      border-top: 1.5px solid var(--border);
+      color: var(--text3); font-size: 12px; font-weight: 600;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero { padding: 40px 16px 36px; }
+      .global-kpi-strip { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .main-wrap { padding: 44px 16px 60px; }
+      .stats-table thead th, .stats-table tbody td { padding: 10px 12px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- BRAND BAR -->
+<div class="brand-bar"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="/walkin-leaderboard" class="nav-brand">
+      <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" />
+      <div class="nav-divider"></div>
+      <span class="nav-title">City Walk-in Analytics</span>
+    </a>
+    <div class="nav-actions">
+      <button class="nav-btn" id="refresh-btn" onclick="loadAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Refresh
+      </button>
+      <div class="nav-live-pill">
+        <div class="live-dot"></div>
+        Live
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="analytics-hero">
+  <div class="hero-logos">
+    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1780981956/reliance-digital-seeklogo_ap43wc.png" alt="Reliance Digital" />
+    <div class="hero-logo-sep"></div>
+    <img src="https://res.cloudinary.com/dcztgvlfq/image/upload/v1781072324/unnamed_jycnue.png" alt="Bootup India" />
+  </div>
+  <div class="hero-eyebrow">📊 Live Regional Performance</div>
+  <h1 class="hero-title">City-Wise Walk-in Analytics</h1>
+  <p class="hero-sub">Separated breakdown for College POCs and Independent Creators</p>
+
+  <!-- SEGMENT SELECTOR -->
+  <div class="segment-wrap">
+    <button class="segment-btn active" id="seg-all" onclick="switchView('all')">
+      <span>🌐 All Walk-ins</span>
+      <span class="segment-badge" id="badge-all-total">—</span>
+    </button>
+    <button class="segment-btn" id="seg-pocs" onclick="switchView('pocs')">
+      <span>🎓 College POCs Only</span>
+      <span class="segment-badge" id="badge-pocs-total">—</span>
+    </button>
+    <button class="segment-btn" id="seg-creators" onclick="switchView('creators')">
+      <span>🎥 Creators Only</span>
+      <span class="segment-badge" id="badge-creators-total">—</span>
+    </button>
+  </div>
+</section>
+
+<!-- GLOBAL KPI STRIP -->
+<div class="global-kpi-strip" id="global-kpi-strip">
+  <div class="global-kpi-card" style="animation-delay:0s">
+    <div class="gkpi-top">
+      <div class="gkpi-label" id="lbl-kpi-pocs">Active POCs</div>
+      <div class="gkpi-icon blue">👥</div>
+    </div>
+    <span class="gkpi-value blue" id="gkpi-total-pocs">—</span>
+  </div>
+  <div class="global-kpi-card" style="animation-delay:0.06s">
+    <div class="gkpi-top">
+      <div class="gkpi-label">Total Registrations</div>
+      <div class="gkpi-icon blue">📝</div>
+    </div>
+    <span class="gkpi-value blue" id="gkpi-total-visits">—</span>
+  </div>
+  <div class="global-kpi-card" style="animation-delay:0.12s">
+    <div class="gkpi-top">
+      <div class="gkpi-label">Stories Uploaded</div>
+      <div class="gkpi-icon green">📸</div>
+    </div>
+    <span class="gkpi-value green" id="gkpi-total-stories">—</span>
+  </div>
+  <div class="global-kpi-card" style="animation-delay:0.18s">
+    <div class="gkpi-top">
+      <div class="gkpi-label">Views Pending</div>
+      <div class="gkpi-icon orange">⏳</div>
+    </div>
+    <span class="gkpi-value orange" id="gkpi-total-pending">—</span>
+  </div>
+  <div class="global-kpi-card" style="animation-delay:0.24s">
+    <div class="gkpi-top">
+      <div class="gkpi-label">Views Uploaded</div>
+      <div class="gkpi-icon green">👁️</div>
+    </div>
+    <span class="gkpi-value green" id="gkpi-total-views-sc">—</span>
+  </div>
+</div>
+
+<!-- UPDATE STRIP -->
+<div class="update-strip" style="margin-top:32px;">
+  <div class="live-dot"></div>
+  <span id="update-time">Loading live data…</span>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main-wrap" id="analytics-main">
+
+  <!-- 1. COLLEGE POCs CITY TABLE -->
+  <section id="pocs-section">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">🎓 College POCs</div>
+        <div class="section-title">POC Walk-in Summary (City-Wise)</div>
+        <div class="section-accent-bar"></div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);font-weight:600;">
+        💡 Click on any city row to view individual POC stats
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th style="text-align:center;">No. of POCs Bringing Walkin</th>
+            <th style="text-align:center;">Total Registrations</th>
+            <th style="text-align:center;">Story Screenshots Uploaded</th>
+            <th style="text-align:center;">Views Pending</th>
+            <th style="text-align:center;">Views Uploaded</th>
+            <th style="text-align:right;">Total Views Reported</th>
+          </tr>
+        </thead>
+        <tbody id="pocs-table-body">
+          <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Loading live POC statistics…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2. CREATORS CITY TABLE (SEPARATE) -->
+  <section id="creators-section" style="margin-top:56px;">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow purple">🎥 Creators (Separate)</div>
+        <div class="section-title">Creator Walk-in Summary (City-Wise)</div>
+        <div class="section-accent-bar purple"></div>
+      </div>
+      <div style="font-size:12px;color:var(--purple);font-weight:600;">
+        ✨ Independent content creators registered via Creator Portal
+      </div>
+    </div>
+
+    <div class="table-container creators-theme">
+      <table class="stats-table creators-table">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th style="text-align:center;">Creators Registered</th>
+            <th style="text-align:center;">Total Registrations</th>
+            <th style="text-align:center;">Story Screenshots Uploaded</th>
+            <th style="text-align:center;">Views Pending</th>
+            <th style="text-align:center;">Views Uploaded</th>
+            <th style="text-align:right;">Total Views Reported</th>
+          </tr>
+        </thead>
+        <tbody id="creators-table-body">
+          <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Loading creator statistics…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>Powered by <a href="https://vigorlaunchpad.com" target="_blank">Vigorlaunchpad</a> × Reliance Digital &nbsp;·&nbsp; Bootup India Campaign 2026</p>
+</footer>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   CITY ANALYTICS — DATA + RENDER (CREATORS SEPARATE)
+   ═══════════════════════════════════════════════════ */
+
+const SUPABASE_URL      = 'https://aebkutavunwlwzswuhbc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlYmt1dGF2dW53bHd6c3d1aGJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTAyNDksImV4cCI6MjA5NjQ4NjI0OX0.-tnBG6MDWB_WjHDJeeWCpiEwvbMSk9H8e4UneAKDR78';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const CITIES = [
+  { key: 'mumbai',     label: 'Mumbai',     emoji: '🌆', cls: 'mumbai'     },
+  { key: 'pune',       label: 'Pune',       emoji: '🏙️', cls: 'pune'       },
+  { key: 'aurangabad', label: 'Aurangabad', emoji: '🌇', cls: 'aurangabad' },
+];
+
+let globalState = {
+  pocsCityMap: {},
+  creatorsCityMap: {},
+  allRows: [],
+  currentSegment: 'all'
+};
+
+function inferCity(pocId = '') {
+  const id = pocId.toLowerCase();
+  if (id.startsWith('pun_') || id === 'creator_pune') return 'Pune';
+  if (id.startsWith('aur_') || id === 'creator_aurangabad') return 'Aurangabad';
+  if (id === 'vendor_shivraj' || id.includes('shivraj')) return 'Pune';
+  return 'Mumbai';
+}
+
+function countUp(el, target, duration = 1200) {
+  if (!el) return;
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const prog = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - prog, 4);
+    el.textContent = Math.floor(ease * target).toLocaleString('en-IN');
+    if (prog < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ── FETCH & AGGREGATE ─────────────────────────────────
+async function loadAll() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.classList.add('spinning');
+
+  try {
+    const { data: rows, error } = await db
+      .from('walkin_registrations')
+      .select('*');
+
+    if (error) throw error;
+
+    globalState.allRows = rows || [];
+
+    const pocsCityMap = {
+      Mumbai:     { pocMap: {}, total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+      Pune:       { pocMap: {}, total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+      Aurangabad: { pocMap: {}, total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+    };
+
+    const creatorsCityMap = {
+      Mumbai:     { creatorList: [], total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+      Pune:       { creatorList: [], total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+      Aurangabad: { creatorList: [], total: 0, stories: 0, pendingViews: 0, viewsUploaded: 0, viewsCount: 0 },
+    };
+
+    (rows || []).forEach(r => {
+      const isCreator = (r.poc_id && r.poc_id.startsWith('creator_')) || r.poc_name === 'Creators';
+      const city = inferCity(r.poc_id || '');
+
+      const hasStory = !!r.story_screenshot_url;
+      const hasViews = !!r.views_screenshot_url;
+      const viewsCount = r.views_count || 0;
+
+      if (isCreator) {
+        // Creator row
+        const cAgg = creatorsCityMap[city];
+        if (!cAgg) return;
+        cAgg.total++;
+        cAgg.creatorList.push(r);
+        if (hasStory) {
+          cAgg.stories++;
+          if (!hasViews) cAgg.pendingViews++;
+        }
+        if (hasViews) cAgg.viewsUploaded++;
+        cAgg.viewsCount += viewsCount;
+      } else {
+        // College POC row
+        const pAgg = pocsCityMap[city];
+        if (!pAgg) return;
+        pAgg.total++;
+
+        const pocKey = r.poc_id || 'unknown';
+        if (!pAgg.pocMap[pocKey]) {
+          pAgg.pocMap[pocKey] = {
+            id: pocKey,
+            name: r.poc_name || pocKey,
+            store: (r.preferred_store || '').replace('Reliance Digital — ', ''),
+            total: 0,
+            stories: 0,
+            viewsUploaded: 0,
+            pendingViews: 0,
+            viewsCount: 0
+          };
+        }
+        const p = pAgg.pocMap[pocKey];
+        p.total++;
+
+        if (hasStory) {
+          pAgg.stories++;
+          p.stories++;
+          if (!hasViews) {
+            pAgg.pendingViews++;
+            p.pendingViews++;
+          }
+        }
+        if (hasViews) {
+          pAgg.viewsUploaded++;
+          p.viewsUploaded++;
+        }
+        pAgg.viewsCount += viewsCount;
+        p.viewsCount   += viewsCount;
+      }
+    });
+
+    globalState.pocsCityMap = pocsCityMap;
+    globalState.creatorsCityMap = creatorsCityMap;
+
+    // Badges in selector
+    const totalPocsReg = Object.values(pocsCityMap).reduce((s, c) => s + c.total, 0);
+    const totalCreatorsReg = Object.values(creatorsCityMap).reduce((s, c) => s + c.total, 0);
+    document.getElementById('badge-all-total').textContent = totalPocsReg + totalCreatorsReg;
+    document.getElementById('badge-pocs-total').textContent = totalPocsReg;
+    document.getElementById('badge-creators-total').textContent = totalCreatorsReg;
+
+    renderGlobalKPIs();
+    renderPOCTable(pocsCityMap);
+    renderCreatorsTable(creatorsCityMap);
+    updateTimestamp();
+
+  } catch (err) {
+    console.error('Error loading analytics:', err);
+  } finally {
+    if (btn) btn.classList.remove('spinning');
+  }
+}
+
+// ── GLOBAL KPIs ───────────────────────────────────────
+function renderGlobalKPIs() {
+  const { pocsCityMap, creatorsCityMap, currentSegment } = globalState;
+
+  let totalPOCs = 0, totalVisits = 0, totalStories = 0, totalPending = 0, totalViewsSc = 0;
+
+  if (currentSegment === 'all' || currentSegment === 'pocs') {
+    for (const c of Object.values(pocsCityMap)) {
+      totalPOCs    += Object.keys(c.pocMap).length;
+      totalVisits  += c.total;
+      totalStories += c.stories;
+      totalPending += c.pendingViews;
+      totalViewsSc += c.viewsUploaded;
+    }
+  }
+
+  if (currentSegment === 'all' || currentSegment === 'creators') {
+    for (const c of Object.values(creatorsCityMap)) {
+      if (currentSegment === 'creators') {
+        totalPOCs += c.total; // creator count
+      }
+      totalVisits  += (currentSegment === 'creators' ? c.total : c.total);
+      totalStories += (currentSegment === 'creators' ? c.stories : c.stories);
+      totalPending += (currentSegment === 'creators' ? c.pendingViews : c.pendingViews);
+      totalViewsSc += (currentSegment === 'creators' ? c.viewsUploaded : c.viewsUploaded);
+    }
+  }
+
+  document.getElementById('lbl-kpi-pocs').textContent = currentSegment === 'creators' ? 'Creators' : currentSegment === 'pocs' ? 'College POCs' : 'Active POCs';
+  countUp(document.getElementById('gkpi-total-pocs'),     totalPOCs);
+  countUp(document.getElementById('gkpi-total-visits'),   totalVisits);
+  countUp(document.getElementById('gkpi-total-stories'),  totalStories);
+  countUp(document.getElementById('gkpi-total-pending'),  totalPending);
+  countUp(document.getElementById('gkpi-total-views-sc'), totalViewsSc);
+}
+
+// ── RENDER POC TABLE ──────────────────────────────────
+function renderPOCTable(pocsCityMap) {
+  const tbody = document.getElementById('pocs-table-body');
+  if (!tbody) return;
+
+  let grandPOCs = 0, grandTotal = 0, grandStories = 0, grandPending = 0, grandViewsUp = 0, grandViewsCount = 0;
+  let html = '';
+
+  CITIES.forEach(c => {
+    const agg = pocsCityMap[c.label] || { pocMap:{}, total:0, stories:0, pendingViews:0, viewsUploaded:0, viewsCount:0 };
+    const pocCount = Object.keys(agg.pocMap).length;
+    const storyRate = agg.total > 0 ? Math.round((agg.stories / agg.total) * 100) : 0;
+
+    grandPOCs       += pocCount;
+    grandTotal      += agg.total;
+    grandStories    += agg.stories;
+    grandPending    += agg.pendingViews;
+    grandViewsUp    += agg.viewsUploaded;
+    grandViewsCount += agg.viewsCount;
+
+    const pocsSorted = Object.values(agg.pocMap).sort((a, b) => b.total - a.total);
+    const pocCardsHtml = pocsSorted.map(p => `
+      <div class="poc-subcard">
+        <div class="poc-subcard-top">
+          <span class="poc-subcard-name">${p.name}</span>
+          <span class="badge-pill pill-blue">👥 ${p.total}</span>
+        </div>
+        <div class="poc-subcard-store">🏬 ${p.store || 'Store'}</div>
+        <div class="poc-subcard-stats">
+          <span class="badge-pill pill-green">📸 ${p.stories} stories</span>
+          <span class="badge-pill pill-orange">⏳ ${p.pendingViews} views pending</span>
+          <span class="badge-pill pill-gray">👁️ ${p.viewsUploaded} uploaded (${p.viewsCount.toLocaleString('en-IN')} views)</span>
+        </div>
+      </div>
+    `).join('');
+
+    html += `
+      <tr onclick="toggleDrilldown('dd-poc-${c.key}')" title="Click to view POCs">
+        <td>
+          <div class="city-cell">
+            <div class="city-cell-icon ${c.cls}">${c.emoji}</div>
+            <div>
+              <div style="font-weight:800;font-size:15px;">${c.label}</div>
+              <div style="font-size:11px;color:var(--text3);">Click to expand ${pocCount} POCs ▾</div>
+            </div>
+          </div>
+        </td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-blue" style="font-size:13px;">${pocCount} POCs</span>
+        </td>
+        <td style="text-align:center;font-weight:800;font-size:15px;color:var(--text);">${agg.total.toLocaleString('en-IN')}</td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-green" style="font-size:13px;">📸 ${agg.stories} (${storyRate}%)</span>
+        </td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-orange" style="font-size:13px;">⏳ ${agg.pendingViews}</span>
+        </td>
+        <td style="text-align:center;font-weight:700;color:var(--text2);">${agg.viewsUploaded}</td>
+        <td style="text-align:right;font-weight:800;color:var(--green);font-size:15px;">
+          ${agg.viewsCount > 0 ? agg.viewsCount.toLocaleString('en-IN') : '—'}
+        </td>
+      </tr>
+      <tr class="drilldown-row" id="dd-poc-${c.key}">
+        <td colspan="7">
+          <div class="drilldown-content">
+            <div style="font-size:12px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+              ${c.emoji} Active College POCs in ${c.label} (${pocCount})
+            </div>
+            <div class="poc-subgrid">
+              ${pocCardsHtml || '<div style="color:var(--text3);font-size:12px;">No active POCs</div>'}
+            </div>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  const grandStoryRate = grandTotal > 0 ? Math.round((grandStories / grandTotal) * 100) : 0;
+  html += `
+    <tr class="table-total-row">
+      <td>🎓 POC TOTAL</td>
+      <td style="text-align:center;">${grandPOCs} POCs</td>
+      <td style="text-align:center;">${grandTotal.toLocaleString('en-IN')}</td>
+      <td style="text-align:center;">${grandStories} (${grandStoryRate}%)</td>
+      <td style="text-align:center;">${grandPending}</td>
+      <td style="text-align:center;">${grandViewsUp}</td>
+      <td style="text-align:right;">${grandViewsCount.toLocaleString('en-IN')}</td>
+    </tr>
+  `;
+
+  tbody.innerHTML = html;
+}
+
+// ── RENDER CREATORS TABLE ─────────────────────────────
+function renderCreatorsTable(creatorsCityMap) {
+  const tbody = document.getElementById('creators-table-body');
+  if (!tbody) return;
+
+  let grandCreators = 0, grandTotal = 0, grandStories = 0, grandPending = 0, grandViewsUp = 0, grandViewsCount = 0;
+  let html = '';
+
+  CITIES.forEach(c => {
+    const agg = creatorsCityMap[c.label] || { creatorList:[], total:0, stories:0, pendingViews:0, viewsUploaded:0, viewsCount:0 };
+    const storyRate = agg.total > 0 ? Math.round((agg.stories / agg.total) * 100) : 0;
+
+    grandCreators   += agg.total;
+    grandTotal      += agg.total;
+    grandStories    += agg.stories;
+    grandPending    += agg.pendingViews;
+    grandViewsUp    += agg.viewsUploaded;
+    grandViewsCount += agg.viewsCount;
+
+    const creatorCardsHtml = agg.creatorList.map(cr => `
+      <div class="poc-subcard" style="border-left:3px solid var(--purple);">
+        <div class="poc-subcard-top">
+          <span class="poc-subcard-name">${cr.full_name || 'Creator'}</span>
+          <span class="badge-pill pill-purple">${cr.college_name || '@instagram'}</span>
+        </div>
+        <div class="poc-subcard-store">🏬 ${cr.preferred_store || 'Store'}</div>
+        <div class="poc-subcard-stats">
+          <span class="badge-pill ${cr.story_screenshot_url ? 'pill-green' : 'pill-gray'}">${cr.story_screenshot_url ? '📸 Story Uploaded' : '⏳ No Story'}</span>
+          <span class="badge-pill ${cr.views_screenshot_url ? 'pill-purple' : 'pill-orange'}">${cr.views_screenshot_url ? '👁️ Views (' + (cr.views_count || 0) + ')' : '⏳ Views Missing'}</span>
+        </div>
+      </div>
+    `).join('');
+
+    html += `
+      <tr onclick="toggleDrilldown('dd-cr-${c.key}')" title="Click to view creators">
+        <td>
+          <div class="city-cell">
+            <div class="city-cell-icon creator">🎥</div>
+            <div>
+              <div style="font-weight:800;font-size:15px;">${c.label} Creators</div>
+              <div style="font-size:11px;color:var(--purple);">${agg.total} creators registered ▾</div>
+            </div>
+          </div>
+        </td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-purple" style="font-size:13px;">${agg.total} Creators</span>
+        </td>
+        <td style="text-align:center;font-weight:800;font-size:15px;color:var(--text);">${agg.total.toLocaleString('en-IN')}</td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-green" style="font-size:13px;">📸 ${agg.stories} (${storyRate}%)</span>
+        </td>
+        <td style="text-align:center;">
+          <span class="badge-pill pill-orange" style="font-size:13px;">⏳ ${agg.pendingViews}</span>
+        </td>
+        <td style="text-align:center;font-weight:700;color:var(--text2);">${agg.viewsUploaded}</td>
+        <td style="text-align:right;font-weight:800;color:var(--purple);font-size:15px;">
+          ${agg.viewsCount > 0 ? agg.viewsCount.toLocaleString('en-IN') : '—'}
+        </td>
+      </tr>
+      <tr class="drilldown-row" id="dd-cr-${c.key}">
+        <td colspan="7">
+          <div class="drilldown-content">
+            <div style="font-size:12px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+              🎥 Registered Creators in ${c.label} (${agg.total})
+            </div>
+            <div class="poc-subgrid">
+              ${creatorCardsHtml || '<div style="color:var(--text3);font-size:12px;">No creators in this city</div>'}
+            </div>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  const grandStoryRate = grandTotal > 0 ? Math.round((grandStories / grandTotal) * 100) : 0;
+  html += `
+    <tr class="table-total-row creator-total">
+      <td>🎥 CREATORS TOTAL</td>
+      <td style="text-align:center;">${grandCreators} Creators</td>
+      <td style="text-align:center;">${grandTotal.toLocaleString('en-IN')}</td>
+      <td style="text-align:center;">${grandStories} (${grandStoryRate}%)</td>
+      <td style="text-align:center;">${grandPending}</td>
+      <td style="text-align:center;">${grandViewsUp}</td>
+      <td style="text-align:right;">${grandViewsCount.toLocaleString('en-IN')}</td>
+    </tr>
+  `;
+
+  tbody.innerHTML = html;
+}
+
+function toggleDrilldown(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('active');
+}
+
+// ── SEGMENT SWITCHER ──────────────────────────────────
+function switchView(seg) {
+  globalState.currentSegment = seg;
+
+  document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`seg-${seg}`)?.classList.add('active');
+
+  const pocsSection = document.getElementById('pocs-section');
+  const creatorsSection = document.getElementById('creators-section');
+
+  if (seg === 'all') {
+    pocsSection.style.display = 'block';
+    creatorsSection.style.display = 'block';
+  } else if (seg === 'pocs') {
+    pocsSection.style.display = 'block';
+    creatorsSection.style.display = 'none';
+  } else if (seg === 'creators') {
+    pocsSection.style.display = 'none';
+    creatorsSection.style.display = 'block';
+  }
+
+  renderGlobalKPIs();
+}
+
+// ── TIMESTAMP ─────────────────────────────────────────
+function updateTimestamp() {
+  const now  = new Date();
+  const time = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const day  = now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  const el   = document.getElementById('update-time');
+  if (el) el.textContent = `Live Data Synced: ${day} at ${time}`;
+}
+
+// ── INITIALIZE & REALTIME ────────────────────────────
+loadAll();
+
+// 1. Supabase Realtime WebSocket subscription (instant push on any insert/update/delete)
+try {
+  db.channel('walkin_analytics_realtime')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'walkin_registrations' },
+      (payload) => {
+        console.log('⚡ Realtime update received:', payload.eventType);
+        loadAll();
+      }
+    )
+    .subscribe((status) => {
+      console.log('Realtime connection status:', status);
+    });
+} catch (err) {
+  console.warn('Realtime subscription fallback to polling:', err);
+}
+
+// 2. Active background polling interval (every 60 seconds)
+setInterval(loadAll, 60 * 1000);
+</script>
+
+</body>
+</html>
