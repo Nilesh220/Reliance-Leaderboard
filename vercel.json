@@ -10,6 +10,7 @@
     { "source": "/walkin-story",        "destination": "/walkin-story.html"        },
     { "source": "/walkin-leaderboard",  "destination": "/walkin-leaderboard.html"  },
     { "source": "/creator-register",    "destination": "/creator-register.html"    },
-    { "source": "/creator-story",       "destination": "/creator-story.html"       }
+    { "source": "/creator-story",       "destination": "/creator-story.html"       },
+    { "source": "/city-analytics",      "destination": "/city-analytics.html"      }
   ]
 }
